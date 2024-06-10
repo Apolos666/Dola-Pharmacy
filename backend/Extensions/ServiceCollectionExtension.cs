@@ -1,5 +1,6 @@
 ﻿using backend.Data;
 using backend.Options;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -15,6 +16,10 @@ public static class ServiceCollectionExtension
         {
             options.UseNpgsql(databaseConfig?.ConnectionString);
         });
+
+        services.AddDefaultIdentity<IdentityUser>(options => { })
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>();
 
         return services;
     } 
