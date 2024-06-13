@@ -1,18 +1,24 @@
 using backend.Extensions;
+using backend.Options;
+using backend.Services.Account;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-
 builder.Services.
     AddCustomOptions(builder.Configuration).
-    AddDatabase();
+    AddDatabase().
+    AddRepositories().
+    AddCustomServices().
+    AddThirdPartyServices().
+    AddCorsService();
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
-
+app.UseHttpsRedirection();
+app.UseConfiguredCors();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseHttpsRedirection();
 app.MapControllers();
 app.Run();
-

@@ -18,7 +18,7 @@ public class Cart
     [Required] public DateTime DeliveryDate { get; set; }
     [Required] public TimeSpan DeliveryTime { get; set; }
 
-    [ForeignKey(nameof(UserId))] public virtual IdentityUser User { get; set; } = null!;
+    [ForeignKey(nameof(UserId))] public virtual ApplicationIdentityUser User { get; set; } = null!;
     public virtual ICollection<CartItem> CartItems { get; set; }
     public virtual ICollection<Order> Orders { get; set; }
     
