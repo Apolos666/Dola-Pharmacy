@@ -38,6 +38,13 @@ public class AccountController : ControllerBase
     [HttpGet("confirm-email")]
     public async Task<IActionResult> ConfirmEmail([FromQuery] string token, [FromQuery] string email)
     {
-        return Ok();
+        var confirmResult = await _authenticationService.ConfirmEmailAsync(token, email);
+        
+        if (!confirmResult)
+        {
+            return BadRequest("Invalid Email Confirmation Request.");
+        }
+        
+        return Ok("Verified Email Successfully.");
     }
 }
