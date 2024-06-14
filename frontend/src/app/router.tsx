@@ -3,6 +3,7 @@ import AppLayout from "../layouts/AppLayout.tsx";
 import Home from "../pages/Home.tsx";
 import Login from "../pages/Login.tsx";
 import {registerRoute} from "@/pages/Register.tsx";
+import EmailVerification from "@/pages/EmailVerification.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -15,7 +16,8 @@ export const router = createBrowserRouter([
                     {   path: 'login', element: <Login />},
                     {   path: 'register',
                         ...registerRoute
-                    }
+                    },
+                    {   path: 'email-verification', element: <EmailVerification />},
                 ]
             }
         ]

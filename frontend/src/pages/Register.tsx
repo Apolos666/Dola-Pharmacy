@@ -9,6 +9,7 @@ function Register() {
     const actionData = useActionData();
     const { toast } = useToast();
 
+    // Hiển thị thông báo lỗi khi đăng nhap trả ve từ action bằng toast
     useEffect(() => {
         if ( typeof actionData !== 'string') return;
 
@@ -44,8 +45,8 @@ async function action({request}: { request: Request }) {
     }
 
     try {
-        const response = await axios.post('/account/register', registerDto, {signal: request.signal})
-        return redirect("/")
+        await axios.post('/account/register', registerDto, {signal: request.signal})
+        return redirect("/account/email-verification")
     } catch (err) {
         countError++;
         switch (err.response.status) {

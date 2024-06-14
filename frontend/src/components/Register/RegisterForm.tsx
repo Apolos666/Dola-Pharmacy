@@ -1,6 +1,6 @@
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
-import {useSubmit} from "react-router-dom";
+import {useNavigation, useSubmit} from "react-router-dom";
 import {IRegisterFormInput, schemaRegisterForm} from "./RegisterFormConfig.ts";
 import {Button} from "@/components/ui/button.tsx"
 import {Form, FormControl, FormField, FormItem, FormMessage,} from "@/components/ui/form.tsx"
@@ -19,6 +19,7 @@ export function RegisterForm() {
     })
 
     const submit = useSubmit();
+    const { state }= useNavigation();
 
     // Sử dụng hàm submit từ react-router-dom để gọi action
     const onSubmit = (data: IRegisterFormInput) => {
@@ -111,7 +112,7 @@ export function RegisterForm() {
                     <Button
                         type="submit"
                         className="p-3 bg-[#1B74E7] text-white w-full rounded-[4px] hover:bg-[#003CBF]"
-                    >Đăng ký</Button>
+                    >{ state === "submitting" ? "Đăng ký ..." : "Đăng ký"}</Button>
                 </form>
             </Form>
         </>
