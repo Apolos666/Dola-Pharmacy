@@ -3,7 +3,9 @@ using backend.Models;
 using backend.Options;
 using backend.Repositories.Generic;
 using backend.Services.Account;
+using backend.Services.Email;
 using backend.UnitOfWork;
+using Mailjet.Client;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -21,7 +23,29 @@ public static class ServiceCollectionBuilderExtension
             options.UseNpgsql(databaseConfig?.ConnectionString);
         });
 
-        services.AddDefaultIdentity<ApplicationIdentityUser>(options => { })
+        services.AddDefaultIdentity<ApplicationIdentityUser>(options =>
+            {
+                // Sign in settings
+                options.SignIn.RequireConfirmedEmail = true;
+
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequiredUniqueChars = 0;
+
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(60);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings
+                options.User.AllowedUserNameCharacters =
+                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = true;
+            })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -43,7 +67,8 @@ public static class ServiceCollectionBuilderExtension
     {
         services
             .Configure<DatabaseConfig>(configuration.GetSection("DatabaseConfig"))
-            .Configure<CorsConfig>(configuration.GetSection("CorsConfig"));
+            .Configure<CorsConfig>(configuration.GetSection("CorsConfig"))
+            .Configure<MailSettings>(configuration.GetSection("MailSettings"));
         
         return services;
     }
@@ -69,7 +94,9 @@ public static class ServiceCollectionBuilderExtension
     
     public static IServiceCollection AddCustomServices(this IServiceCollection services)
     {
-        services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services
+            .AddScoped<IAuthenticationService, AuthenticationService>()
+            .AddScoped<IEmailService, MailKitEmailService>();
         
         return services;
     }
@@ -77,6 +104,12 @@ public static class ServiceCollectionBuilderExtension
     public static IServiceCollection AddThirdPartyServices(this IServiceCollection services)
     {
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddHttpClient<IMailjetClient, MailjetClient>(client =>
+        {
+            client.SetDefaultSettings();
+            
+            client.UseBasicAuthentication("6f9543c0602cc1be87d94d1ae524adfc", "26658f53db990f8da9e5e3406e78ced3");
+        });
         
         return services;
     }
