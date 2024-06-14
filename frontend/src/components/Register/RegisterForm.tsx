@@ -5,6 +5,7 @@ import {IRegisterFormInput, schemaRegisterForm} from "./RegisterFormConfig.ts";
 import {Button} from "@/components/ui/button.tsx"
 import {Form, FormControl, FormField, FormItem, FormMessage,} from "@/components/ui/form.tsx"
 import {Input} from "@/components/ui/input.tsx"
+import Spinner from "@/components/Spinner/Spinner.tsx";
 
 export function RegisterForm() {
     const form = useForm<IRegisterFormInput>({
@@ -115,6 +116,7 @@ export function RegisterForm() {
                     >{ state === "submitting" ? "Đăng ký ..." : "Đăng ký"}</Button>
                 </form>
             </Form>
+            {state === "submitting" ? <Spinner /> : "" }
         </>
     )
 }

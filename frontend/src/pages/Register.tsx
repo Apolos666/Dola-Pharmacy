@@ -1,6 +1,6 @@
 import {RegisterForm} from "@/components/Register/RegisterForm.tsx";
 import axios from "@/api/axios.ts";
-import {redirect, useActionData} from "react-router-dom";
+import {redirect, useActionData, useNavigation} from "react-router-dom";
 import {useEffect} from "react";
 import {useToast} from "@/components/ui/use-toast.ts";
 import {cn} from "@/lib/utils.ts";

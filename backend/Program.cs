@@ -1,7 +1,5 @@
 using backend.Extensions;
-using backend.Options;
-using backend.Services.Account;
-using Microsoft.Extensions.Options;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +12,12 @@ builder.Services.
     AddCorsService();
 
 builder.Services.AddControllers();
-
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration.ReadFrom.Configuration(context.Configuration);
+});
 var app = builder.Build();
+app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseConfiguredCors();
 app.UseAuthentication();

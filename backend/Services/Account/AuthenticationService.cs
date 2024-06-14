@@ -15,13 +15,15 @@ public class AuthenticationService : IAuthenticationService
     private readonly UserManager<ApplicationIdentityUser> _userManager;
     private readonly IMapper _mapper;
     private readonly IEmailService _emailService;
+    private readonly ILogger<AuthenticationService> _logger;
 
     public AuthenticationService(UserManager<ApplicationIdentityUser> userManager, IMapper mapper,
-        IEmailService emailService)
+        IEmailService emailService, ILogger<AuthenticationService> logger)
     {
         _userManager = userManager;
         _mapper = mapper;
         _emailService = emailService;
+        _logger = logger;
     }
 
     public async Task<bool> RegisterUserAsync(RegisterDto registerDto)
@@ -31,6 +33,7 @@ public class AuthenticationService : IAuthenticationService
         newUser.EmailConfirmed = false;
 
         var isCreated = await _userManager.CreateAsync(newUser, registerDto.Password);
+        _logger.LogInformation("Created user with email: {@email}", newUser.Email);
 
         if (!isCreated.Succeeded) return false;
 

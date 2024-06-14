@@ -10,9 +10,11 @@ namespace backend.Services.Email;
 public class MailKitEmailService : IEmailService
 {
     private readonly MailSettings _mailSettings;
+    private readonly Logger<MailKitEmailService> _logger;
     
-    public MailKitEmailService(IOptions<MailSettings> mailSettingsOptions)
+    public MailKitEmailService(IOptions<MailSettings> mailSettingsOptions, Logger<MailKitEmailService> logger)
     {
+        _logger = logger;
         _mailSettings = mailSettingsOptions.Value;
     }
     
@@ -42,10 +44,12 @@ public class MailKitEmailService : IEmailService
             await mailKitClient.AuthenticateAsync(_mailSettings.SenderEmail, _mailSettings.Password);
             var result = await mailKitClient.SendAsync(emailMessage);
             await mailKitClient.DisconnectAsync(true);
+            _logger.LogInformation("Sent email to {@receiverEmail}", mailData.ReceiverEmail);
             return true;
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error sending email to {@receiverEmail}", mailData.ReceiverEmail);
             return false;
         }
     }
