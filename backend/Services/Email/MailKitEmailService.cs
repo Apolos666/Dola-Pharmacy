@@ -10,9 +10,9 @@ namespace backend.Services.Email;
 public class MailKitEmailService : IEmailService
 {
     private readonly MailSettings _mailSettings;
-    private readonly Logger<MailKitEmailService> _logger;
+    private readonly ILogger<MailKitEmailService> _logger;
     
-    public MailKitEmailService(IOptions<MailSettings> mailSettingsOptions, Logger<MailKitEmailService> logger)
+    public MailKitEmailService(IOptions<MailSettings> mailSettingsOptions, ILogger<MailKitEmailService> logger)
     {
         _logger = logger;
         _mailSettings = mailSettingsOptions.Value;

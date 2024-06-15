@@ -1,10 +1,6 @@
 ﻿using backend.DTOs.Account;
 using backend.Services.Account;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 using Microsoft.AspNetCore.Mvc;
-using MimeKit;
-using MimeKit.Text;
 
 namespace backend.Controllers;
 
@@ -19,6 +15,26 @@ public class AccountController : ControllerBase
     {
         _authenticationService = authenticationService;
         _logger = logger;
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+    {
+        _logger.LogInformation("Logging in user with email: {@email}", loginDto.Email);
+        
+        if (!LoginDtoValidator.ValidateLoginDto(loginDto).isValid)
+        {
+            return BadRequest(LoginDtoValidator.ValidateLoginDto(loginDto).result);
+        }
+        
+        var result = await _authenticationService.LoginUserAsync(loginDto);
+
+        return result switch
+        {
+            StatusCodes.Status401Unauthorized => Unauthorized("Invalid credentials"),
+            StatusCodes.Status403Forbidden => StatusCode(StatusCodes.Status403Forbidden, "Email not confirmed"),
+            _ => Ok()
+        };
     }
     
     [HttpPost("register")]

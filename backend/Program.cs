@@ -9,7 +9,8 @@ builder.Services.
     AddRepositories().
     AddCustomServices().
     AddThirdPartyServices().
-    AddCorsService();
+    AddCorsService().
+    AddApplicationAuthentication();
 
 builder.Services.AddControllers();
 builder.Host.UseSerilog((context, configuration) =>

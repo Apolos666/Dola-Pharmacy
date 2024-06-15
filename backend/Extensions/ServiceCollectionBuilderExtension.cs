@@ -1,4 +1,5 @@
-﻿using backend.Data;
+﻿using System.Text;
+using backend.Data;
 using backend.Models;
 using backend.Options;
 using backend.Repositories.Generic;
@@ -6,9 +7,11 @@ using backend.Services.Account;
 using backend.Services.Email;
 using backend.UnitOfWork;
 using Mailjet.Client;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace backend.Extensions;
 
@@ -63,12 +66,22 @@ public static class ServiceCollectionBuilderExtension
         return services;
     }
     
+    public static IServiceCollection AddCustomServices(this IServiceCollection services)
+    {
+        services
+            .AddScoped<IAuthenticationService, AuthenticationService>()
+            .AddScoped<IEmailService, MailKitEmailService>();
+        
+        return services;
+    }
+    
     public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .Configure<DatabaseConfig>(configuration.GetSection("DatabaseConfig"))
             .Configure<CorsConfig>(configuration.GetSection("CorsConfig"))
-            .Configure<MailSettings>(configuration.GetSection("MailSettings"));
+            .Configure<MailSettings>(configuration.GetSection("MailSettings"))
+            .Configure<JwtConfig>(configuration.GetSection("JwtConfig"));
         
         return services;
     }
@@ -91,14 +104,35 @@ public static class ServiceCollectionBuilderExtension
         
         return services;
     }
-    
-    public static IServiceCollection AddCustomServices(this IServiceCollection services)
+
+    public static IServiceCollection AddApplicationAuthentication(this IServiceCollection service)
     {
-        services
-            .AddScoped<IAuthenticationService, AuthenticationService>()
-            .AddScoped<IEmailService, MailKitEmailService>();
-        
-        return services;
+        var jwtConfig = service.BuildServiceProvider().GetService<IOptions<JwtConfig>>()?.Value;
+
+        service
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateActor = true,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    RequireExpirationTime = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtConfig?.Issuer,
+                    ValidAudience = jwtConfig?.Audience,
+                    ClockSkew = TimeSpan.Zero,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig?.Key!))
+                };
+            });
+
+        return service;
     }
     
     public static IServiceCollection AddThirdPartyServices(this IServiceCollection services)

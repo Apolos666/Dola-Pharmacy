@@ -1,6 +1,6 @@
 import {RegisterForm} from "@/components/RegisterForm/RegisterForm.tsx";
 import axios from "@/api/axios.ts";
-import {redirect, useActionData, useNavigation} from "react-router-dom";
+import {redirect, useActionData} from "react-router-dom";
 import {useEffect} from "react";
 import {useToast} from "@/components/ui/use-toast.ts";
 import {cn} from "@/lib/utils.ts";
@@ -9,7 +9,7 @@ function Register() {
     const actionData = useActionData();
     const { toast } = useToast();
 
-    // Hiển thị thông báo lỗi khi đăng nhap trả ve từ action bằng toast
+    // Hiển thị thông báo lỗi khi đăng ký trả về từ action bằng toast
     useEffect(() => {
         if ( typeof actionData !== 'string') return;
 

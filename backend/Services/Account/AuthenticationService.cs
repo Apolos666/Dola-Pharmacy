@@ -26,6 +26,23 @@ public class AuthenticationService : IAuthenticationService
         _logger = logger;
     }
 
+    public async Task<int> LoginUserAsync(LoginDto loginDto)
+    {
+        var user = await _userManager.FindByEmailAsync(loginDto.Email);
+
+        if (user is null || !(await _userManager.CheckPasswordAsync(user, loginDto.Password)))
+        {
+            return StatusCodes.Status401Unauthorized; // Wrong credentials
+        }
+
+        if (!user.EmailConfirmed)
+        {
+            return StatusCodes.Status403Forbidden; // Email not confirmed
+        }
+        
+        return StatusCodes.Status200OK; // Success
+    }
+
     public async Task<bool> RegisterUserAsync(RegisterDto registerDto)
     {
         var newUser = _mapper.Map<ApplicationIdentityUser>(registerDto);
