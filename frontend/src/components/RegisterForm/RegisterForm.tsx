@@ -5,7 +5,6 @@ import {IRegisterFormInput, schemaRegisterForm} from "./RegisterFormConfig.ts";
 import {Button} from "@/components/ui/button.tsx"
 import {Form, FormControl, FormField, FormItem, FormMessage,} from "@/components/ui/form.tsx"
 import {Input} from "@/components/ui/input.tsx"
-import Spinner from "@/components/Spinner/Spinner.tsx";
 import FacebookButton from "@/components/ExternalLogin/FacebookButton.tsx";
 import GoogleButton from "@/components/ExternalLogin/GoogleButton.tsx";
 
@@ -136,7 +135,6 @@ export function RegisterForm() {
                     </div>
                 </div>
             </div>
-            {state === "submitting" ? <Spinner/> : ""}
         </>
     )
 }

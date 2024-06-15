@@ -4,10 +4,10 @@ import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import FacebookButton from "@/components/ExternalLogin/FacebookButton.tsx";
 import GoogleButton from "@/components/ExternalLogin/GoogleButton.tsx";
-import Spinner from "@/components/Spinner/Spinner.tsx";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {ILoginFormInput, schemaLoginForm} from "@/components/LoginForm/LoginFormConfig.ts";
+import ForgotPasswordForm from "@/components/ForgotPasswordForm/ForgotPasswordForm.tsx";
 
 function LoginForm() {
     const form = useForm<ILoginFormInput>({
@@ -81,16 +81,16 @@ function LoginForm() {
                             >{state === "submitting" ? "Đăng nhập ..." : "Đăng nhập"}</Button>
                         </form>
                     </Form>
-                    {/* Todo: làm chức năng quên mật khẩu */}
-                    <div className="text-center my-3">Quên mật khẩu</div>
+                    <ForgotPasswordForm />
                     <div className="text-center my-3">Hoặc đăng nhập bằng</div>
                     <div className="flex xl:justify-around xl:items-center xl:flex-row xl:mx-2 flex-col mx-20 gap-2">
-                        <FacebookButton className="xl:flex-1"/>
+                    <FacebookButton className="xl:flex-1"/>
                         <GoogleButton className="xl:flex-1"/>
                     </div>
                 </div>
             </div>
-            {state === "submitting" ? <Spinner/> : ""}
+
+
         </>
     )
 }

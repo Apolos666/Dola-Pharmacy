@@ -43,16 +43,15 @@ async function action({request}: { request: Request }) {
 
     try {
         const result = await axios.post('/account/login', loginDto, {signal: request.signal})
-        console.log(result);
         return redirect("/")
-        // return redirect("/account/email-verification")
     } catch (err) {
         countError++;
         switch (err.response.status) {
             case 401:
                 return "Thông tin không hợp lệ " + countError
             case 403:
-                return "Email chưa được xác thực " + countError
+                redirect("/account/email-verification") // Chuyển hướng đến trang xác thực email
+                break;
             case 500:
                 return "Có lỗi xảy ra ở bên hệ thống " + countError
             default:
