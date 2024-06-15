@@ -1,11 +1,12 @@
 import {useParams} from "react-router-dom";
+import ResetPasswordForm from "@/components/ResetPasswordForm/ResetPasswordForm.tsx";
 
 function ResetPassword() {
     const { email, token } = useParams();
 
     return (
         <>
-            <div>{email} and {token}</div>
+            <ResetPasswordForm email={email as string} token={token as string}/>
         </>
     )
 }
