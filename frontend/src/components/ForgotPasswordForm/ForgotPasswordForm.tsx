@@ -5,16 +5,13 @@ import {
     IForgotPasswordFormInput,
     schemaForgotPasswordForm
 } from "@/components/ForgotPasswordForm/ForgotPasswordConfig.ts";
-import {useNavigation, useSubmit} from "react-router-dom";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormMessage
-} from "@/components/ui/form.tsx";
+import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
+import {accountApi} from "@/api/account.ts";
+import {useToast} from "@/components/ui/use-toast.ts";
+import {cn} from "@/lib/utils.ts";
+import Spinner from "@/components/Spinner/Spinner.tsx";
 
 function ForgotPasswordForm() {
     const form = useForm<IForgotPasswordFormInput>({
@@ -24,14 +21,37 @@ function ForgotPasswordForm() {
         },
     })
 
-    const submit = useSubmit();
-    const { state } = useNavigation();
+    const { toast } = useToast();
+    const [ isLoading, setIsLoading ] = useState<boolean>(false);
 
-    const onSubmit = (data: IForgotPasswordFormInput) => {
-        submit({...data}, {
-            method: 'POST',
-            action: '/account/login',
-        });
+    const onSubmit = async (data: IForgotPasswordFormInput) => {
+        setIsLoading(true);
+        const status = await accountApi.requestResetPassword(data);
+        setIsLoading(false);
+        showToastBasedOnStatus(status)
+    }
+
+    function showToastBasedOnStatus(status: number) {
+        switch (status) {
+            case 200:
+                toast({
+                    title: "Thành công",
+                    description: "Vui lòng kiểm tra email để lấy lại mật khẩu",
+                    className: cn(
+                        'bg-[#1B7AE7] text-white rounded-xl',
+                    )
+                })
+                break;
+            case 400:
+                toast({
+                    title: "Có lỗi hiện tại đang xảy ra",
+                    description: "Yêu cầu không hợp lệ",
+                    className: cn(
+                        'bg-[#7F1D1D] text-white rounded-xl',
+                    )
+                })
+                break;
+        }
     }
 
     const [toggleForgetPassword, setToggleForgetPassword] = useState<boolean>(false);
@@ -65,11 +85,12 @@ function ForgotPasswordForm() {
                             <Button
                                 className="p-3 bg-[#1B74E7] text-white w-full rounded-[4px] hover:bg-[#003CBF]"
                                 type="submit"
-                            >{ state === "submitting" ? "Lấy lại mật khẩu ..." : "Lấy lại mật khẩu"}</Button>
+                            >{ isLoading ? "Lấy lại mật khẩu ..." : "Lấy lại mật khẩu"}</Button>
                         </form>
                     </Form>
                 </div>}
             </div>
+            {isLoading && <Spinner />}
         </>
     )
 }

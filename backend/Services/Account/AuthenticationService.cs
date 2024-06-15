@@ -94,4 +94,43 @@ public class AuthenticationService : IAuthenticationService
         // Todo: thêm logging
         return confirmResult.Succeeded;
     }
+
+    public async Task<bool> ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto)
+    {
+        var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
+
+        if (user is null || !user.EmailConfirmed)
+        {
+            _logger.LogWarning("User not found or email not confirmed.");
+            return false; // User not found or email not confirmed
+        }
+        
+        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        // Mã hóa token
+        var tokenGeneratedBytes = Encoding.UTF8.GetBytes(resetToken);
+        var codeEncoded = WebEncoders.Base64UrlEncode(tokenGeneratedBytes);
+        
+        var callbackUrl = $"http://localhost:5173/account/reset-password/{user.Email}/{codeEncoded}";
+        
+        var emailMessage = $"""
+                                <h1>Xin chào {user.UserName},</h1>
+                                <p>Anh/chị đã yêu cầu đổi mật khẩu tại Dola Pharmacy.</p>
+                                <p>Anh/chị vui lòng truy cập vào liên kết dưới đây để thay đổi mật khẩu của Anh/chị nhé.</p>
+                                <a href='{callbackUrl}' style='background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;'>Đặt lại mật khẩu</a>
+                                <p>Nếu Anh/chị không yêu cầu email này, vui lòng bỏ qua.</p>
+                                <p>Trân trọng,</p>
+                                <p>Dola Pharmacy</p>
+                            """;
+
+        var mailData = new MailDataBuilder()
+            .WithReceiverName(user.UserName!)
+            .WithReceiverEmail(user.Email!)
+            .WithTitle("Đặt lại mật khẩu Dola Pharmacy")
+            .WithBody(emailMessage)
+            .Build();
+        
+        await _emailService.SendEmail(mailData);
+
+        return true;
+    }
 }

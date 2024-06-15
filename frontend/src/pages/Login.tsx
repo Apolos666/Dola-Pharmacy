@@ -42,7 +42,7 @@ async function action({request}: { request: Request }) {
     }
 
     try {
-        const result = await axios.post('/account/login', loginDto, {signal: request.signal})
+        await axios.post('/account/login', loginDto, {signal: request.signal})
         return redirect("/")
     } catch (err) {
         countError++;

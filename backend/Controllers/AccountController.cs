@@ -66,10 +66,31 @@ public class AccountController : ControllerBase
         
         if (!confirmResult)
         {
-            _logger.LogInformation("Successfully confirmed email for user with email: {@email}", email);
             return BadRequest("Invalid Email Confirmation Request.");
         }
         
+        _logger.LogInformation("Successfully confirmed email for user with email: {@email}", email);
         return Ok("Verified Email Successfully.");
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
+    {
+        _logger.LogInformation("Forgot password for user with email: {@email}", forgotPasswordDto.Email);
+        
+        if (!ForgotPasswordDtoValidator.ValidateForgotPasswordDto(forgotPasswordDto).isValid)
+        {
+            return BadRequest(ForgotPasswordDtoValidator.ValidateForgotPasswordDto(forgotPasswordDto).result);
+        }
+        
+        var result = await _authenticationService.ForgotPasswordAsync(forgotPasswordDto);
+        
+        if (!result)
+        {
+            return BadRequest("Invalid Request.");
+        }
+        
+        _logger.LogInformation("Successfully sent forgot password email for user with email: {@email}", forgotPasswordDto.Email);
+        return Ok();
     }
 }
