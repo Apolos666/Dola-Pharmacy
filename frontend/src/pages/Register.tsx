@@ -1,4 +1,4 @@
-import {RegisterForm} from "@/components/Register/RegisterForm.tsx";
+import {RegisterForm} from "@/components/RegisterForm/RegisterForm.tsx";
 import axios from "@/api/axios.ts";
 import {redirect, useActionData, useNavigation} from "react-router-dom";
 import {useEffect} from "react";
