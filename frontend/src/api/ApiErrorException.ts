@@ -1,3 +1,17 @@
+export class BadRequestError extends Error {
+    constructor(message = "Bad Request") {
+        super(message);
+        this.name = "BadRequestError";
+    }
+}
+
+export class ConflictError extends Error {
+    constructor(message = "Conflict") {
+        super(message);
+        this.name = "ConflictError";
+    }
+}
+
 export class UnauthorizedError extends Error {
     constructor(message = "Unauthorized") {
         super(message);

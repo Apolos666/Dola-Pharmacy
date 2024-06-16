@@ -1,9 +1,10 @@
 import {RegisterForm} from "@/components/RegisterForm/RegisterForm.tsx";
-import axios from "@/api/axios.ts";
 import {redirect, useActionData} from "react-router-dom";
 import {useEffect} from "react";
 import {useToast} from "@/components/ui/use-toast.ts";
 import {cn} from "@/lib/utils.ts";
+import {accountApi} from "@/api/account.ts";
+import {IRegisterDto} from "@/components/RegisterForm/RegisterFormConfig.ts";
 
 function Register() {
     const actionData = useActionData();
@@ -36,30 +37,22 @@ async function action({request}: { request: Request }) {
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
 
-    const registerDto = {
-        "Ho": data.firstName,
-        "Ten": data.lastName,
-        "Email": data.email,
-        "PhoneNumber": data.phoneNumber,
-        "Password": data.password
+    const registerDto: IRegisterDto = {
+        Ho: data.firstName.toString(),
+        Ten: data.lastName.toString(),
+        Email: data.email.toString(),
+        PhoneNumber: data.phoneNumber.toString(),
+        Password: data.password.toString()
     }
 
     try {
-        await axios.post('/account/register', registerDto, {signal: request.signal})
+        await accountApi.requestRegisterAsync({data: registerDto, request});
         return redirect("/account/email-verification")
     } catch (err) {
         countError++;
-        switch (err.response.status) {
-            case 400:
-                return "Yêu cầu không hợp lệ " + countError
-            case 409:
-                return "Email đã tồn tại " + countError
-            case 500:
-                return "Có lỗi xảy ra ở bên hệ thống " + countError
-            default:
-                return "Có lỗi xảy ra, chúng tôi đang khắc phục " + countError
-        }
+        return err.message + " " + countError
     }
+
 }
 
 export const registerRoute = {

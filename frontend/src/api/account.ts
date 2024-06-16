@@ -2,7 +2,14 @@ import {IForgotPasswordFormInput} from "@/components/ForgotPasswordForm/ForgotPa
 import axios, {axiosPrivate} from "@/api/axios.ts";
 import {IResetPasswordData} from "@/components/ResetPasswordForm/ResetPasswordConfig.ts";
 import {ILoginDto} from "@/components/LoginForm/LoginFormConfig.ts";
-import {EmailNotVerifiedError, SystemError, UnauthorizedError, UnknownError} from "@/api/ApiErrorException.ts";
+import {
+    BadRequestError, ConflictError,
+    EmailNotVerifiedError,
+    SystemError,
+    UnauthorizedError,
+    UnknownError
+} from "@/api/ApiErrorException.ts";
+import {IRegisterDto} from "@/components/RegisterForm/RegisterFormConfig.ts";
 
 async function requestLogicAsync({data, request } : { data: ILoginDto, request: Request}) {
     try {
@@ -13,6 +20,23 @@ async function requestLogicAsync({data, request } : { data: ILoginDto, request: 
                 throw new UnauthorizedError(err.response.data)
             case 403:
                 throw new EmailNotVerifiedError()
+            case 500:
+                throw new SystemError()
+            default:
+                throw new UnknownError()
+        }
+    }
+}
+
+async function requestRegisterAsync({data, request}: { data: IRegisterDto, request: Request }) {
+    try {
+        await axios.post('/account/register', data, {signal: request.signal})
+    } catch (err) {
+        switch (err.response.status) {
+            case 400:
+                throw new BadRequestError(err.response.data)
+            case 409:
+                throw new ConflictError(err.response.data)
             case 500:
                 throw new SystemError()
             default:
@@ -49,6 +73,7 @@ async function confirmResetPasswordAsync(data : IResetPasswordData) : Promise<nu
 
 export const accountApi = {
     requestLogicAsync,
+    requestRegisterAsync,
     requestResetPasswordAsync,
     confirmResetPasswordAsync
 }

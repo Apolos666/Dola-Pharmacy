@@ -8,6 +8,14 @@ export interface IRegisterFormInput {
     password: string;
 }
 
+export interface IRegisterDto {
+    Ho: string;
+    Ten: string;
+    Email: string;
+    PhoneNumber: string;
+    Password: string;
+}
+
 const phoneVnReg = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
 
 export const schemaRegisterForm = yup.object().shape({
