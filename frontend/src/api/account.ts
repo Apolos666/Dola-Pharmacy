@@ -1,5 +1,5 @@
 import {IForgotPasswordFormInput} from "@/components/ForgotPasswordForm/ForgotPasswordConfig.ts";
-import axios, {axiosPrivate} from "@/api/axios.ts";
+import axios from "@/api/axios.ts";
 import {IResetPasswordData} from "@/components/ResetPasswordForm/ResetPasswordConfig.ts";
 import {ILoginDto} from "@/components/LoginForm/LoginFormConfig.ts";
 import {
@@ -13,7 +13,7 @@ import {IRegisterDto} from "@/components/RegisterForm/RegisterFormConfig.ts";
 
 async function requestLogicAsync({data, request } : { data: ILoginDto, request: Request}) {
     try {
-        await axiosPrivate.post('/account/login', data, {signal: request.signal})
+        await axios.post('/account/login', data, {signal: request.signal, withCredentials: true })
     } catch (err) {
         switch (err.response.status) {
             case 401:
@@ -71,9 +71,26 @@ async function confirmResetPasswordAsync(data : IResetPasswordData) : Promise<nu
     }
 }
 
+async function requestRefreshTokenAsync() {
+    try {
+        const response = await axios.post('/account/refresh-token', {}, {withCredentials: true});
+        return response.data;
+    } catch (err) {
+        switch (err.response.status) {
+            case 401:
+                throw new UnauthorizedError(err.response.data)
+            case 500:
+                throw new SystemError()
+            default:
+                throw new UnknownError()
+        }
+    }
+}
+
 export const accountApi = {
     requestLogicAsync,
     requestRegisterAsync,
     requestResetPasswordAsync,
-    confirmResetPasswordAsync
+    confirmResetPasswordAsync,
+    requestRefreshTokenAsync
 }

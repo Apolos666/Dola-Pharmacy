@@ -76,7 +76,7 @@ public class AccountController : ControllerBase
         return BadRequest();
     }
 
-    [HttpGet("refresh-token")]
+    [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken()
     {
         var refreshToken = Request.Cookies[Cookies.RefreshToken];
