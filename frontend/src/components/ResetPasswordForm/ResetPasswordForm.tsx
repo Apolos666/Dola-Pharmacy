@@ -58,7 +58,7 @@ function ResetPasswordForm({ email, token } : IResetPasswordProp) {
                     title: "Reset password thành công",
                     description: "Quay trở lại trang đăng nhập để đăng nhập lại",
                     className: cn(
-                        'bg-[#1B7AE7] text-white rounded-xl',
+                        'bg-emerald-400 text-white rounded-xl',
                     )
                 })
 

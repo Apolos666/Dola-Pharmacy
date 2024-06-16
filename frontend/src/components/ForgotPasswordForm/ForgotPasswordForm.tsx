@@ -38,7 +38,7 @@ function ForgotPasswordForm() {
                     title: "Thành công",
                     description: "Vui lòng kiểm tra email để lấy lại mật khẩu",
                     className: cn(
-                        'bg-[#1B7AE7] text-white rounded-xl',
+                        'bg-emerald-400 text-white rounded-xl',
                     )
                 })
                 break;
