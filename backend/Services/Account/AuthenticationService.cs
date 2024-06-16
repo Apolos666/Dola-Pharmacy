@@ -13,17 +13,19 @@ namespace backend.Services.Account;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly UserManager<ApplicationIdentityUser> _userManager;
+    private readonly IPasswordValidator<ApplicationIdentityUser> _passwordValidator;
     private readonly IMapper _mapper;
     private readonly IEmailService _emailService;
     private readonly ILogger<AuthenticationService> _logger;
 
     public AuthenticationService(UserManager<ApplicationIdentityUser> userManager, IMapper mapper,
-        IEmailService emailService, ILogger<AuthenticationService> logger)
+        IEmailService emailService, ILogger<AuthenticationService> logger, IPasswordValidator<ApplicationIdentityUser> passwordValidator)
     {
         _userManager = userManager;
         _mapper = mapper;
         _emailService = emailService;
         _logger = logger;
+        _passwordValidator = passwordValidator;
     }
 
     public async Task<int> LoginUserAsync(LoginDto loginDto)
@@ -132,5 +134,45 @@ public class AuthenticationService : IAuthenticationService
         await _emailService.SendEmail(mailData);
 
         return true;
+    }
+
+    public async Task<bool> ResetPasswordAsync(ResetPasswordDto resetPasswordDto)
+    {
+        var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
+
+        if (user is null) return false; // User not found
+        
+        var passwordValidationResult = await _passwordValidator.ValidateAsync(_userManager, user, resetPasswordDto.Password);
+        
+        // Reset password is identical to the old password
+        if (!passwordValidationResult.Succeeded)
+        {
+            foreach (var error in passwordValidationResult.Errors)
+            {
+                _logger.LogError("Error resetting password: {@error}", error);
+            }
+
+            return false;
+        }
+        
+        // Giải mã token
+        var codeDecodedBytes = WebEncoders.Base64UrlDecode(resetPasswordDto.Token);
+        var codeDecoded = Encoding.UTF8.GetString(codeDecodedBytes);
+        
+        var result = await _userManager.ResetPasswordAsync(user, codeDecoded, resetPasswordDto.Password);
+
+        if (result.Succeeded)
+        {
+            _logger.LogInformation("Successfully reset password for user with email: {@email}", resetPasswordDto.Email);
+            return true;
+        }
+        
+        // Log errors if something wrong with reset password async
+        foreach (var error in result.Errors)
+        {
+            _logger.LogError("Error resetting password: {@error}", error);
+        }
+
+        return false;
     }
 }

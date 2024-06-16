@@ -5,6 +5,7 @@ using backend.Options;
 using backend.Repositories.Generic;
 using backend.Services.Account;
 using backend.Services.Email;
+using backend.Services.PasswordValidator;
 using backend.UnitOfWork;
 using Mailjet.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -50,7 +51,8 @@ public static class ServiceCollectionBuilderExtension
                 options.User.RequireUniqueEmail = true;
             })
             .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddPasswordValidator<CustomPasswordValidator<ApplicationIdentityUser>>();
 
         services.AddScoped<Func<ApplicationDbContext>>((provider) => () => provider.GetService<ApplicationDbContext>()!);
         services.AddScoped<DbFactory>();

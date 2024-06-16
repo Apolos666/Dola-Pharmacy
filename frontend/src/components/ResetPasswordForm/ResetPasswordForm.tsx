@@ -1,4 +1,5 @@
 import {
+    IResetPasswordData,
     IResetPasswordFormInput,
     IResetPasswordProp,
     schemaResetPasswordForm
@@ -15,8 +16,12 @@ import {
 } from "@/components/ui/form.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import Spinner from "@/components/Spinner/Spinner.tsx";
+import {useToast} from "@/components/ui/use-toast.ts";
+import {accountApi} from "@/api/account.ts";
+import {cn} from "@/lib/utils.ts";
+import {useNavigate} from "react-router-dom";
 
 function ResetPasswordForm({ email, token } : IResetPasswordProp) {
     const form = useForm<IResetPasswordFormInput>({
@@ -27,10 +32,50 @@ function ResetPasswordForm({ email, token } : IResetPasswordProp) {
         },
     })
 
+    const { toast } = useToast();
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
+    const navigate = useNavigate();
+    const redirectDelayMs = useRef<number>(2000);
 
     const onSubmit = async (data: IResetPasswordFormInput) => {
-        console.log(data);
+        setIsLoading(true);
+
+        const resetPasswordData: IResetPasswordData = {
+            email: email,
+            token: token,
+            password: data.password
+        }
+
+        const status = await accountApi.confirmResetPassword(resetPasswordData);
+        setIsLoading( false);
+        showToastBasedOnStatus(status);
+    }
+
+    function showToastBasedOnStatus(status: number) {
+        switch (status) {
+            case 200:
+                toast({
+                    title: "Reset password thành công",
+                    description: "Quay trở lại trang đăng nhập để đăng nhập lại",
+                    className: cn(
+                        'bg-[#1B7AE7] text-white rounded-xl',
+                    )
+                })
+
+                setTimeout(() => {
+                    navigate('/account/login', { replace: true});
+                }, redirectDelayMs.current);
+                break;
+            case 400:
+                toast({
+                    title: "Có lỗi hiện tại đang xảy ra",
+                    description: "Mật khẩu không hợp lệ hoặc có lỗi từ hệ thống",
+                    className: cn(
+                        'bg-[#7F1D1D] text-white rounded-xl',
+                    )
+                })
+                break;
+        }
     }
 
     return (

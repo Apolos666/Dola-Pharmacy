@@ -8,4 +8,5 @@ public interface IAuthenticationService
     Task<bool> RegisterUserAsync(RegisterDto registerDto);
     Task<bool> ConfirmEmailAsync(string token, string email);
     Task<bool> ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto);
+    Task<bool> ResetPasswordAsync(ResetPasswordDto resetPasswordDto);
 }

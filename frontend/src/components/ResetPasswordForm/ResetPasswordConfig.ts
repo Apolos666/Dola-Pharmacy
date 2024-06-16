@@ -5,6 +5,10 @@ export interface IResetPasswordProp {
     token: string
 }
 
+export interface IResetPasswordData extends IResetPasswordProp {
+    password: string
+}
+
 export interface IResetPasswordFormInput {
     password: string;
     confirmPassword: string;

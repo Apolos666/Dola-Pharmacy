@@ -91,6 +91,26 @@ public class AccountController : ControllerBase
         }
         
         _logger.LogInformation("Successfully sent forgot password email for user with email: {@email}", forgotPasswordDto.Email);
-        return Ok();
+        return Ok("Forgot Password Email Sent Successfully.");
+    }
+    
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+    {
+        _logger.LogInformation("Resetting password for user with email: {@email}", resetPasswordDto.Email);
+        
+        if (!ResetPasswordValidator.ValidateResetPasswordDto(resetPasswordDto).isValid)
+        {
+            return BadRequest(ResetPasswordValidator.ValidateResetPasswordDto(resetPasswordDto).result);
+        }
+        
+        var result = await _authenticationService.ResetPasswordAsync(resetPasswordDto);
+        
+        if (!result)
+        {
+            return BadRequest("Something went wrong while resetting password");
+        }
+        
+        return Ok("Password reset successfully.");
     }
 }
