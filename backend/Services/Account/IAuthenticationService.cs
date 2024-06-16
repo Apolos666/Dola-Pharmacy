@@ -10,6 +10,7 @@ public interface IAuthenticationService
     Task<bool> ConfirmEmailAsync(string token, string email);
     Task<bool> ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto);
     Task<bool> ResetPasswordAsync(ResetPasswordDto resetPasswordDto);
+    Task<string?> RefreshAccessTokenAsync(string refreshToken);
     Task<string> GenerateJwtStringAsync(string userEmail);
     RefreshToken GenerateRefreshToken();
     Task<bool> SaveRefreshTokenAsync(string userEmail, RefreshToken refreshToken);

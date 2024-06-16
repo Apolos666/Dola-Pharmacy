@@ -12,6 +12,7 @@ using backend.Services.Email;
 using backend.Utilities.TypeSafe;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -236,6 +237,17 @@ public class AuthenticationService : IAuthenticationService
         }
 
         return false;
+    }
+
+    public async Task<string?> RefreshAccessTokenAsync(string refreshToken)
+    {
+        var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
+        if (user is null || user.ExpiredTime < DateTime.UtcNow) return null;
+
+        var newAccessToken = await GenerateJwtStringAsync(user.Email!);
+
+        return newAccessToken;
     }
 
     public async Task<string> GenerateJwtStringAsync(string userEmail)

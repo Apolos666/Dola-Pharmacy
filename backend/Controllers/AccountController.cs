@@ -1,5 +1,6 @@
 ﻿using backend.DTOs.Account;
 using backend.Services.Account;
+using backend.Utilities.TypeSafe;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -73,6 +74,20 @@ public class AccountController : ControllerBase
         }
         
         return BadRequest();
+    }
+
+    [HttpGet("refresh-token")]
+    public async Task<IActionResult> RefreshToken()
+    {
+        var refreshToken = Request.Cookies[Cookies.RefreshToken];
+        
+        if (string.IsNullOrWhiteSpace(refreshToken)) return Unauthorized("No refresh token found in cookies");
+
+        var newAccessToken = await _authenticationService.RefreshAccessTokenAsync(refreshToken);
+        
+        if (string.IsNullOrWhiteSpace(newAccessToken)) return Unauthorized("Unable to refresh access token");
+        
+        return Ok(new AccessTokenResponse(newAccessToken));
     }
 
     [HttpGet("confirm-email")]
