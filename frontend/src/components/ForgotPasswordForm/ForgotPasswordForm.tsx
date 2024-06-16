@@ -26,7 +26,7 @@ function ForgotPasswordForm() {
 
     const onSubmit = async (data: IForgotPasswordFormInput) => {
         setIsLoading(true);
-        const status = await accountApi.requestResetPassword(data);
+        const status = await accountApi.requestResetPasswordAsync(data);
         setIsLoading(false);
         showToastBasedOnStatus(status)
     }

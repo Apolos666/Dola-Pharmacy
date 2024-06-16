@@ -5,6 +5,11 @@ export interface ILoginFormInput {
     password: string;
 }
 
+export interface ILoginDto {
+    Email: string;
+    Password: string;
+}
+
 export const schemaLoginForm = yup.object().shape({
     email: yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
     password: yup.string()

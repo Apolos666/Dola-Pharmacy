@@ -1,14 +1,19 @@
-﻿using System.Net;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using backend.Data;
 using backend.DTOs.Account;
 using backend.DTOs.Email;
 using backend.Models;
+using backend.Options;
 using backend.Services.Email;
 using backend.Utilities.TypeSafe;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace backend.Services.Account;
 
@@ -20,10 +25,13 @@ public class AuthenticationService : IAuthenticationService
     private readonly IEmailService _emailService;
     private readonly ILogger<AuthenticationService> _logger;
     private readonly DbFactory _dbFactory;
+    private readonly JwtConfig _jwtConfig;
+    private readonly RefreshTokenConfig _refreshTokenConfig;
 
     public AuthenticationService(UserManager<ApplicationIdentityUser> userManager, IMapper mapper,
         IEmailService emailService, ILogger<AuthenticationService> logger,
-        IPasswordValidator<ApplicationIdentityUser> passwordValidator, DbFactory dbFactory)
+        IPasswordValidator<ApplicationIdentityUser> passwordValidator, DbFactory dbFactory,
+        IOptions<JwtConfig> jwtConfigOptions, IOptions<RefreshTokenConfig> refreshTokenConfigOptions)
     {
         _userManager = userManager;
         _mapper = mapper;
@@ -31,6 +39,8 @@ public class AuthenticationService : IAuthenticationService
         _logger = logger;
         _passwordValidator = passwordValidator;
         _dbFactory = dbFactory;
+        _jwtConfig = jwtConfigOptions.Value;
+        _refreshTokenConfig = refreshTokenConfigOptions.Value;
     }
 
     private async Task<bool> AddUserToRoleAsync(ApplicationIdentityUser user, string role)
@@ -42,6 +52,19 @@ public class AuthenticationService : IAuthenticationService
         _logger.LogInformation("Added user with email: {@email} to role: {@role}", user.Email, role);
         
         return result.Succeeded;
+    }
+
+    private async Task<List<Claim>> GetUserPermissionAsync(ApplicationIdentityUser user)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.UserName!),
+        };
+        
+        var userRoles = await _userManager.GetRolesAsync(user);
+        claims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
+
+        return claims;
     }
 
     public async Task<int> LoginUserAsync(LoginDto loginDto)
@@ -60,7 +83,7 @@ public class AuthenticationService : IAuthenticationService
 
         return StatusCodes.Status200OK; // Success
     }
-
+    
     public async Task<bool> RegisterUserAsync(RegisterDto registerDto)
     {
         await using var transaction = await _dbFactory.DbContext.Database.BeginTransactionAsync();
@@ -213,5 +236,77 @@ public class AuthenticationService : IAuthenticationService
         }
 
         return false;
+    }
+
+    public async Task<string> GenerateJwtStringAsync(string userEmail)
+    {
+        var user = await _userManager.FindByEmailAsync(userEmail);
+        
+        if (user is null) return string.Empty;
+        
+        var claims = await GetUserPermissionAsync(user!);
+        
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.Key));
+        
+        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
+        
+        var securityTokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(claims),
+            Issuer = _jwtConfig.Issuer,
+            Audience = _jwtConfig.Audience,
+            Expires = DateTime.Now.AddMinutes(_jwtConfig.ExpiresMin),
+            SigningCredentials = signingCredentials
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var token = tokenHandler.CreateToken(securityTokenDescriptor);
+        return tokenHandler.WriteToken(token);
+    }
+
+    public RefreshToken GenerateRefreshToken()
+    {
+        var refreshToken = new RefreshToken
+        {
+            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            Created = DateTime.Now,
+            Expires = DateTime.Now.AddDays(_refreshTokenConfig.ExpiresDay)
+        };
+
+        return refreshToken;
+    }
+    
+    /// <summary>
+    /// Save refresh token to database
+    /// </summary>
+    public async Task<bool> SaveRefreshTokenAsync(string userEmail, RefreshToken refreshToken)
+    {
+        var user = await _userManager.FindByEmailAsync(userEmail);
+
+        if (user is null) return false;
+        
+        user.RefreshToken = refreshToken.Token;
+        user.CreatedTime = refreshToken.Created.ToUniversalTime();
+        user.ExpiredTime = refreshToken.Expires.ToUniversalTime();
+        
+        var result = await _userManager.UpdateAsync(user);
+        
+        return result.Succeeded;
+    }
+    
+    /// <summary>
+    /// Write refresh token to cookie
+    /// </summary>
+    public void WriteRefreshTokenCookie(RefreshToken refreshToken, HttpContext httpContext)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = refreshToken.Expires,
+            Secure = true,
+            SameSite = SameSiteMode.None
+        };
+
+        httpContext.Response.Cookies.Append(Cookies.RefreshToken, refreshToken.Token, cookieOptions);
     }
 }

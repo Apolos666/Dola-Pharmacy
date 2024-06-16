@@ -29,12 +29,30 @@ public class AccountController : ControllerBase
         
         var result = await _authenticationService.LoginUserAsync(loginDto);
 
-        return result switch
+        switch (result)
         {
-            StatusCodes.Status401Unauthorized => Unauthorized("Invalid credentials"),
-            StatusCodes.Status403Forbidden => StatusCode(StatusCodes.Status403Forbidden, "Email not confirmed"),
-            _ => Ok()
-        };
+            case StatusCodes.Status401Unauthorized:
+                return Unauthorized("Invalid credentials");
+            case StatusCodes.Status403Forbidden:
+                return StatusCode(StatusCodes.Status403Forbidden, "Email not confirmed");
+            default:
+                // Generate JWT token
+                var accessToken = await _authenticationService.GenerateJwtStringAsync(loginDto.Email);
+                if (string.IsNullOrWhiteSpace(accessToken)) return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong while generating access token");
+                
+                // Generate refresh token
+                var refreshToken = _authenticationService.GenerateRefreshToken();
+                
+                // Save refresh token to database
+                var saveRefreshTokenResult = await _authenticationService.SaveRefreshTokenAsync(loginDto.Email, refreshToken);
+                if (!saveRefreshTokenResult) return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong while saving refresh token");
+                
+                // Write refresh token to cookie
+                _authenticationService.WriteRefreshTokenCookie(refreshToken, HttpContext);
+                
+                var loginResponseDto = new LoginResponseDto(accessToken);
+                return Ok(loginResponseDto);
+        }
     }
     
     [HttpPost("register")]

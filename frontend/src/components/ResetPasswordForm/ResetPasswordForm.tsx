@@ -46,7 +46,7 @@ function ResetPasswordForm({ email, token } : IResetPasswordProp) {
             password: data.password
         }
 
-        const status = await accountApi.confirmResetPassword(resetPasswordData);
+        const status = await accountApi.confirmResetPasswordAsync(resetPasswordData);
         setIsLoading( false);
         showToastBasedOnStatus(status);
     }

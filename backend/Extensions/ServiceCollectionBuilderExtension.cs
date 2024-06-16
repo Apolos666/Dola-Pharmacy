@@ -83,7 +83,8 @@ public static class ServiceCollectionBuilderExtension
             .Configure<DatabaseConfig>(configuration.GetSection("DatabaseConfig"))
             .Configure<CorsConfig>(configuration.GetSection("CorsConfig"))
             .Configure<MailSettings>(configuration.GetSection("MailSettings"))
-            .Configure<JwtConfig>(configuration.GetSection("JwtConfig"));
+            .Configure<JwtConfig>(configuration.GetSection("JwtConfig"))
+            .Configure<RefreshTokenConfig>(configuration.GetSection("RefreshTokenConfig"));
         
         return services;
     }

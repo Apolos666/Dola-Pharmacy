@@ -1,9 +1,11 @@
 import LoginForm from "@/components/LoginForm/LoginForm.tsx";
-import axios from "@/api/axios.ts";
 import {redirect, useActionData} from "react-router-dom";
 import {useToast} from "@/components/ui/use-toast.ts";
 import {useEffect} from "react";
 import {cn} from "@/lib/utils.ts";
+import {ILoginDto} from "@/components/LoginForm/LoginFormConfig.ts";
+import {accountApi} from "@/api/account.ts";
+import {EmailNotVerifiedError} from "@/api/ApiErrorException.ts";
 
 function Login() {
     const actionData = useActionData();
@@ -36,26 +38,20 @@ async function action({request}: { request: Request }) {
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
 
-    const loginDto = {
-        "Email": data.email,
-        "Password": data.password
+    const loginDto: ILoginDto = {
+        Email: data.email.toString(),
+        Password: data.password.toString()
     }
 
     try {
-        await axios.post('/account/login', loginDto, {signal: request.signal})
-        return redirect("/")
+        await accountApi.requestLogicAsync({data: loginDto, request})
+        return redirect("/");
     } catch (err) {
-        countError++;
-        switch (err.response.status) {
-            case 401:
-                return "Thông tin không hợp lệ " + countError
-            case 403:
-                redirect("/account/email-verification") // Chuyển hướng đến trang xác thực email
-                break;
-            case 500:
-                return "Có lỗi xảy ra ở bên hệ thống " + countError
-            default:
-                return "Có lỗi xảy ra, chúng tôi đang khắc phục " + countError
+        if (err instanceof EmailNotVerifiedError) {
+            return redirect("/account/email-verification"); // Chuyển hướng đến trang xác thực email
+        } else {
+            countError++;
+            return err.message + " " + countError
         }
     }
 }
