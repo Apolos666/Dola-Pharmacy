@@ -25,7 +25,7 @@ public class Order
     [Required] public Guid? CouponId { get; set; }
     [Required] public DateTime OrderDate { get; set; }
     
-    [ForeignKey(nameof(UserId))] public virtual IdentityUser User { get; set; } = null!;
+    [ForeignKey(nameof(UserId))] public virtual ApplicationIdentityUser User { get; set; } = null!;
     [ForeignKey(nameof(AddressId))] public virtual Address Address { get; set; } = null!;
     [ForeignKey(nameof(ShippingMethodId))] public virtual ShippingMethod ShippingMethod { get; set; } = null!;
     [ForeignKey(nameof(PaymentMethodId))] public virtual PaymentMethod PaymentMethod { get; set; } = null!;
