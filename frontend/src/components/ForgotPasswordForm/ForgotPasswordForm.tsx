@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {
@@ -11,9 +11,18 @@ import {Button} from "@/components/ui/button.tsx";
 import {accountApi} from "@/api/account.ts";
 import {useToast} from "@/components/ui/use-toast.ts";
 import {cn} from "@/lib/utils.ts";
-import Spinner from "@/components/Spinner/Spinner.tsx";
+import {LoadingContext} from "@/contexts/LoadingProvider.tsx";
+import {ResponseMessage} from "@/model/ResponseMessage.ts";
 
 function ForgotPasswordForm() {
+    const {isLoading, setIsLoading} = useContext(LoadingContext)
+    const [toggleForgetPassword, setToggleForgetPassword] = useState<boolean>(false);
+
+    const countError = useRef<number>(0);
+    const [forgetPasswordResponse, setForgetPasswordResponse] = useState<ResponseMessage>();
+
+    const { toast } = useToast();
+
     const form = useForm<IForgotPasswordFormInput>({
         resolver: yupResolver(schemaForgotPasswordForm),
         defaultValues: {
@@ -21,40 +30,42 @@ function ForgotPasswordForm() {
         },
     })
 
-    const { toast } = useToast();
-    const [ isLoading, setIsLoading ] = useState<boolean>(false);
-
-    const onSubmit = async (data: IForgotPasswordFormInput) => {
-        setIsLoading(true);
-        const status = await accountApi.requestResetPasswordAsync(data);
-        setIsLoading(false);
-        showToastBasedOnStatus(status)
-    }
-
-    function showToastBasedOnStatus(status: number) {
-        switch (status) {
-            case 200:
-                toast({
-                    title: "Thành công",
-                    description: "Vui lòng kiểm tra email để lấy lại mật khẩu",
-                    className: cn(
-                        'bg-emerald-400 text-white rounded-xl',
-                    )
-                })
-                break;
-            case 400:
+    useEffect(() => {
+        switch (forgetPasswordResponse?.type) {
+            case "error":
                 toast({
                     title: "Có lỗi hiện tại đang xảy ra",
-                    description: "Yêu cầu không hợp lệ",
+                    description: forgetPasswordResponse?.message,
                     className: cn(
                         'bg-[#7F1D1D] text-white rounded-xl',
                     )
                 })
                 break;
+            case "success":
+                toast({
+                    title: "Thành công",
+                    description: forgetPasswordResponse?.message,
+                    className: cn(
+                        'bg-emerald-400 text-white rounded-xl',
+                    )
+                })
+                break;
+        }
+
+    }, [forgetPasswordResponse]);
+
+    const onSubmit = async (data: IForgotPasswordFormInput) => {
+        setIsLoading(true);
+        try {
+            await accountApi.requestResetPasswordAsync(data);
+            setForgetPasswordResponse({message: "Lấy lại mật khẩu thành công", type: "success"})
+        } catch (err) {
+            countError.current++;
+            setForgetPasswordResponse({message: `${err.message} ${countError.current}`, type: "error"})
+        } finally {
+            setIsLoading(false);
         }
     }
-
-    const [toggleForgetPassword, setToggleForgetPassword] = useState<boolean>(false);
 
     return(
         <>
@@ -90,7 +101,6 @@ function ForgotPasswordForm() {
                     </Form>
                 </div>}
             </div>
-            {isLoading && <Spinner />}
         </>
     )
 }

@@ -7,11 +7,7 @@ import {ILoginDto} from "@/components/LoginForm/LoginFormConfig.ts";
 import {accountApi} from "@/api/account.ts";
 import {EmailNotVerifiedError} from "@/api/ApiErrorException.ts";
 import {LoadingContext} from "@/contexts/LoadingProvider.tsx";
-
-type LoginResponse = {
-    message: string;
-    type: "error" | "success";
-}
+import {ResponseMessage} from "@/model/ResponseMessage.ts";
 
 export function Login() {
     const { setIsLoading } = useContext(LoadingContext);
@@ -22,7 +18,7 @@ export function Login() {
     const navigate = useNavigate();
     const { toast } = useToast();
 
-    const [loginResponse, setLoginResponse] = useState<LoginResponse>();
+    const [loginResponse, setLoginResponse] = useState<ResponseMessage>();
 
     // Hiển thị thông báo lỗi khi đăng nhập
     useEffect(() => {

@@ -1,7 +1,6 @@
 import {
     IResetPasswordData,
     IResetPasswordFormInput,
-    IResetPasswordProp,
     schemaResetPasswordForm
 } from "@/components/ResetPasswordForm/ResetPasswordConfig.ts";
 import {useForm} from "react-hook-form";
@@ -16,14 +15,18 @@ import {
 } from "@/components/ui/form.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {useRef, useState} from "react";
-import Spinner from "@/components/Spinner/Spinner.tsx";
-import {useToast} from "@/components/ui/use-toast.ts";
-import {accountApi} from "@/api/account.ts";
-import {cn} from "@/lib/utils.ts";
-import {useNavigate} from "react-router-dom";
+import {useContext} from "react";
+import {LoadingContext} from "@/contexts/LoadingProvider.tsx";
 
-function ResetPasswordForm({ email, token } : IResetPasswordProp) {
+type ResetPasswordFormProps = {
+    handleConfirmResetPasswordAsync: (data: IResetPasswordData) => Promise<void>;
+    email: string;
+    token: string;
+}
+
+function ResetPasswordForm({handleConfirmResetPasswordAsync, email, token} : ResetPasswordFormProps) {
+    const { isLoading } = useContext(LoadingContext)
+
     const form = useForm<IResetPasswordFormInput>({
         resolver: yupResolver(schemaResetPasswordForm),
         defaultValues: {
@@ -32,50 +35,14 @@ function ResetPasswordForm({ email, token } : IResetPasswordProp) {
         },
     })
 
-    const { toast } = useToast();
-    const [ isLoading, setIsLoading ] = useState<boolean>(false);
-    const navigate = useNavigate();
-    const redirectDelayMs = useRef<number>(2000);
-
     const onSubmit = async (data: IResetPasswordFormInput) => {
-        setIsLoading(true);
-
         const resetPasswordData: IResetPasswordData = {
             email: email,
             token: token,
             password: data.password
         }
 
-        const status = await accountApi.confirmResetPasswordAsync(resetPasswordData);
-        setIsLoading( false);
-        showToastBasedOnStatus(status);
-    }
-
-    function showToastBasedOnStatus(status: number) {
-        switch (status) {
-            case 200:
-                toast({
-                    title: "Reset password thành công",
-                    description: "Quay trở lại trang đăng nhập để đăng nhập lại",
-                    className: cn(
-                        'bg-emerald-400 text-white rounded-xl',
-                    )
-                })
-
-                setTimeout(() => {
-                    navigate('/account/login', { replace: true});
-                }, redirectDelayMs.current);
-                break;
-            case 400:
-                toast({
-                    title: "Có lỗi hiện tại đang xảy ra",
-                    description: "Mật khẩu không hợp lệ hoặc có lỗi từ hệ thống",
-                    className: cn(
-                        'bg-[#7F1D1D] text-white rounded-xl',
-                    )
-                })
-                break;
-        }
+        await handleConfirmResetPasswordAsync(resetPasswordData);
     }
 
     return (
@@ -127,7 +94,6 @@ function ResetPasswordForm({ email, token } : IResetPasswordProp) {
                     </Form>
                 </div>
             </div>
-            {isLoading && <Spinner/>}
         </>
     )
 }

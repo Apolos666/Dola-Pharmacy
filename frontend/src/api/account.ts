@@ -3,7 +3,8 @@ import axios from "@/api/axios.ts";
 import {IResetPasswordData} from "@/components/ResetPasswordForm/ResetPasswordConfig.ts";
 import {ILoginDto} from "@/components/LoginForm/LoginFormConfig.ts";
 import {
-    BadRequestError, ConflictError,
+    BadRequestError,
+    ConflictError,
     EmailNotVerifiedError,
     SystemError,
     UnauthorizedError,
@@ -28,9 +29,9 @@ async function requestLogicAsync(data : ILoginDto) {
     }
 }
 
-async function requestRegisterAsync({data, request}: { data: IRegisterDto, request: Request }) {
+async function requestRegisterAsync(data: IRegisterDto) {
     try {
-        await axios.post('/account/register', data, {signal: request.signal})
+        await axios.post('/account/register', data)
     } catch (err) {
         switch (err.response.status) {
             case 400:
@@ -52,8 +53,15 @@ async function requestResetPasswordAsync(data : IForgotPasswordFormInput) : Prom
         });
 
         return result.status;
-    } catch (err) {
-        return err.response.status;
+    } catch(err) {
+        switch (err.response.status) {
+            case 400:
+                throw new BadRequestError(err.response.data)
+            case 500:
+                throw new SystemError()
+            default:
+                throw new UnknownError()
+        }
     }
 }
 
@@ -67,7 +75,14 @@ async function confirmResetPasswordAsync(data : IResetPasswordData) : Promise<nu
 
         return result.status;
     } catch(err) {
-        return err.response.status;
+        switch (err.response.status) {
+            case 400:
+                throw new BadRequestError(err.response.data)
+            case 500:
+                throw new SystemError()
+            default:
+                throw new UnknownError()
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-import {Link, useNavigation, useSubmit} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
@@ -8,8 +8,16 @@ import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {ILoginDto, ILoginFormInput, schemaLoginForm} from "@/components/LoginForm/LoginFormConfig.ts";
 import ForgotPasswordForm from "@/components/ForgotPasswordForm/ForgotPasswordForm.tsx";
+import {useContext} from "react";
+import {LoadingContext} from "@/contexts/LoadingProvider.tsx";
 
-function LoginForm({ handleLoginAsync }) {
+type LoginFormProps = {
+    handleLoginAsync: (data: ILoginDto) => Promise<void>;
+}
+
+function LoginForm({ handleLoginAsync } : LoginFormProps) {
+    const {isLoading} = useContext(LoadingContext)
+
     const form = useForm<ILoginFormInput>({
         resolver: yupResolver(schemaLoginForm),
         defaultValues: {
@@ -17,8 +25,6 @@ function LoginForm({ handleLoginAsync }) {
             password: "",
         },
     })
-
-    const { state } = useNavigation();
 
     const onSubmit = async (data: ILoginFormInput) => {
         const loginDto: ILoginDto = {
@@ -78,7 +84,7 @@ function LoginForm({ handleLoginAsync }) {
                             <Button
                                 type="submit"
                                 className="p-3 bg-[#1B74E7] text-white w-full rounded-[4px] hover:bg-[#003CBF]"
-                            >{state === "submitting" ? "Đăng nhập ..." : "Đăng nhập"}</Button>
+                            >{isLoading ? "Đăng nhập ..." : "Đăng nhập"}</Button>
                         </form>
                     </Form>
                     <ForgotPasswordForm />

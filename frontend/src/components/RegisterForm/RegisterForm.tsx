@@ -1,14 +1,22 @@
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
-import {Link, useNavigation, useSubmit} from "react-router-dom";
-import {IRegisterFormInput, schemaRegisterForm} from "./RegisterFormConfig.ts";
+import {Link} from "react-router-dom";
+import {IRegisterDto, IRegisterFormInput, schemaRegisterForm} from "./RegisterFormConfig.ts";
 import {Button} from "@/components/ui/button.tsx"
 import {Form, FormControl, FormField, FormItem, FormMessage,} from "@/components/ui/form.tsx"
 import {Input} from "@/components/ui/input.tsx"
 import FacebookButton from "@/components/ExternalLogin/FacebookButton.tsx";
 import GoogleButton from "@/components/ExternalLogin/GoogleButton.tsx";
+import {useContext} from "react";
+import {LoadingContext} from "@/contexts/LoadingProvider.tsx";
 
-export function RegisterForm() {
+type RegisterFormProps = {
+    handleRegisterAsync: (data: IRegisterDto) => Promise<void>;
+}
+
+export function RegisterForm({ handleRegisterAsync } : RegisterFormProps) {
+    const {isLoading} = useContext(LoadingContext)
+
     const form = useForm<IRegisterFormInput>({
         resolver: yupResolver(schemaRegisterForm),
         defaultValues: {
@@ -20,15 +28,17 @@ export function RegisterForm() {
         },
     })
 
-    const submit = useSubmit();
-    const { state }= useNavigation();
-
     // Sử dụng hàm submit từ react-router-dom để gọi action
-    const onSubmit = (data: IRegisterFormInput) => {
-        submit({...data}, {
-            method: 'POST',
-            action: '/account/register',
-        });
+    const onSubmit = async (data: IRegisterFormInput) => {
+        const registerDto: IRegisterDto = {
+            Ho: data.firstName.toString(),
+            Ten: data.lastName.toString(),
+            Email: data.email.toString(),
+            PhoneNumber: data.phoneNumber.toString(),
+            Password: data.password.toString()
+        }
+
+        await handleRegisterAsync(registerDto)
     }
 
     return (
@@ -125,7 +135,7 @@ export function RegisterForm() {
                             <Button
                                 type="submit"
                                 className="p-3 bg-[#1B74E7] text-white w-full rounded-[4px] hover:bg-[#003CBF]"
-                            >{state === "submitting" ? "Đăng ký ..." : "Đăng ký"}</Button>
+                            >{isLoading ? "Đăng ký ..." : "Đăng ký"}</Button>
                         </form>
                     </Form>
                     <div className="text-center my-3">Hoặc đăng nhập bằng</div>
