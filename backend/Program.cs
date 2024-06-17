@@ -1,18 +1,28 @@
 using backend.Extensions;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-
 builder.Services.
     AddCustomOptions(builder.Configuration).
-    AddDatabase();
+    AddDatabase().
+    AddRepositories().
+    AddCustomServices().
+    AddThirdPartyServices().
+    AddCorsService().
+    AddApplicationAuthentication();
 
+builder.Services.AddControllers();
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration.ReadFrom.Configuration(context.Configuration);
+});
 var app = builder.Build();
-
+app.UseSerilogRequestLogging();
+app.UseHttpsRedirection();
+app.UseConfiguredCors();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseHttpsRedirection();
 app.MapControllers();
+// await app.SeedDataAsync();
 app.Run();
-
