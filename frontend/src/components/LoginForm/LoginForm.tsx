@@ -6,10 +6,10 @@ import FacebookButton from "@/components/ExternalLogin/FacebookButton.tsx";
 import GoogleButton from "@/components/ExternalLogin/GoogleButton.tsx";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
-import {ILoginFormInput, schemaLoginForm} from "@/components/LoginForm/LoginFormConfig.ts";
+import {ILoginDto, ILoginFormInput, schemaLoginForm} from "@/components/LoginForm/LoginFormConfig.ts";
 import ForgotPasswordForm from "@/components/ForgotPasswordForm/ForgotPasswordForm.tsx";
 
-function LoginForm() {
+function LoginForm({ handleLoginAsync }) {
     const form = useForm<ILoginFormInput>({
         resolver: yupResolver(schemaLoginForm),
         defaultValues: {
@@ -18,15 +18,15 @@ function LoginForm() {
         },
     })
 
-    const submit = useSubmit();
-    const { state }= useNavigation();
+    const { state } = useNavigation();
 
-    // Sử dụng hàm submit từ react-router-dom để gọi action
-    const onSubmit = (data: ILoginFormInput) => {
-        submit({...data}, {
-            method: 'POST',
-            action: '/account/login',
-        });
+    const onSubmit = async (data: ILoginFormInput) => {
+        const loginDto: ILoginDto = {
+            Email: data.email.toString(),
+            Password: data.password.toString()
+        }
+
+        await handleLoginAsync(loginDto);
     }
 
     return(

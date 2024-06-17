@@ -1,11 +1,13 @@
 import Header from "../components/Header.tsx";
-import {Outlet, useNavigation} from "react-router-dom";
+import {Outlet} from "react-router-dom";
 import {Toaster} from "@/components/ui/toaster.tsx";
 import Footer from "@/components/Footer.tsx";
 import Spinner from "@/components/Spinner/Spinner.tsx";
+import {useContext} from "react";
+import {LoadingContext} from "@/contexts/LoadingProvider.tsx";
 
 function AppLayout() {
-    const { state }= useNavigation();
+    const { isLoading } = useContext(LoadingContext);
 
     return (
         <>
@@ -13,7 +15,7 @@ function AppLayout() {
             <Outlet />
             <Footer />
             <Toaster/>
-            {state === "submitting" ? <Spinner/> : ""}
+            {isLoading && <Spinner/>}
         </>
     )
 }

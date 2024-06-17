@@ -11,9 +11,9 @@ import {
 } from "@/api/ApiErrorException.ts";
 import {IRegisterDto} from "@/components/RegisterForm/RegisterFormConfig.ts";
 
-async function requestLogicAsync({data, request } : { data: ILoginDto, request: Request}) {
+async function requestLogicAsync(data : ILoginDto) {
     try {
-        await axios.post('/account/login', data, {signal: request.signal, withCredentials: true })
+        await axios.post('/account/login', data, {withCredentials: true })
     } catch (err) {
         switch (err.response.status) {
             case 401:
