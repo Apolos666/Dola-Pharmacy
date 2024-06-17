@@ -14,7 +14,7 @@ import {IRegisterDto} from "@/components/RegisterForm/RegisterFormConfig.ts";
 
 async function requestLogicAsync(data : ILoginDto) {
     try {
-        await axios.post('/account/login', data, {withCredentials: true })
+       return await axios.post('/account/login', data, {withCredentials: true })
     } catch (err) {
         switch (err.response.status) {
             case 401:
@@ -40,6 +40,22 @@ async function requestRegisterAsync(data: IRegisterDto) {
                 throw new ConflictError(err.response.data)
             case 500:
                 throw new SystemError()
+            default:
+                throw new UnknownError()
+        }
+    }
+}
+
+async function requestLogoutAsync() {
+    try {
+        const result = await axios.post('/account/logout', {}, {withCredentials: true})
+        return result.data;
+    } catch (err)
+    {
+        switch (err.response.status)
+        {
+            case 500:
+                throw new SystemError(err.response.data)
             default:
                 throw new UnknownError()
         }
@@ -105,6 +121,7 @@ async function requestRefreshTokenAsync() {
 export const accountApi = {
     requestLogicAsync,
     requestRegisterAsync,
+    requestLogoutAsync,
     requestResetPasswordAsync,
     confirmResetPasswordAsync,
     requestRefreshTokenAsync

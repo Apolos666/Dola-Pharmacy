@@ -144,6 +144,31 @@ public class AuthenticationService : IAuthenticationService
         }
     }
 
+    public async Task<bool> LogoutAsync(HttpContext httpContext)
+    {
+        var refreshToken = httpContext.Request.Cookies[Cookies.RefreshToken];
+        
+        // Nếu không có refreshToken thì không thể logout
+        if (string.IsNullOrWhiteSpace(refreshToken)) return false;
+        
+        var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshToken == refreshToken);
+        
+        // Nếu không tìm thấy user thì không thể logout
+        if (user is null) return false;
+
+        user.RefreshToken = null;
+        user.ExpiredTime = null;
+        user.CreatedTime = null;
+        
+        var result = await _userManager.UpdateAsync(user);
+
+        if (!result.Succeeded) return false;
+        
+        httpContext.Response.Cookies.Delete(Cookies.RefreshToken, CookieOptionsSetup());
+        
+        return true;
+    } 
+
     public async Task<bool> ConfirmEmailAsync(string token, string email)
     {
         // Giải mã token
@@ -311,14 +336,20 @@ public class AuthenticationService : IAuthenticationService
     /// </summary>
     public void WriteRefreshTokenCookie(RefreshToken refreshToken, HttpContext httpContext)
     {
+        var cookieOptions = CookieOptionsSetup();
+
+        httpContext.Response.Cookies.Append(Cookies.RefreshToken, refreshToken.Token, cookieOptions);
+    }
+
+    private CookieOptions CookieOptionsSetup()
+    {
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Expires = refreshToken.Expires,
+            Expires = DateTime.Now.AddDays(_refreshTokenConfig.ExpiresDay),
             Secure = true,
             SameSite = SameSiteMode.None
         };
-
-        httpContext.Response.Cookies.Append(Cookies.RefreshToken, refreshToken.Token, cookieOptions);
+        return cookieOptions;
     }
 }

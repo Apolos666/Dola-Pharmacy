@@ -76,6 +76,19 @@ public class AccountController : ControllerBase
         return BadRequest();
     }
 
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        var result = await _authenticationService.LogoutAsync(HttpContext);
+
+        if (!result)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong while logging out");
+        }
+        
+        return Ok("Logged out successfully.");
+    }
+
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken()
     {

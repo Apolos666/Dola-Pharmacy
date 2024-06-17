@@ -7,6 +7,7 @@ public interface IAuthenticationService
 {
     Task<int> LoginUserAsync(LoginDto loginDto);
     Task<bool> RegisterUserAsync(RegisterDto registerDto);
+    Task<bool> LogoutAsync(HttpContext httpContext); // Cần refreshToken ở đây là để đảm bảo phiên người dùng còn hợp lệ
     Task<bool> ConfirmEmailAsync(string token, string email);
     Task<bool> ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto);
     Task<bool> ResetPasswordAsync(ResetPasswordDto resetPasswordDto);

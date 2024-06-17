@@ -8,6 +8,7 @@ import {accountApi} from "@/api/account.ts";
 import {EmailNotVerifiedError} from "@/api/ApiErrorException.ts";
 import {LoadingContext} from "@/contexts/LoadingProvider.tsx";
 import {ResponseMessage} from "@/model/ResponseMessage.ts";
+import {useAuth} from "@/hooks/useAuth.tsx";
 
 export function Login() {
     const { setIsLoading } = useContext(LoadingContext);
@@ -19,6 +20,7 @@ export function Login() {
     const { toast } = useToast();
 
     const [loginResponse, setLoginResponse] = useState<ResponseMessage>();
+    const { auth, setAuth } = useAuth();
 
     // Hiển thị thông báo lỗi khi đăng nhập
     useEffect(() => {
@@ -49,7 +51,8 @@ export function Login() {
         setIsLoading(true);
 
         try {
-            await accountApi.requestLogicAsync(data)
+            const response = await accountApi.requestLogicAsync(data)
+            setAuth({accessToken: response.data.accessToken})
             setLoginResponse({message: "Đăng nhập thành công", type: "success"})
             setTimeout(() => {
                 navigate("/")

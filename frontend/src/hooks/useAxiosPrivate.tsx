@@ -2,10 +2,20 @@ import {useRefreshToken} from "@/hooks/useRefreshToken.tsx";
 import {useAuth} from "@/hooks/useAuth.tsx";
 import {useEffect} from "react";
 import {axiosPrivate} from "@/api/axios.ts";
+import {useToast} from "@/components/ui/use-toast.ts";
 
 export function useAxiosPrivate() {
     const refreshTokenAsync = useRefreshToken();
     const { auth } = useAuth();
+    const { toast } = useToast()
+
+    function toastError(errorMessage: string) {
+        toast({
+            title: "Phiên đăng nhập hiện tại đã hết hạn, vui lòng đăng nhập lại",
+            description: errorMessage,
+            className: 'bg-[#7F1D1D] text-white rounded-xl',
+        })
+    }
 
     useEffect(() => {
 
@@ -24,12 +34,19 @@ export function useAxiosPrivate() {
                 // A reference to the original request cái mà gây ra lỗi, nó bao gồm URL, header ...
                 const previousRequest = error?.config;
 
-                // Nếu lỗi là 403 và request chưa được gửi đi
-                if (error?.response?.status === 403 && !previousRequest?.sent) {
+                // Nếu lỗi là 401 và request chưa được gửi đi
+                if (error?.response?.status === 401 && !previousRequest?.sent) {
                     // Đánh dấu rằng request đã được gửi đi, để tránh việc gửi đi nhiều lần (vô hạn)
                     previousRequest.sent = true;
 
-                    const newAccessToken = await refreshTokenAsync();
+                    let newAccessToken;
+
+                    try {
+                        newAccessToken = await refreshTokenAsync();
+                    } catch (err) {
+                        toastError(err.message);
+                    }
+
                     previousRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
                     // Gửi lại request
@@ -47,4 +64,6 @@ export function useAxiosPrivate() {
             axiosPrivate.interceptors.response.eject(responseInterceptor);
         }
     }, [auth, refreshTokenAsync]);
+
+    return axiosPrivate;
 }
