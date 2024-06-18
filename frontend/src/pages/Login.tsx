@@ -20,7 +20,7 @@ export function Login() {
     const { toast } = useToast();
 
     const [loginResponse, setLoginResponse] = useState<ResponseMessage>();
-    const { auth, setAuth } = useAuth();
+    const { setAuth } = useAuth();
 
     // Hiển thị thông báo lỗi khi đăng nhập
     useEffect(() => {

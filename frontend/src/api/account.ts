@@ -11,6 +11,7 @@ import {
     UnknownError
 } from "@/api/ApiErrorException.ts";
 import {IRegisterDto} from "@/components/RegisterForm/RegisterFormConfig.ts";
+import {IGoogleSigninRequest} from "@/components/ExternalLogin/GoogleSigninConfig.ts";
 
 async function requestLogicAsync(data : ILoginDto) {
     try {
@@ -23,6 +24,23 @@ async function requestLogicAsync(data : ILoginDto) {
                 throw new EmailNotVerifiedError()
             case 500:
                 throw new SystemError()
+            default:
+                throw new UnknownError()
+        }
+    }
+}
+
+async function requestGoogleLoginAsync(data: IGoogleSigninRequest) {
+    try {
+        return await axios.post('/account/google-sign-in', {
+            ExchangeCode: data.ExchangeCode
+        }, {withCredentials: true})
+    } catch (err) {
+        switch (err.response.status) {
+            case 401:
+                throw new UnauthorizedError(err.response.data)
+            case 500:
+                throw new SystemError(err.response.data)
             default:
                 throw new UnknownError()
         }
@@ -120,6 +138,7 @@ async function requestRefreshTokenAsync() {
 
 export const accountApi = {
     requestLogicAsync,
+    requestGoogleLoginAsync,
     requestRegisterAsync,
     requestLogoutAsync,
     requestResetPasswordAsync,
