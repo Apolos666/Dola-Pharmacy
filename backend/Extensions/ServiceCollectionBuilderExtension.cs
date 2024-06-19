@@ -72,7 +72,8 @@ public static class ServiceCollectionBuilderExtension
     {
         services
             .AddScoped<IAuthenticationService, AuthenticationService>()
-            .AddScoped<IEmailService, MailKitEmailService>();
+            .AddScoped<IEmailService, MailKitEmailService>()
+            .AddScoped<IGoogleAuthService, GoogleAuthService>();
         
         return services;
     }
