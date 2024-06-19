@@ -1,0 +1,3 @@
+.container-app {
+    @apply xl:mx-24 mx-2 h-full flex items-center ;
+}

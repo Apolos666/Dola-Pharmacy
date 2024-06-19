@@ -8,26 +8,50 @@ import ResetPassword from "@/pages/ResetPassword.tsx";
 
 export const router = createBrowserRouter([
     {
+        path: '/',
         element: <AppLayout/>,
+        handle: {
+            crumb: () => "Trang chủ"
+        },
         children: [
-            {   path: '/',
-                element: <Home/>
+            {
+                index: true,
+                element: <Home/>,
             },
             {
                 path: '/account',
                 children: [
+                    {
+                        index: true,
+                        element: <Login/>,
+                        handle: {
+                            crumb: () => "Đăng nhập tài khoản"
+                        }
+                    },
                     {   path: 'login',
-                        element: <Login />
+                        element: <Login/>,
+                        handle: {
+                            crumb: () => "Đăng nhập tài khoản"
+                        }
                     },
                     {   path: 'register',
-                        element: <Register />
+                        element: <Register />,
+                        handle: {
+                            crumb: () => "Đăng ký tài khoản"
+                        }
                     },
                     {   path: 'email-verification',
-                        element: <EmailVerification />
+                        element: <EmailVerification />,
+                        handle: {
+                            crumb: () => "Xác thực email"
+                        }
                     },
                     {
                         path: 'reset-password/:email/:token',
-                        element: <ResetPassword />
+                        element: <ResetPassword />,
+                        handle: {
+                            crumb: () => "Đặt lại mật khẩu"
+                        }
                     }
                 ]
             }
