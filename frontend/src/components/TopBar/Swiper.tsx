@@ -16,7 +16,7 @@ export function Swiper() {
 
     return (
         <>
-            <div className="xl:h-6">
+            <div className="xl:h-6 text-left">
                 <TransitionGroup>
                     <CSSTransition
                         key={textSlideIndex}

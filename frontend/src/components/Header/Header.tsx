@@ -7,7 +7,7 @@ function Header() {
     return (
         <>
             <BannerTop />
-            <div className={`${styles.gradientBg} h-48 bg-[#2772FA] text-center`}>
+            <div className={`${styles.gradientBg} h-48 text-center`}>
                 <TopBar />
             </div>
         </>

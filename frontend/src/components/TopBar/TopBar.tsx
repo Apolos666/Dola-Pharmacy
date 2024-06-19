@@ -7,7 +7,7 @@ export function TopBar() {
     return (
         <div className="flex items-center justify-between text-center container-app pt-2">
             <Swiper/>
-            <div className="flex items-center">
+            <div className="xl:flex items-center hidden">
                 <RegisterLink />
                 <LoginLink />
                 <Hotline />
