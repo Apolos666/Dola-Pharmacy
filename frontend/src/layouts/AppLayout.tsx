@@ -5,15 +5,17 @@ import Footer from "@/components/Footer.tsx";
 import Spinner from "@/components/Spinner/Spinner.tsx";
 import {useContext} from "react";
 import {LoadingContext} from "@/contexts/LoadingProvider.tsx";
+import "../app/app.css"
+
 
 function AppLayout() {
     const { isLoading } = useContext(LoadingContext);
 
     return (
         <>
-            <Header />
-            <Outlet />
-            <Footer />
+            <Header/>
+            <Outlet/>
+            <Footer/>
             <Toaster/>
             {isLoading && <Spinner/>}
         </>
