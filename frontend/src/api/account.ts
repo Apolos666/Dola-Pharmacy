@@ -12,6 +12,7 @@ import {
 } from "@/api/ApiErrorException.ts";
 import {IRegisterDto} from "@/components/RegisterForm/RegisterFormConfig.ts";
 import {IGoogleSigninRequest} from "@/components/ExternalLogin/GoogleSigninConfig.ts";
+import {IFacebookSigninRequest} from "@/components/ExternalLogin/FacebookSigninConfig.ts";
 
 async function requestLogicAsync(data : ILoginDto) {
     try {
@@ -34,6 +35,24 @@ async function requestGoogleLoginAsync(data: IGoogleSigninRequest) {
     try {
         return await axios.post('/account/google-sign-in', {
             ExchangeCode: data.ExchangeCode
+        }, {withCredentials: true})
+    } catch (err) {
+        switch (err.response.status) {
+            case 401:
+                throw new UnauthorizedError(err.response.data)
+            case 500:
+                throw new SystemError(err.response.data)
+            default:
+                throw new UnknownError()
+        }
+    }
+}
+
+async function requestFacebookLoginAsync(data: IFacebookSigninRequest) {
+    try {
+        return await axios.post('/account/facebook-sign-in', {
+            Email: data.Email,
+            Name: data.Name
         }, {withCredentials: true})
     } catch (err) {
         switch (err.response.status) {
@@ -139,6 +158,7 @@ async function requestRefreshTokenAsync() {
 export const accountApi = {
     requestLogicAsync,
     requestGoogleLoginAsync,
+    requestFacebookLoginAsync,
     requestRegisterAsync,
     requestLogoutAsync,
     requestResetPasswordAsync,

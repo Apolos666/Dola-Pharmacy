@@ -87,12 +87,12 @@ public class AuthenticationService : IAuthenticationService
         return StatusCodes.Status200OK; // Success
     }
 
-    public async Task<GoogleLoginResult> GoogleLoginAsync(GoogleSignInRequest googleSignInRequest)
+    public async Task<ExternalLoginResult> GoogleLoginAsync(GoogleSignInRequest googleSignInRequest)
     {
         // Authenticate with Google, return payload inclueded user information to create account
         var payload = await _googleAuthService.AuthenticateAsync(googleSignInRequest.ExchangeCode);
         
-        if (payload is null) return new GoogleLoginResult(false, ""); // Authenticate failed
+        if (payload is null) return new ExternalLoginResult(false, ""); // Authenticate failed
         
         var user = await _userManager.FindByEmailAsync(payload.Email);
         
@@ -110,7 +110,7 @@ public class AuthenticationService : IAuthenticationService
             
                 var isCreated = await _userManager.CreateAsync(newUser);
 
-                if (!isCreated.Succeeded) return new GoogleLoginResult(false, ""); // Create user failed
+                if (!isCreated.Succeeded) return new ExternalLoginResult(false, ""); // Create user failed
                 
                 var isAddRoleSuccess = await AddUserToRoleAsync(newUser, Roles.User);
                 
@@ -118,21 +118,65 @@ public class AuthenticationService : IAuthenticationService
                 {
                     // Rollback transaction if failed to add role
                     await transaction.RollbackAsync();
-                    return new GoogleLoginResult(false, "");
+                    return new ExternalLoginResult(false, "");
                 }
                 
                 await transaction.CommitAsync();
                 _logger.LogInformation("Created user with email: {@email}", newUser.Email);
-                return new GoogleLoginResult(true, newUser.Email); // Create user success
+                return new ExternalLoginResult(true, newUser.Email); // Create user success
             }
         
-            return new GoogleLoginResult(true, user.Email); // User already exists
+            return new ExternalLoginResult(true, user.Email); // User already exists
         }
         catch (Exception exception)
         {
             _logger.LogError("Error while Google login: {@error}", exception.Message);
             await transaction.RollbackAsync();
-            return new GoogleLoginResult(false, "");
+            return new ExternalLoginResult(false, "");
+        }
+    }
+
+    public async Task<ExternalLoginResult> FacebookLoginAsync(FacebookSignInRequest facebookSignInRequest)
+    {
+        var user = await _userManager.FindByEmailAsync(facebookSignInRequest.Email);
+        
+        await using var transaction = await _dbFactory.DbContext.Database.BeginTransactionAsync();
+        
+        try
+        {
+            // If user not found, create new user
+            if (user is null)
+            {
+                var newUser = new ApplicationIdentityUser();
+                newUser.Email = facebookSignInRequest.Email;
+                newUser.UserName = facebookSignInRequest.Name;
+                newUser.EmailConfirmed = true;
+            
+                var isCreated = await _userManager.CreateAsync(newUser);
+
+                if (!isCreated.Succeeded) return new ExternalLoginResult(false, ""); // Create user failed
+                
+                var isAddRoleSuccess = await AddUserToRoleAsync(newUser, Roles.User);
+                
+                if (!isAddRoleSuccess)
+                {
+                    // Rollback transaction if failed to add role
+                    await transaction.RollbackAsync();
+                    return new ExternalLoginResult(false, "");
+                }
+                
+                await transaction.CommitAsync();
+                _logger.LogInformation("Created user with email: {@email}", newUser.Email);
+                return new ExternalLoginResult(true, newUser.Email); // Create user success
+            }
+        
+            return new ExternalLoginResult(true, user.Email); // User already exists
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError("Error while Facebook login: {@error}", exception.Message);
+            await transaction.RollbackAsync();
+            return new ExternalLoginResult(false, "");
         }
     }
 

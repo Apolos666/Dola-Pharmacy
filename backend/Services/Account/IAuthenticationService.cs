@@ -6,7 +6,8 @@ namespace backend.Services.Account;
 public interface IAuthenticationService
 {
     Task<int> LoginUserAsync(LoginDto loginDto);
-    Task<GoogleLoginResult> GoogleLoginAsync(GoogleSignInRequest googleSignInRequest);
+    Task<ExternalLoginResult> GoogleLoginAsync(GoogleSignInRequest googleSignInRequest);
+    Task<ExternalLoginResult> FacebookLoginAsync(FacebookSignInRequest facebookSignInRequest);
     Task<bool> RegisterUserAsync(RegisterDto registerDto);
     Task<bool> LogoutAsync(HttpContext httpContext); // Cần refreshToken ở đây là để đảm bảo phiên người dùng còn hợp lệ
     Task<bool> ConfirmEmailAsync(string token, string email);

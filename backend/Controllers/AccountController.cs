@@ -127,7 +127,39 @@ public class AccountController : ControllerBase
         var loginResponseDto = new LoginResponseDto(accessToken);
         return Ok(loginResponseDto);
     }
+    
+    [HttpPost("facebook-sign-in")]
+    public async Task<IActionResult> FacebookSignIn([FromBody] FacebookSignInRequest facebookSignInRequest)
+    {
+        _logger.LogInformation("Facebook sign in request with payload: {@payload}",
+            facebookSignInRequest);
+        
+        var facebookLoginResult = await _authenticationService.FacebookLoginAsync(facebookSignInRequest);
+        
+        if (!facebookLoginResult.Success) return Unauthorized("Invalid Facebook login request");
+        
+        // Generate JWT token
+        var accessToken = await _authenticationService.GenerateJwtStringAsync(facebookLoginResult.Email!);
+        if (string.IsNullOrWhiteSpace(accessToken))
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "Something went wrong while generating access token");
 
+        // Generate refresh token
+        var refreshToken = _authenticationService.GenerateRefreshToken();
+
+        // Save refresh token to database
+        var saveRefreshTokenResult =
+            await _authenticationService.SaveRefreshTokenAsync(facebookLoginResult.Email!, refreshToken);
+        if (!saveRefreshTokenResult)
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "Something went wrong while saving refresh token");
+
+        // Write refresh token to cookie
+        _authenticationService.WriteRefreshTokenCookie(refreshToken, HttpContext);
+
+        var loginResponseDto = new LoginResponseDto(accessToken);
+        return Ok(loginResponseDto);
+    }
 
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken()
