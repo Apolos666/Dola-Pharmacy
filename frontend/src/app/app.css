@@ -3,5 +3,5 @@
 }
 
 .container-app {
-    @apply xl:px-24 px-2;
+    @apply xl:px-24 md:px-14 px-2;
 }

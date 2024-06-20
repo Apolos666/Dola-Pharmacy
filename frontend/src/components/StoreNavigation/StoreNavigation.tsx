@@ -21,8 +21,23 @@ export function StoreNavigation() {
                 </div>
             </div>
 
+            {/* Tablet */}
+            <div className="md:block xl:hidden hidden container-app">
+                <div className="flex items-center justify-between gap-8">
+                    <SheetNavigation/>
+                    <Logo className="w-72"/>
+                    <UserCart/>
+                </div>
+                <div className="my-4">
+                    <CategoryHeader className="w-full"/>
+                </div>
+                <div className="my-4">
+                    <SearchHeader/>
+                </div>
+            </div>
+
             {/* Mobile */}
-            <div className="xl:hidden block container-app">
+            <div className="md:hidden block container-app">
                 <div className="flex items-center justify-between gap-8">
                     <SheetNavigation/>
                     <Logo className=""/>

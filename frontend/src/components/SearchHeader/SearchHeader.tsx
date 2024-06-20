@@ -3,7 +3,7 @@ import {IoMdSearch} from "react-icons/io";
 import { searchDataHeaderPlaceHolder } from "./SearchHeaderConfig.ts"
 import {useTypingEffect} from "@/hooks/useTypingEffect.tsx";
 
-export function SearchHeader({widthPercent}: {widthPercent?: string}) {
+export function SearchHeader({widthPercent, className}: {widthPercent?: string, className?: string}) {
     const placeholder = useTypingEffect(searchDataHeaderPlaceHolder);
 
     function submitSearch() {
@@ -12,7 +12,7 @@ export function SearchHeader({widthPercent}: {widthPercent?: string}) {
 
     return (
         <>
-            <form className={`relative ${widthPercent}`}>
+            <form className={`relative ${widthPercent} ${className}`}>
                 <Input className="bg-white xl:rounded-[10px] rounded-[12px] text-gray-500 border-white py-6 pr-10"
                        type="text"
                        placeholder={placeholder}
