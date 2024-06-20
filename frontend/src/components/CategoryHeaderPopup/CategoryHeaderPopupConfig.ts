@@ -22,6 +22,7 @@ export const categoriesData: Category[] = [
     Category.KhuyenMaiHot,
 ];
 
+// Todo: Sau này sẽ them link vào đây
 type CategoryItems = {
     src: string;
     title: string;
