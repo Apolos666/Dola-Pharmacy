@@ -6,7 +6,7 @@ export function UserCart() {
         <>
             <HoverCard openDelay={100} closeDelay={100}>
                 <HoverCardTrigger className="flex items-center bg-[#003CBF] p-2 rounded-[10px] hover:bg-white group transition-colors duration-200 ease-in-out cursor-pointer">
-                    <div className="text-white group-hover:text-[#003CBF] transition-colors duration-200 ease-in-out">Giỏ hàng</div>
+                    <div className="xl:block hidden text-white group-hover:text-[#003CBF] transition-colors duration-200 ease-in-out">Giỏ hàng</div>
                     <div className="relative">
                         <HiOutlineShoppingBag className="text-white text-4xl group-hover:text-[#003CBF] transition-colors duration-200 ease-in-out"/>
                         <span
