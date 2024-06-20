@@ -24,12 +24,12 @@ export function StoreNavigation() {
             {/* Mobile */}
             <div className="xl:hidden block container-app">
                 <div className="flex items-center justify-between gap-8">
-                    <SheetNavigation />
+                    <SheetNavigation/>
                     <Logo className=""/>
-                    <UserCart />
+                    <UserCart/>
                 </div>
                 <div className="my-4">
-                    <SearchHeader />
+                    <SearchHeader/>
                 </div>
             </div>
         </>
