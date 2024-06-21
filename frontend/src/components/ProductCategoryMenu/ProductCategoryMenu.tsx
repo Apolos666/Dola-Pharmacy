@@ -31,7 +31,7 @@ export function ProductCategoryMenu({menu, selectedMenu, setSelectedMenu}: Produ
                             className="ml-2 transform group-hover:rotate-180 transition-transform duration-200"/>
                     </Button>
                 </HoverCardTrigger>
-                <HoverCardContent align="center" sideOffset={15} className="bg-white rounded-[8px] p-4 w-[1000px]">
+                <HoverCardContent align="center" sideOffset={15} className="bg-white rounded-[8px] p-4 w-[1000px] container-app-product">
                     <div className="grid grid-cols-4 text-left gap-8 h-[500px]
                                         overflow-y-scroll scrollbar scrollbar-w-2 scrollbar-thumb-rounded-full scrollbar-thumb-blue-500 scrollbar-track-white">
                         {categoriesData.map((category, categoryIndex) => (

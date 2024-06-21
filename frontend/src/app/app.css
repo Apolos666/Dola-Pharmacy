@@ -5,3 +5,7 @@
 .container-app {
     @apply xl:px-24 md:px-14 px-2;
 }
+
+.container-app-product {
+    @apply xl:ml-24 md:ml-14 ml-2;
+}
