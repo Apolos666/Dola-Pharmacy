@@ -4,20 +4,26 @@ import {SearchHeader} from "@/components/SearchHeader/SearchHeader.tsx";
 import {StoreSystemNavigation} from "@/components/StoreSystemNavigation/StoreSystemNavigation.tsx";
 import {UserCart} from "@/components/UserCart/UserCart.tsx";
 import {SheetNavigation} from "@/components/SheetNavigation/SheetNavigation.tsx";
+import {HeaderMenu} from "@/components/HeaderMenu/HeaderMenu.tsx";
 
 export function StoreNavigation() {
     return (
         <>
             {/* PC */}
-            <div className="xl:flex hidden items-center justify-between gap-16 container-app">
-                <div className="flex items-center w-9/12">
-                    <Logo widthPercent="w-2/12"/>
-                    <CategoryHeader widthPercent="w-3/12"/>
-                    <SearchHeader widthPercent="w-7/12"/>
+            <div className="xl:flex flex-col hidden items-center justify-between gap-3 container-app">
+                <div className="flex gap-16 items-center justify-between">
+                    <div className="flex items-center w-9/12">
+                        <Logo widthPercent="w-2/12"/>
+                        <CategoryHeader widthPercent="w-3/12"/>
+                        <SearchHeader widthPercent="w-7/12"/>
+                    </div>
+                    <div className="flex items-center gap-3 w-3/12">
+                        <StoreSystemNavigation/>
+                        <UserCart/>
+                    </div>
                 </div>
-                <div className="flex items-center gap-3 w-3/12">
-                    <StoreSystemNavigation/>
-                    <UserCart/>
+                <div className="w-full mb-2">
+                    <HeaderMenu/>
                 </div>
             </div>
 
