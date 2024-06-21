@@ -9,7 +9,7 @@ public class ProductType
     public ProductType()
     {
         Children = new HashSet<ProductType>();
-        Products = new HashSet<Product>();
+        ProductTypeAssociations = new HashSet<ProductTypeAssociation>();
     }
 
     [Key] public Guid TypeId { get; set; }
@@ -19,7 +19,7 @@ public class ProductType
 
     [ForeignKey(nameof(ParentId))] public virtual ProductType Parent { get; set; }
     public virtual ICollection<ProductType> Children { get; set; }
-    public virtual ICollection<Product> Products { get; set; }
+    public virtual ICollection<ProductTypeAssociation> ProductTypeAssociations { get; set; }
     
     public static ProductType Create(string typeName, string imagePath, Guid? parentId)
     {
@@ -40,7 +40,7 @@ public class ProductType
             ImagePath = imagePath,
             ParentId = parentId,
             Children = new HashSet<ProductType>(),
-            Products = new HashSet<Product>()
+            ProductTypeAssociations = new HashSet<ProductTypeAssociation>()
         };
     }
 }
