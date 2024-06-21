@@ -1,14 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models;
 
+[Table("ProductTypeAssociations")]
 public class ProductTypeAssociation
-{   
-    [ForeignKey("Product")]
-    public Guid ProductId { get; init; }
-    public virtual Product Product { get; set; } = null!;
-    
-    [ForeignKey("ProductType")]
-    public Guid TypeId { get; set; }
-    public virtual ProductType ProductType { get; set; } = null!;
+{
+    [Required] public Guid ProductId { get; init; }
+    [ForeignKey(nameof(ProductId))] public virtual Product Product { get; set; } = null!;
+
+    [Required] public Guid TypeId { get; set; }
+    [ForeignKey(nameof(TypeId))] public virtual ProductType ProductType { get; set; } = null!;
 }
