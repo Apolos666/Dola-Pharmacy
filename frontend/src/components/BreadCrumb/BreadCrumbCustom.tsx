@@ -17,7 +17,6 @@ export function BreadCrumbCustom() {
     if (location.pathname === "/") // If the current path is the home page then don't show the crumb
         return null;
 
-    // todo: nếu ở trang home thì sẽ không lấy cái crumb của nó để hiện thị
     let crumbs = matches
         .filter((match) => Boolean(match.handle?.crumb))
         .map((match) => match.handle!.crumb());
@@ -25,7 +24,7 @@ export function BreadCrumbCustom() {
     return (
         <>
             <div className="h-14 bg-[#D9E6FF] text-center">
-                <Breadcrumb className="container-app">
+                <Breadcrumb className="container-breadCrumb">
                     <BreadcrumbList>
                         {crumbs.map((crumb, index) => (
                             <Fragment key={index}>
