@@ -5,5 +5,5 @@ namespace backend.Repositories.Brand;
 
 public interface IBrandRepository : IRepository<Models.Brand>
 {
-    Models.Brand AddBrand(string branchName);
+    Task<Models.Brand> AddBrandAsync(string branchName);
 }

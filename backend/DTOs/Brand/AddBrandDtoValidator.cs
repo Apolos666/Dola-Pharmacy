@@ -13,7 +13,7 @@ public class AddBrandDtoValidator : AbstractValidator<AddBrandDto>
             .WithMessage("Brand name must be between 3 and 50 characters.");
     }
     
-    public static (bool isValid, string result) ValidateLoginDto(AddBrandDto addBrandDto)
+    public static (bool isValid, string result) ValidateAddTargetGroupDto(AddBrandDto addBrandDto)
     {
         var validator = new AddBrandDtoValidator();
         var result = validator.Validate(addBrandDto);

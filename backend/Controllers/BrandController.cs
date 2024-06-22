@@ -16,9 +16,9 @@ public class BrandController(BrandService brandService, ILogger<BrandController>
     {
         _logger.LogInformation("Adding brand with name: {@name}", addBrandDto.BrandName);
 
-        if (!AddBrandDtoValidator.ValidateLoginDto(addBrandDto).isValid)
+        if (!AddBrandDtoValidator.ValidateAddTargetGroupDto(addBrandDto).isValid)
         {
-            return BadRequest(AddBrandDtoValidator.ValidateLoginDto(addBrandDto).result);
+            return BadRequest(AddBrandDtoValidator.ValidateAddTargetGroupDto(addBrandDto).result);
         }
         
         var responseBrandDto = await _brandService.AddBrand(addBrandDto.BrandName);

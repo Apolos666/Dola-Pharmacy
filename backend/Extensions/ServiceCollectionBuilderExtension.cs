@@ -4,10 +4,12 @@ using backend.Models;
 using backend.Options;
 using backend.Repositories.Brand;
 using backend.Repositories.Generic;
+using backend.Repositories.TargetGroup;
 using backend.Services.Account;
 using backend.Services.Brand;
 using backend.Services.Email;
 using backend.Services.PasswordValidator;
+using backend.Services.TargetGroup;
 using backend.UnitOfWork;
 using Mailjet.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -67,7 +69,8 @@ public static class ServiceCollectionBuilderExtension
     {
         services
             .AddScoped(typeof(IRepository<>), typeof(Repository<>))
-            .AddScoped<IBrandRepository, BrandRepository>();
+            .AddScoped<IBrandRepository, BrandRepository>()
+            .AddScoped<ITargetGroupRepository, TargetGroupRepository>();
         
         return services;
     }
@@ -80,7 +83,8 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<IGoogleAuthService, GoogleAuthService>();
 
         services
-            .AddScoped<BrandService>();
+            .AddScoped<BrandService>()
+            .AddScoped<TargetGroupService>();
         
         return services;
     }

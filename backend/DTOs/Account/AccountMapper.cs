@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
-using backend.DTOs.Account;
 using backend.Models;
 
-namespace backend.Configurations.AutoMapper;
+namespace backend.DTOs.Account;
 
 public class AccountMapper : Profile
 {

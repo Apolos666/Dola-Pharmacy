@@ -13,7 +13,7 @@ public class BrandService(IUnitOfWork unitOfWork, IBrandRepository brandReposito
 
     public async Task<ResponseBrandDto> AddBrand(string branchName)
     {
-        var brand = _brandRepository.AddBrand(branchName);
+        var brand = await _brandRepository.AddBrandAsync(branchName);
         var saved = await _unitOfWork.CommitAsync();
         
         if (saved <= 0)
