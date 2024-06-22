@@ -21,7 +21,7 @@ public class ProductType
     public virtual ICollection<ProductType> Children { get; set; }
     public virtual ICollection<ProductTypeAssociation> ProductTypeAssociations { get; set; }
     
-    public static ProductType Create(string typeName, string imagePath, Guid? parentId)
+    public static ProductType Create(Guid? id, string typeName, string imagePath, Guid? parentId)
     {
         if (string.IsNullOrEmpty(typeName) || typeName.Length > 50)
         {
@@ -35,7 +35,7 @@ public class ProductType
 
         return new ProductType
         {
-            TypeId = Guid.NewGuid(),
+            TypeId = id ?? Guid.NewGuid(),
             TypeName = typeName,
             ImagePath = imagePath,
             ParentId = parentId,

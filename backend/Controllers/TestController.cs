@@ -26,10 +26,12 @@ public class TestController : ControllerBase
     [HttpPost("test-uploadimage")]
     public async Task<IActionResult> Upload([FromForm(Name = "Data")] IFormFile file)
     {
+        var key = $"products/{Guid.NewGuid()}";
+        
         var putObjectRequest = new PutObjectRequest
         {
             BucketName = "dolapharmacy",
-            Key = $"products/{Guid.NewGuid()}",
+            Key = key,
             ContentType = file.ContentType,
             InputStream = file.OpenReadStream()
         };
@@ -38,7 +40,7 @@ public class TestController : ControllerBase
 
         if (putObjectResponse.HttpStatusCode == HttpStatusCode.OK)
             return Ok();
-
+        
         return BadRequest();
     }
 }

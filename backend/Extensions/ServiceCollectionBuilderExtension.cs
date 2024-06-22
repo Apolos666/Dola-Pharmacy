@@ -5,11 +5,13 @@ using backend.Models;
 using backend.Options;
 using backend.Repositories.Brand;
 using backend.Repositories.Generic;
+using backend.Repositories.ProductType;
 using backend.Repositories.TargetGroup;
 using backend.Services.Account;
 using backend.Services.Brand;
 using backend.Services.Email;
 using backend.Services.PasswordValidator;
+using backend.Services.ProductType;
 using backend.Services.TargetGroup;
 using backend.UnitOfWork;
 using Mailjet.Client;
@@ -71,7 +73,8 @@ public static class ServiceCollectionBuilderExtension
         services
             .AddScoped(typeof(IRepository<>), typeof(Repository<>))
             .AddScoped<IBrandRepository, BrandRepository>()
-            .AddScoped<ITargetGroupRepository, TargetGroupRepository>();
+            .AddScoped<ITargetGroupRepository, TargetGroupRepository>()
+            .AddScoped<IProductTypeRepository, ProductTypeRepository>();
         
         return services;
     }
@@ -85,7 +88,8 @@ public static class ServiceCollectionBuilderExtension
 
         services
             .AddScoped<BrandService>()
-            .AddScoped<TargetGroupService>();
+            .AddScoped<TargetGroupService>()
+            .AddScoped<ProductTypeService>();
         
         return services;
     }
@@ -97,7 +101,8 @@ public static class ServiceCollectionBuilderExtension
             .Configure<CorsConfig>(configuration.GetSection("CorsConfig"))
             .Configure<MailSettings>(configuration.GetSection("MailSettings"))
             .Configure<JwtConfig>(configuration.GetSection("JwtConfig"))
-            .Configure<RefreshTokenConfig>(configuration.GetSection("RefreshTokenConfig"));
+            .Configure<RefreshTokenConfig>(configuration.GetSection("RefreshTokenConfig"))
+            .Configure<AwsS3Config>(configuration.GetSection("AwsS3Config"));
         
         return services;
     }
