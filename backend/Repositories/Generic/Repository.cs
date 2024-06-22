@@ -19,7 +19,7 @@ public class Repository<T> : IRepository<T> where T : class
     public void Add(T entity)
     {
         DbSet.Add(entity);
-    }
+    }   
 
     public void Update(T entity)
     {

@@ -2,8 +2,10 @@
 using backend.Data;
 using backend.Models;
 using backend.Options;
+using backend.Repositories.Brand;
 using backend.Repositories.Generic;
 using backend.Services.Account;
+using backend.Services.Brand;
 using backend.Services.Email;
 using backend.Services.PasswordValidator;
 using backend.UnitOfWork;
@@ -63,7 +65,9 @@ public static class ServiceCollectionBuilderExtension
     
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services
+            .AddScoped(typeof(IRepository<>), typeof(Repository<>))
+            .AddScoped<IBrandRepository, BrandRepository>();
         
         return services;
     }
@@ -74,6 +78,9 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<IAuthenticationService, AuthenticationService>()
             .AddScoped<IEmailService, MailKitEmailService>()
             .AddScoped<IGoogleAuthService, GoogleAuthService>();
+
+        services
+            .AddScoped<BrandService>();
         
         return services;
     }
