@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using backend.Data;
+using backend.Extensions.Cloud;
 using backend.Models;
 using backend.Options;
 using backend.Repositories.Brand;
@@ -159,6 +160,8 @@ public static class ServiceCollectionBuilderExtension
             
             client.UseBasicAuthentication("6f9543c0602cc1be87d94d1ae524adfc", "26658f53db990f8da9e5e3406e78ced3");
         });
+
+        services.AddAwsService();
         
         return services;
     }
