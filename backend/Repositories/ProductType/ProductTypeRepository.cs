@@ -7,7 +7,7 @@ namespace backend.Repositories.ProductType;
 public class ProductTypeRepository(DbFactory dbFactory)
     : Repository<Models.ProductType>(dbFactory), IProductTypeRepository
 {
-    public async Task<Models.ProductType> AddProductTypeAsync(Guid? id, string typeName, string imageUrl, Guid? parentId)
+    public async Task<Models.ProductType> AddProductTypeAsync(Guid? id, string typeName, string? imageUrl, Guid? parentId)
     {
         try
         {

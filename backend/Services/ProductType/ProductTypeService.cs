@@ -47,14 +47,15 @@ public class ProductTypeService(
 
         if (putObjectResponse.HttpStatusCode == HttpStatusCode.OK)
         {
-            var imageUrl = $"{_awsS3Config.PrefixUrl}/{HttpUtility.UrlEncode(key)}";
+            // The 'key' is URL-encoded to ensure proper handling of special characters in the URL
+            var imageUrl = $"{_awsS3Config.PrefixUrl}/{HttpUtility.UrlEncode(key)}"; 
             return (true, imageUrl);
         }
 
         return (false, "");
     }
     
-    public async Task<ResponseProductTypeDto> AddProductTypeAsync(Guid? id, string typeName, string imagePath, Guid? parentId = null)
+    public async Task<ResponseProductTypeDto> AddProductTypeAsync(Guid? id, string typeName, string? imagePath, Guid? parentId = null)
     {
         var productType = await _productTypeRepository.AddProductTypeAsync(id, typeName, imagePath, parentId);
         var saved = await _unitOfWork.CommitAsync();

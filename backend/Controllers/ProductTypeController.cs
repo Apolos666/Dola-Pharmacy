@@ -20,14 +20,19 @@ public class ProductTypeController(ProductTypeService productTypeService, ILogge
         {
             return BadRequest(AddProductTypeDtoValidator.ValidateAddProductTypeDto(productTypeDto).result);
         }
-
-        var productTypeId = Guid.NewGuid();
-
-        var (success, imagePath) = await _productTypeService.UploadProductTypeImageAsync(productTypeId, productTypeDto.TypeName ,productTypeDto.Image);
         
-        if (!success)
-            return StatusCode(StatusCodes.Status500InternalServerError, "Error uploading image.");
+        var productTypeId = Guid.NewGuid();
+        string? imagePath = null;
 
+        if (productTypeDto.Image is not null)
+        {
+            var (success, imagePathResponse) = await _productTypeService.UploadProductTypeImageAsync(productTypeId, productTypeDto.TypeName ,productTypeDto.Image);
+            if (success) 
+                imagePath = imagePathResponse; 
+            else 
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error uploading image.");
+        }
+        
         try
         {
             var response = await _productTypeService.AddProductTypeAsync(productTypeId, productTypeDto.TypeName,

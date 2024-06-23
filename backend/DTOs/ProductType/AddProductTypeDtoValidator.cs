@@ -9,9 +9,6 @@ public class AddProductTypeDtoValidator : AbstractValidator<AddProductTypeDto>
         RuleFor(x => x.TypeName)
             .NotEmpty().WithMessage("TypeName is required.")
             .MaximumLength(100).WithMessage("TypeName must not exceed 100 characters.");
-        
-        RuleFor(x => x.Image)
-            .NotNull().WithMessage("Image is required.");
     }
     
     public static (bool isValid, string result) ValidateAddProductTypeDto(AddProductTypeDto addProductTypeDto)
