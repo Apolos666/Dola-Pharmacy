@@ -5,12 +5,14 @@ using backend.Models;
 using backend.Options;
 using backend.Repositories.Brand;
 using backend.Repositories.Generic;
+using backend.Repositories.ProductStatus;
 using backend.Repositories.ProductType;
 using backend.Repositories.TargetGroup;
 using backend.Services.Account;
 using backend.Services.Brand;
 using backend.Services.Email;
 using backend.Services.PasswordValidator;
+using backend.Services.ProductStatus;
 using backend.Services.ProductType;
 using backend.Services.TargetGroup;
 using backend.UnitOfWork;
@@ -74,7 +76,8 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped(typeof(IRepository<>), typeof(Repository<>))
             .AddScoped<IBrandRepository, BrandRepository>()
             .AddScoped<ITargetGroupRepository, TargetGroupRepository>()
-            .AddScoped<IProductTypeRepository, ProductTypeRepository>();
+            .AddScoped<IProductTypeRepository, ProductTypeRepository>()
+            .AddScoped<IProductStatusRepository, ProductStatusRepository>();
         
         return services;
     }
@@ -89,7 +92,8 @@ public static class ServiceCollectionBuilderExtension
         services
             .AddScoped<BrandService>()
             .AddScoped<TargetGroupService>()
-            .AddScoped<ProductTypeService>();
+            .AddScoped<ProductTypeService>()
+            .AddScoped<ProductStatusService>();
         
         return services;
     }
