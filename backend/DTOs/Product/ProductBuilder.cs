@@ -87,7 +87,7 @@ public class ProductBuilder
             BuyingGuide = _buyingGuide,
             Weight = _weight,
             ProductTargetGroups = new HashSet<ProductTargetGroup>(),
-            ProductImages = new HashSet<ProductImage>(),
+            ProductImages = new HashSet<Models.ProductImage>(),
             PromotionProducts = new HashSet<PromotionProduct>(),
             CartItems = new HashSet<CartItem>(),
             OrderItems = new HashSet<OrderItem>(),

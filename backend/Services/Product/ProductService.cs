@@ -27,4 +27,9 @@ public class ProductService(IUnitOfWork unitOfWork, IProductRepository productRe
         var responseProductDto = _mapper.Map<ResponseProductDto>(productWithRelations);
         return responseProductDto;
     }
+    
+    public async Task<bool> IsProductExists(Guid productId)
+    {
+        return await _productRepository.CheckIfProductExists(productId);
+    }
 }

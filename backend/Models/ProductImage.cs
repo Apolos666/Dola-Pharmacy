@@ -14,7 +14,7 @@ public class ProductImage
 
     [ForeignKey(nameof(ProductId))] public virtual Product Product { get; set; } = null!;
     
-    public static ProductImage Create(Guid productId, string imageUrl, bool isPrimary = false)
+    public static ProductImage Create(Guid? imageId , Guid productId, string imageUrl, bool isPrimary = false)
     {
         if (string.IsNullOrEmpty(imageUrl) || imageUrl.Length > 300)
         {
@@ -23,7 +23,7 @@ public class ProductImage
 
         return new ProductImage
         {
-            ImageId = Guid.NewGuid(),
+            ImageId = imageId ?? Guid.NewGuid(),
             ProductId = productId,
             ImageUrl = imageUrl,
             IsPrimary = isPrimary
