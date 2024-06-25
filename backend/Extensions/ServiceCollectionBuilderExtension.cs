@@ -8,6 +8,7 @@ using backend.Repositories.Generic;
 using backend.Repositories.Product;
 using backend.Repositories.ProductImage;
 using backend.Repositories.ProductStatus;
+using backend.Repositories.ProductTargetGroup;
 using backend.Repositories.ProductType;
 using backend.Repositories.TargetGroup;
 using backend.Services.Account;
@@ -17,6 +18,7 @@ using backend.Services.PasswordValidator;
 using backend.Services.Product;
 using backend.Services.ProductImage;
 using backend.Services.ProductStatus;
+using backend.Services.ProductTargetGroupService;
 using backend.Services.ProductType;
 using backend.Services.TargetGroup;
 using backend.UnitOfWork;
@@ -83,7 +85,8 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<IProductTypeRepository, ProductTypeRepository>()
             .AddScoped<IProductStatusRepository, ProductStatusRepository>()
             .AddScoped<IProductRepository, ProductRepository>()
-            .AddScoped<IProductImageRepository, ProductImageRepository>();
+            .AddScoped<IProductImageRepository, ProductImageRepository>()
+            .AddScoped<IProductTargetGroupRepository, ProductTargetGroupRepository>();
         
         return services;
     }
@@ -101,7 +104,8 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<ProductTypeService>()
             .AddScoped<ProductStatusService>()
             .AddScoped<ProductService>()
-            .AddScoped<ProductImageService>();
+            .AddScoped<ProductImageService>()
+            .AddScoped<ProductTargetGroupService>();
         
         return services;
     }

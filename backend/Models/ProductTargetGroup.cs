@@ -10,4 +10,13 @@ public class ProductTargetGroup
 
     [ForeignKey(nameof(ProductId))] public virtual Product Product { get; set; } = null!;
     [ForeignKey(nameof(GroupId))] public virtual TargetGroup TargetGroup { get; set; } = null!;
+    
+    public static ProductTargetGroup Create(Guid productId, Guid groupId)
+    {
+        return new ProductTargetGroup
+        {
+            ProductId = productId,
+            GroupId = groupId
+        };
+    }
 }

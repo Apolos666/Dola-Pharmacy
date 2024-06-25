@@ -2,6 +2,7 @@
 using backend.DTOs.ProductImage;
 using backend.Services.Product;
 using backend.Services.ProductImage;
+using backend.Services.ProductTargetGroupService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -11,11 +12,13 @@ namespace backend.Controllers;
 public class ProductController(
     ProductService productService,
     ProductImageService productImageService,
-    ILogger<ProductController> logger)
+    ILogger<ProductController> logger,
+    ProductTargetGroupService productTargetGroupService)
     : ControllerBase
 {
     private readonly ProductService _productService = productService;
     private readonly ProductImageService _productImageService = productImageService;
+    private readonly ProductTargetGroupService _productTargetGroupService = productTargetGroupService;
     private readonly ILogger<ProductController> _logger = logger;
 
     [HttpPost("add-product")]
@@ -50,7 +53,8 @@ public class ProductController(
         {
             return BadRequest(AddProductImageDtoValidator.ValidateAddProductImageDto(addProductImageDto).result);
         }
-
+        
+        // Todo: Refactor vào cái proudctImageService luôn
         var isProductExists = await _productService.IsProductExists(productId);
 
         if (!isProductExists)
@@ -79,6 +83,21 @@ public class ProductController(
         {
             _logger.LogError(ex, "Error adding product image.");
             return StatusCode(StatusCodes.Status500InternalServerError, "Error saving product image to database.");
+        }
+    }
+
+    [HttpPost("{productId:guid}/product-target-group/{groupId:guid}")]
+    public async Task<IActionResult> AddProductTargetGroup([FromRoute] Guid productId, [FromRoute] Guid groupId)
+    {
+        try
+        {
+            var response = await _productTargetGroupService.AddProductTargetGroupAsync(productId, groupId);
+            return Ok(response);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Error adding product target group with exception: {@Exception}", exception.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error adding product target group");
         }
     }
 }

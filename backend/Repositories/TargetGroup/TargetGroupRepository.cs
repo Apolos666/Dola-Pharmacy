@@ -25,4 +25,9 @@ public class TargetGroupRepository(DbFactory dbFactory)
             throw new Exception($"Error ocurred when trying to save TargetGroup : {exception.Message}");
         }
     }
+
+    public Task<bool> IsTargetGroupExistAsync(Guid groupId)
+    {
+        return DbSet.AnyAsync(tg => tg.GroupId == groupId);
+    }
 }
