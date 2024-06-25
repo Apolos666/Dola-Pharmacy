@@ -25,4 +25,9 @@ public class ProductTypeRepository(DbFactory dbFactory)
             throw new Exception($"Error ocurred when trying to save ProductType : {exception.Message}");
         }
     }
+
+    public async Task<bool> IsProductTypeExistAsync(Guid id)
+    {
+        return await DbSet.AnyAsync(pt => pt.TypeId == id);
+    }
 }

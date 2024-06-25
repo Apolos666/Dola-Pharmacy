@@ -1,8 +1,10 @@
 ﻿using backend.DTOs.Product;
 using backend.DTOs.ProductImage;
+using backend.Models;
 using backend.Services.Product;
 using backend.Services.ProductImage;
 using backend.Services.ProductTargetGroupService;
+using backend.Services.ProductTypeAssociation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -13,12 +15,14 @@ public class ProductController(
     ProductService productService,
     ProductImageService productImageService,
     ILogger<ProductController> logger,
-    ProductTargetGroupService productTargetGroupService)
+    ProductTargetGroupService productTargetGroupService,
+    ProductTypeAssociationService productTypeAssociationService)
     : ControllerBase
 {
     private readonly ProductService _productService = productService;
     private readonly ProductImageService _productImageService = productImageService;
     private readonly ProductTargetGroupService _productTargetGroupService = productTargetGroupService;
+    private readonly ProductTypeAssociationService _productTypeAssociationService = productTypeAssociationService;
     private readonly ILogger<ProductController> _logger = logger;
 
     [HttpPost("add-product")]
@@ -98,6 +102,21 @@ public class ProductController(
         {
             _logger.LogError(exception, "Error adding product target group with exception: {@Exception}", exception.Message);
             return StatusCode(StatusCodes.Status500InternalServerError, "Error adding product target group");
+        }
+    }
+    
+    [HttpPost("{productId:guid}/product-type-association/{productTypeId:guid}")]
+    public async Task<IActionResult> AddProductTypeAssociation([FromRoute] Guid productId, [FromRoute] Guid productTypeId)
+    {
+        try
+        {
+            var response = await _productTypeAssociationService.AddProductTypeAssociationAsync(productId, productTypeId);
+            return Ok(response);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Error adding product type association with exception: {@Exception}", exception.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error adding product type association");
         }
     }
 }

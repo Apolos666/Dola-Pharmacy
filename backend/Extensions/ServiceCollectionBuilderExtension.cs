@@ -10,6 +10,7 @@ using backend.Repositories.ProductImage;
 using backend.Repositories.ProductStatus;
 using backend.Repositories.ProductTargetGroup;
 using backend.Repositories.ProductType;
+using backend.Repositories.ProductTypeAssociation;
 using backend.Repositories.TargetGroup;
 using backend.Services.Account;
 using backend.Services.Brand;
@@ -20,6 +21,7 @@ using backend.Services.ProductImage;
 using backend.Services.ProductStatus;
 using backend.Services.ProductTargetGroupService;
 using backend.Services.ProductType;
+using backend.Services.ProductTypeAssociation;
 using backend.Services.TargetGroup;
 using backend.UnitOfWork;
 using Mailjet.Client;
@@ -86,7 +88,8 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<IProductStatusRepository, ProductStatusRepository>()
             .AddScoped<IProductRepository, ProductRepository>()
             .AddScoped<IProductImageRepository, ProductImageRepository>()
-            .AddScoped<IProductTargetGroupRepository, ProductTargetGroupRepository>();
+            .AddScoped<IProductTargetGroupRepository, ProductTargetGroupRepository>()
+            .AddScoped<IProductTypeAssociationRepository, ProductTypeAssociationRepository>();
         
         return services;
     }
@@ -105,7 +108,8 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<ProductStatusService>()
             .AddScoped<ProductService>()
             .AddScoped<ProductImageService>()
-            .AddScoped<ProductTargetGroupService>();
+            .AddScoped<ProductTargetGroupService>()
+            .AddScoped<ProductTypeAssociationService>();
         
         return services;
     }

@@ -11,4 +11,13 @@ public class ProductTypeAssociation
 
     [Required] public Guid TypeId { get; set; }
     [ForeignKey(nameof(TypeId))] public virtual ProductType ProductType { get; set; } = null!;
+    
+    public static ProductTypeAssociation Create(Guid productId, Guid typeId)
+    {
+        return new ProductTypeAssociation
+        {
+            ProductId = productId,
+            TypeId = typeId
+        };
+    }
 }
