@@ -41,4 +41,20 @@ public class ProductTypeAssociationService(
         
         return productTypeAssociation;
     }
+    
+    public async Task<bool> DeleteProductTypeAssociationAsync(Guid productId, Guid productType)
+    {
+        var productTypeAssociation = await _productTypeAssociationRepository.GetProductTypeAssociationAsync(productId, productType);
+        
+        if (productTypeAssociation is null)
+            throw new Exception($"Product Type Association with Product ID {productId} and Type ID {productType} does not exist");
+        
+        _productTypeAssociationRepository.Delete(productTypeAssociation);
+        var saved = await _unitOfWork.CommitAsync();
+        
+        if (saved <= 0)
+            throw new Exception("Error ocurred when trying to delete ProductTypeAssociation");
+        
+        return true;
+    }
 }

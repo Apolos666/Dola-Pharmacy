@@ -105,6 +105,21 @@ public class ProductController(
         }
     }
     
+    [HttpDelete("{productId:guid}/product-target-group/{groupId:guid}")]
+    public async Task<IActionResult> DeleteProductTargetGroup([FromRoute] Guid productId, [FromRoute] Guid groupId)
+    {
+        try
+        {
+            await _productTargetGroupService.DeleteProductTargetGroupAsync(productId, groupId);
+            return NoContent();
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Error deleting product target group with exception: {@Exception}", exception.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error deleting product target group");
+        }
+    }
+    
     [HttpPost("{productId:guid}/product-type-association/{productTypeId:guid}")]
     public async Task<IActionResult> AddProductTypeAssociation([FromRoute] Guid productId, [FromRoute] Guid productTypeId)
     {
@@ -117,6 +132,21 @@ public class ProductController(
         {
             _logger.LogError(exception, "Error adding product type association with exception: {@Exception}", exception.Message);
             return StatusCode(StatusCodes.Status500InternalServerError, "Error adding product type association");
+        }
+    }
+    
+    [HttpDelete("{productId:guid}/product-type-association/{productTypeId:guid}")]
+    public async Task<IActionResult> DeleteProductTypeAssociation([FromRoute] Guid productId, [FromRoute] Guid productTypeId)
+    {
+        try
+        {
+            await _productTypeAssociationService.DeleteProductTypeAssociationAsync(productId, productTypeId);
+            return NoContent();
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Error deleting product type association with exception: {@Exception}", exception.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error deleting product type association");
         }
     }
 }

@@ -41,4 +41,20 @@ public class ProductTargetGroupService(
             throw new Exception($"Cannot save ProductTargetGroup to database");
         return productTargetGroup;
     }
+
+    public async Task<bool> DeleteProductTargetGroupAsync(Guid productId, Guid groupId)
+    {
+        var productTargetGroup = await _productTargetGroupRepository.GetProductTargetGroupAsync(productId, groupId);
+        
+        if (productTargetGroup is null)
+            throw new Exception($"ProductTargetGroup with productId {productId} and groupId {groupId} does not exist");
+        
+        _productTargetGroupRepository.Delete(productTargetGroup);
+        var saved = await _unitOfWork.CommitAsync();
+        
+        if (saved <= 0)
+            throw new Exception($"Cannot delete ProductTargetGroup from database");
+        
+        return true;
+    }
 }
