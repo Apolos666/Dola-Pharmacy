@@ -2,6 +2,7 @@
 using backend.DTOs.Product;
 using backend.Repositories.Product;
 using backend.UnitOfWork;
+using backend.Utilities.Pagination;
 
 namespace backend.Services.Product;
 
@@ -26,6 +27,18 @@ public class ProductService(IUnitOfWork unitOfWork, IProductRepository productRe
 
         var responseProductDto = _mapper.Map<ResponseProductDto>(productWithRelations);
         return responseProductDto;
+    }
+
+    public async Task<PagedList<Models.Product>> GetProductAsync(GetProductDto getProductDto)
+    {
+        var productQuery = _productRepository.GetIQueryableProduct();
+
+        var sortedProductQuery =
+            _productRepository.SortProducts(productQuery, getProductDto.SortColumn, getProductDto.SortOrder);
+        
+        var products = await PagedList<Models.Product>.CreateAsync(sortedProductQuery, getProductDto.Page, getProductDto.PageSize);
+
+        return products;
     }
     
     public async Task<bool> IsProductExists(Guid productId)

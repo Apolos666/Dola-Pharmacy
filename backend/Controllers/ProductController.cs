@@ -1,6 +1,5 @@
 ﻿using backend.DTOs.Product;
 using backend.DTOs.ProductImage;
-using backend.Models;
 using backend.Services.Product;
 using backend.Services.ProductImage;
 using backend.Services.ProductTargetGroupService;
@@ -45,6 +44,21 @@ public class ProductController(
         {
             _logger.LogError(exception, "Faield to add product {@ProductName}", addProductDto.ProductName);
             return StatusCode(StatusCodes.Status500InternalServerError, "Error occurred while adding product.");
+        }
+    }
+
+    [HttpGet("get-products")]
+    public async Task<IActionResult> GetProducts([FromQuery] GetProductDto getProductDto)
+    {
+        try
+        {
+            var response = await _productService.GetProductAsync(getProductDto);
+            return Ok(response);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Error getting products with exception: {@Exception}", exception.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error getting products");
         }
     }
 
