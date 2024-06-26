@@ -8,28 +8,20 @@ namespace backend.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AccountController : ControllerBase
+public class AccountController(IAuthenticationService authenticationService, ILogger<AccountController> logger)
+    : ControllerBase
 {
-    private readonly IAuthenticationService _authenticationService;
-    private readonly ILogger<AccountController> _logger;
-
-    public AccountController(IAuthenticationService authenticationService, ILogger<AccountController> logger)
-    {
-        _authenticationService = authenticationService;
-        _logger = logger;
-    }
-
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
-        _logger.LogInformation("Logging in user with email: {@email}", loginDto.Email);
+        logger.LogInformation("Logging in user with email: {@email}", loginDto.Email);
 
         if (!LoginDtoValidator.ValidateLoginDto(loginDto).isValid)
         {
             return BadRequest(LoginDtoValidator.ValidateLoginDto(loginDto).result);
         }
 
-        var result = await _authenticationService.LoginUserAsync(loginDto);
+        var result = await authenticationService.LoginUserAsync(loginDto);
 
         switch (result)
         {
@@ -39,23 +31,23 @@ public class AccountController : ControllerBase
                 return StatusCode(StatusCodes.Status403Forbidden, "Email not confirmed");
             default:
                 // Generate JWT token
-                var accessToken = await _authenticationService.GenerateJwtStringAsync(loginDto.Email);
+                var accessToken = await authenticationService.GenerateJwtStringAsync(loginDto.Email);
                 if (string.IsNullOrWhiteSpace(accessToken))
                     return StatusCode(StatusCodes.Status500InternalServerError,
                         "Something went wrong while generating access token");
 
                 // Generate refresh token
-                var refreshToken = _authenticationService.GenerateRefreshToken();
+                var refreshToken = authenticationService.GenerateRefreshToken();
 
                 // Save refresh token to database
                 var saveRefreshTokenResult =
-                    await _authenticationService.SaveRefreshTokenAsync(loginDto.Email, refreshToken);
+                    await authenticationService.SaveRefreshTokenAsync(loginDto.Email, refreshToken);
                 if (!saveRefreshTokenResult)
                     return StatusCode(StatusCodes.Status500InternalServerError,
                         "Something went wrong while saving refresh token");
 
                 // Write refresh token to cookie
-                _authenticationService.WriteRefreshTokenCookie(refreshToken, HttpContext);
+                authenticationService.WriteRefreshTokenCookie(refreshToken, HttpContext);
 
                 var loginResponseDto = new LoginResponseDto(accessToken);
                 return Ok(loginResponseDto);
@@ -65,14 +57,14 @@ public class AccountController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     {
-        _logger.LogInformation("Registering user with email: {@email}", registerDto.Email);
+        logger.LogInformation("Registering user with email: {@email}", registerDto.Email);
 
         if (!RegisterDtoValidator.ValidateRegisterDto(registerDto).isValid)
         {
             return BadRequest(RegisterDtoValidator.ValidateRegisterDto(registerDto).result);
         }
 
-        var result = await _authenticationService.RegisterUserAsync(registerDto);
+        var result = await authenticationService.RegisterUserAsync(registerDto);
 
         if (result)
         {
@@ -85,7 +77,7 @@ public class AccountController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        var result = await _authenticationService.LogoutAsync(HttpContext);
+        var result = await authenticationService.LogoutAsync(HttpContext);
 
         if (!result)
         {
@@ -98,31 +90,31 @@ public class AccountController : ControllerBase
     [HttpPost("google-sign-in")]
     public async Task<IActionResult> GoogleSignIn([FromBody] GoogleSignInRequest googleSignInRequest)
     {
-        _logger.LogInformation("Google sign in request with exchange code: {@exchangeCode}",
+        logger.LogInformation("Google sign in request with exchange code: {@exchangeCode}",
             googleSignInRequest.ExchangeCode);
         
-        var googleLoginResult = await _authenticationService.GoogleLoginAsync(googleSignInRequest);
+        var googleLoginResult = await authenticationService.GoogleLoginAsync(googleSignInRequest);
         
         if (!googleLoginResult.Success) return Unauthorized("Invalid Google login request");
         
         // Generate JWT token
-        var accessToken = await _authenticationService.GenerateJwtStringAsync(googleLoginResult.Email!);
+        var accessToken = await authenticationService.GenerateJwtStringAsync(googleLoginResult.Email!);
         if (string.IsNullOrWhiteSpace(accessToken))
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "Something went wrong while generating access token");
 
         // Generate refresh token
-        var refreshToken = _authenticationService.GenerateRefreshToken();
+        var refreshToken = authenticationService.GenerateRefreshToken();
 
         // Save refresh token to database
         var saveRefreshTokenResult =
-            await _authenticationService.SaveRefreshTokenAsync(googleLoginResult.Email!, refreshToken);
+            await authenticationService.SaveRefreshTokenAsync(googleLoginResult.Email!, refreshToken);
         if (!saveRefreshTokenResult)
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "Something went wrong while saving refresh token");
 
         // Write refresh token to cookie
-        _authenticationService.WriteRefreshTokenCookie(refreshToken, HttpContext);
+        authenticationService.WriteRefreshTokenCookie(refreshToken, HttpContext);
 
         var loginResponseDto = new LoginResponseDto(accessToken);
         return Ok(loginResponseDto);
@@ -131,31 +123,31 @@ public class AccountController : ControllerBase
     [HttpPost("facebook-sign-in")]
     public async Task<IActionResult> FacebookSignIn([FromBody] FacebookSignInRequest facebookSignInRequest)
     {
-        _logger.LogInformation("Facebook sign in request with payload: {@payload}",
+        logger.LogInformation("Facebook sign in request with payload: {@payload}",
             facebookSignInRequest);
         
-        var facebookLoginResult = await _authenticationService.FacebookLoginAsync(facebookSignInRequest);
+        var facebookLoginResult = await authenticationService.FacebookLoginAsync(facebookSignInRequest);
         
         if (!facebookLoginResult.Success) return Unauthorized("Invalid Facebook login request");
         
         // Generate JWT token
-        var accessToken = await _authenticationService.GenerateJwtStringAsync(facebookLoginResult.Email!);
+        var accessToken = await authenticationService.GenerateJwtStringAsync(facebookLoginResult.Email!);
         if (string.IsNullOrWhiteSpace(accessToken))
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "Something went wrong while generating access token");
 
         // Generate refresh token
-        var refreshToken = _authenticationService.GenerateRefreshToken();
+        var refreshToken = authenticationService.GenerateRefreshToken();
 
         // Save refresh token to database
         var saveRefreshTokenResult =
-            await _authenticationService.SaveRefreshTokenAsync(facebookLoginResult.Email!, refreshToken);
+            await authenticationService.SaveRefreshTokenAsync(facebookLoginResult.Email!, refreshToken);
         if (!saveRefreshTokenResult)
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "Something went wrong while saving refresh token");
 
         // Write refresh token to cookie
-        _authenticationService.WriteRefreshTokenCookie(refreshToken, HttpContext);
+        authenticationService.WriteRefreshTokenCookie(refreshToken, HttpContext);
 
         var loginResponseDto = new LoginResponseDto(accessToken);
         return Ok(loginResponseDto);
@@ -168,7 +160,7 @@ public class AccountController : ControllerBase
 
         if (string.IsNullOrWhiteSpace(refreshToken)) return Unauthorized("No refresh token found in cookies");
 
-        var newAccessToken = await _authenticationService.RefreshAccessTokenAsync(refreshToken);
+        var newAccessToken = await authenticationService.RefreshAccessTokenAsync(refreshToken);
 
         if (string.IsNullOrWhiteSpace(newAccessToken)) return Unauthorized("Unable to refresh access token");
 
@@ -178,37 +170,37 @@ public class AccountController : ControllerBase
     [HttpGet("confirm-email")]
     public async Task<IActionResult> ConfirmEmail([FromQuery] string token, [FromQuery] string email)
     {
-        _logger.LogInformation("Confirming email for user with email: {@email}", email);
+        logger.LogInformation("Confirming email for user with email: {@email}", email);
 
-        var confirmResult = await _authenticationService.ConfirmEmailAsync(token, email);
+        var confirmResult = await authenticationService.ConfirmEmailAsync(token, email);
 
         if (!confirmResult)
         {
             return BadRequest("Invalid Email Confirmation Request.");
         }
 
-        _logger.LogInformation("Successfully confirmed email for user with email: {@email}", email);
+        logger.LogInformation("Successfully confirmed email for user with email: {@email}", email);
         return Ok("Verified Email Successfully.");
     }
 
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
     {
-        _logger.LogInformation("Forgot password for user with email: {@email}", forgotPasswordDto.Email);
+        logger.LogInformation("Forgot password for user with email: {@email}", forgotPasswordDto.Email);
 
         if (!ForgotPasswordDtoValidator.ValidateForgotPasswordDto(forgotPasswordDto).isValid)
         {
             return BadRequest(ForgotPasswordDtoValidator.ValidateForgotPasswordDto(forgotPasswordDto).result);
         }
 
-        var result = await _authenticationService.ForgotPasswordAsync(forgotPasswordDto);
+        var result = await authenticationService.ForgotPasswordAsync(forgotPasswordDto);
 
         if (!result)
         {
             return BadRequest("Invalid Request.");
         }
 
-        _logger.LogInformation("Successfully sent forgot password email for user with email: {@email}",
+        logger.LogInformation("Successfully sent forgot password email for user with email: {@email}",
             forgotPasswordDto.Email);
         return Ok("Forgot Password Email Sent Successfully.");
     }
@@ -216,14 +208,14 @@ public class AccountController : ControllerBase
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
     {
-        _logger.LogInformation("Resetting password for user with email: {@email}", resetPasswordDto.Email);
+        logger.LogInformation("Resetting password for user with email: {@email}", resetPasswordDto.Email);
 
         if (!ResetPasswordValidator.ValidateResetPasswordDto(resetPasswordDto).isValid)
         {
             return BadRequest(ResetPasswordValidator.ValidateResetPasswordDto(resetPasswordDto).result);
         }
 
-        var result = await _authenticationService.ResetPasswordAsync(resetPasswordDto);
+        var result = await authenticationService.ResetPasswordAsync(resetPasswordDto);
 
         if (!result)
         {

@@ -21,23 +21,27 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         
         modelBuilder.Entity<OrderItem>()
             .HasKey(oi => new { oi.OrderId, oi.ProductId });
+
+        modelBuilder.Entity<ProductTypeAssociation>()
+            .HasKey(pta => new { pta.ProductId, pta.TypeId });
     }
     
-    public DbSet<Address> Addresses { get; set; }
-    public DbSet<Brand> Brands { get; set; }
-    public DbSet<Cart> Carts { get; set; }
-    public DbSet<CartItem> CartItems { get; set; }
-    public DbSet<Coupon> Coupons { get; set; }
-    public DbSet<Order> Orders { get; set; }
-    public DbSet<OrderItem> OrderItems { get; set; }
-    public DbSet<PaymentMethod> PaymentMethods { get; set; }
-    public DbSet<Product> Products { get; set; }
-    public DbSet<ProductImage> ProductImages { get; set; }
-    public DbSet<ProductTargetGroup> ProductTargetGroups { get; set; }
-    public DbSet<ProductType> ProductTypes { get; set; }
-    public DbSet<Promotion> Promotions { get; set; }
-    public DbSet<PromotionProduct> PromotionProducts { get; set; }
-    public DbSet<ShippingMethod> ShippingMethods { get; set; }
-    public DbSet<Status> Status { get; set; }
-    public DbSet<TargetGroup> TargetGroups { get; set; }
+    public DbSet<Address> Addresses { get; init; }
+    public DbSet<Brand> Brands { get; init; }
+    public DbSet<Cart> Carts { get; init; }
+    public DbSet<CartItem> CartItems { get; init; }
+    public DbSet<Coupon> Coupons { get; init; }
+    public DbSet<Order> Orders { get; init; }
+    public DbSet<OrderItem> OrderItems { get; init; }
+    public DbSet<PaymentMethod> PaymentMethods { get; init; }
+    public DbSet<Product> Products { get; init; }
+    public DbSet<ProductImage> ProductImages { get; init; }
+    public DbSet<ProductTargetGroup> ProductTargetGroups { get; init; }
+    public DbSet<ProductType> ProductTypes { get; init; }
+    public DbSet<Promotion> Promotions { get; init; }
+    public DbSet<PromotionProduct> PromotionProducts { get; init; }
+    public DbSet<ShippingMethod> ShippingMethods { get; init; }
+    public DbSet<Status> Status { get; init; }
+    public DbSet<TargetGroup> TargetGroups { get; init; }
+    public DbSet<ProductTypeAssociation> ProductTypeAssociations { get; init; }
 };

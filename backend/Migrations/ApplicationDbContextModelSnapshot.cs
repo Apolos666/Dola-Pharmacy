@@ -475,15 +475,15 @@ namespace backend.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
                     b.Property<Guid>("StatusId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TypeId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Weight")
@@ -494,8 +494,6 @@ namespace backend.Migrations
                     b.HasIndex("BrandId");
 
                     b.HasIndex("StatusId");
-
-                    b.HasIndex("TypeId");
 
                     b.ToTable("Products");
                 });
@@ -510,6 +508,9 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
@@ -543,7 +544,6 @@ namespace backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("ImagePath")
-                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
@@ -560,6 +560,21 @@ namespace backend.Migrations
                     b.HasIndex("ParentId");
 
                     b.ToTable("ProductTypes");
+                });
+
+            modelBuilder.Entity("backend.Models.ProductTypeAssociation", b =>
+                {
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TypeId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ProductId", "TypeId");
+
+                    b.HasIndex("TypeId");
+
+                    b.ToTable("ProductTypeAssociations");
                 });
 
             modelBuilder.Entity("backend.Models.Promotion", b =>
@@ -826,15 +841,7 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("backend.Models.ProductType", "ProductType")
-                        .WithMany("Products")
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Brand");
-
-                    b.Navigation("ProductType");
 
                     b.Navigation("Status");
                 });
@@ -876,6 +883,25 @@ namespace backend.Migrations
                         .HasForeignKey("ParentId");
 
                     b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("backend.Models.ProductTypeAssociation", b =>
+                {
+                    b.HasOne("backend.Models.Product", "Product")
+                        .WithMany("ProductTypeAssociations")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.ProductType", "ProductType")
+                        .WithMany("ProductTypeAssociations")
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ProductType");
                 });
 
             modelBuilder.Entity("backend.Models.PromotionProduct", b =>
@@ -939,6 +965,8 @@ namespace backend.Migrations
 
                     b.Navigation("ProductTargetGroups");
 
+                    b.Navigation("ProductTypeAssociations");
+
                     b.Navigation("PromotionProducts");
                 });
 
@@ -946,7 +974,7 @@ namespace backend.Migrations
                 {
                     b.Navigation("Children");
 
-                    b.Navigation("Products");
+                    b.Navigation("ProductTypeAssociations");
                 });
 
             modelBuilder.Entity("backend.Models.Promotion", b =>
