@@ -12,8 +12,8 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240621081454_initialDatabase")]
-    partial class initialDatabase
+    [Migration("20240623055741_UpdateProductType")]
+    partial class UpdateProductType
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -478,6 +478,9 @@ namespace backend.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -541,7 +544,6 @@ namespace backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("ImagePath")
-                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 

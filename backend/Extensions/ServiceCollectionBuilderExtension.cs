@@ -1,11 +1,28 @@
 ﻿using System.Text;
 using backend.Data;
+using backend.Extensions.Cloud;
 using backend.Models;
 using backend.Options;
+using backend.Repositories.Brand;
 using backend.Repositories.Generic;
+using backend.Repositories.Product;
+using backend.Repositories.ProductImage;
+using backend.Repositories.ProductStatus;
+using backend.Repositories.ProductTargetGroup;
+using backend.Repositories.ProductType;
+using backend.Repositories.ProductTypeAssociation;
+using backend.Repositories.TargetGroup;
 using backend.Services.Account;
+using backend.Services.Brand;
 using backend.Services.Email;
 using backend.Services.PasswordValidator;
+using backend.Services.Product;
+using backend.Services.ProductImage;
+using backend.Services.ProductStatus;
+using backend.Services.ProductTargetGroupService;
+using backend.Services.ProductType;
+using backend.Services.ProductTypeAssociation;
+using backend.Services.TargetGroup;
 using backend.UnitOfWork;
 using Mailjet.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,7 +80,16 @@ public static class ServiceCollectionBuilderExtension
     
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services
+            .AddScoped(typeof(IRepository<>), typeof(Repository<>))
+            .AddScoped<IBrandRepository, BrandRepository>()
+            .AddScoped<ITargetGroupRepository, TargetGroupRepository>()
+            .AddScoped<IProductTypeRepository, ProductTypeRepository>()
+            .AddScoped<IProductStatusRepository, ProductStatusRepository>()
+            .AddScoped<IProductRepository, ProductRepository>()
+            .AddScoped<IProductImageRepository, ProductImageRepository>()
+            .AddScoped<IProductTargetGroupRepository, ProductTargetGroupRepository>()
+            .AddScoped<IProductTypeAssociationRepository, ProductTypeAssociationRepository>();
         
         return services;
     }
@@ -74,6 +100,16 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<IAuthenticationService, AuthenticationService>()
             .AddScoped<IEmailService, MailKitEmailService>()
             .AddScoped<IGoogleAuthService, GoogleAuthService>();
+
+        services
+            .AddScoped<BrandService>()
+            .AddScoped<TargetGroupService>()
+            .AddScoped<ProductTypeService>()
+            .AddScoped<ProductStatusService>()
+            .AddScoped<ProductService>()
+            .AddScoped<ProductImageService>()
+            .AddScoped<ProductTargetGroupService>()
+            .AddScoped<ProductTypeAssociationService>();
         
         return services;
     }
@@ -85,7 +121,8 @@ public static class ServiceCollectionBuilderExtension
             .Configure<CorsConfig>(configuration.GetSection("CorsConfig"))
             .Configure<MailSettings>(configuration.GetSection("MailSettings"))
             .Configure<JwtConfig>(configuration.GetSection("JwtConfig"))
-            .Configure<RefreshTokenConfig>(configuration.GetSection("RefreshTokenConfig"));
+            .Configure<RefreshTokenConfig>(configuration.GetSection("RefreshTokenConfig"))
+            .Configure<AwsS3Config>(configuration.GetSection("AwsS3Config"));
         
         return services;
     }
@@ -148,6 +185,8 @@ public static class ServiceCollectionBuilderExtension
             
             client.UseBasicAuthentication("6f9543c0602cc1be87d94d1ae524adfc", "26658f53db990f8da9e5e3406e78ced3");
         });
+
+        services.AddAwsService();
         
         return services;
     }
