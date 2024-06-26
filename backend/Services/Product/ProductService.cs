@@ -11,19 +11,20 @@ public class ProductService(IUnitOfWork unitOfWork, IProductRepository productRe
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IProductRepository _productRepository = productRepository;
     private readonly IMapper _mapper = mapper;
-    
+
     public async Task<ResponseProductDto> AddProductAsync(AddProductDto addProductDto)
     {
         var product = _productRepository.AddProduct(addProductDto);
         var saved = await _unitOfWork.CommitAsync();
-        
+
         if (saved <= 0)
             throw new Exception($"Cannot save {product} to database");
 
         var productWithRelations = await _productRepository.GetProductWithRelations(product.ProductId);
-            
+
         if (productWithRelations is null)
-            throw new Exception($"Product with ID {product.ProductId} could not be found in the database with its relations.");
+            throw new Exception(
+                $"Product with ID {product.ProductId} could not be found in the database with its relations.");
 
         var responseProductDto = _mapper.Map<ResponseProductDto>(productWithRelations);
         return responseProductDto;
@@ -33,14 +34,18 @@ public class ProductService(IUnitOfWork unitOfWork, IProductRepository productRe
     {
         var productQuery = _productRepository.GetIQueryableProduct();
 
-        var sortedProductQuery =
+        productQuery =
+            _productRepository.FilterProducts(productQuery, getProductDto.FilterColumn, getProductDto.FilterValue);
+
+        productQuery =
             _productRepository.SortProducts(productQuery, getProductDto.SortColumn, getProductDto.SortOrder);
-        
-        var products = await PagedList<Models.Product>.CreateAsync(sortedProductQuery, getProductDto.Page, getProductDto.PageSize);
+
+        var products =
+            await PagedList<Models.Product>.CreateAsync(productQuery, getProductDto.Page, getProductDto.PageSize);
 
         return products;
     }
-    
+
     public async Task<bool> IsProductExists(Guid productId)
     {
         return await _productRepository.CheckIfProductExists(productId);
