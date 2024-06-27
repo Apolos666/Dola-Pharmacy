@@ -47,7 +47,7 @@ public class ProductController(
         }
     }
 
-    [HttpGet("get-products")]
+    [HttpGet("get-products")] 
     public async Task<IActionResult> GetProducts([FromQuery] GetProductDto getProductDto)
     {
         try

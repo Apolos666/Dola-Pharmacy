@@ -3,6 +3,7 @@ using backend.DTOs.Product;
 using backend.Repositories.Product;
 using backend.UnitOfWork;
 using backend.Utilities.Pagination;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Product;
 

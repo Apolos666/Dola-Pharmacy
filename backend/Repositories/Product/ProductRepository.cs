@@ -2,6 +2,7 @@
 using backend.Data;
 using backend.DTOs.Product;
 using backend.Repositories.Generic;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Repositories.Product;
@@ -42,28 +43,58 @@ public class ProductRepository(DbFactory dbFactory) : Repository<Models.Product>
     public IQueryable<Models.Product> FilterProducts(IQueryable<Models.Product> iQueryable, string? filterColumn,
         string? filterValue)
     {
+        if (string.IsNullOrEmpty(filterColumn) || string.IsNullOrEmpty(filterValue))
+            return iQueryable;
+
+        var filterValues = filterValue
+            .Split(["or", "Or", "oR", "OR"], StringSplitOptions.RemoveEmptyEntries)
+            .Select(fv => fv.Trim())
+            .ToList();
+
         return filterColumn?.ToLower() switch
         {
-            "price" => GetProductsByPrice(iQueryable, filterValue),
-            "brand" => filterValue is not null ? GetProductsByBrand(iQueryable, filterValue) : iQueryable,
-            "targetgroup" => GetProductsByTargetGroup(iQueryable, filterValue),
-            "weight" => decimal.TryParse(filterValue, out var weight) ? iQueryable.Where(p => p.Weight == weight) : iQueryable,
-                _ => iQueryable
+            "price" => GetProductsByPrice(iQueryable, filterValues),
+            "brand" => GetProductsByBrand(iQueryable, filterValues),
+            "targetgroup" => GetProductsByTargetGroup(iQueryable, filterValues),
+            "weight" => GetProductsByWeight(iQueryable, filterValues),
+            _ => iQueryable
         };
     }
-    
-    private IQueryable<Models.Product> GetProductsByBrand(IQueryable<Models.Product> iQueryable, string filterValue)
+
+    private IQueryable<Models.Product> GetProductsByWeight(IQueryable<Models.Product> iQueryable, List<string> filterValues)
     {
-        var query = from p in iQueryable
-                                    join b in dbFactory.DbContext.Set<Models.Brand>() on p.BrandId equals b.BrandId
-                                    where b.BrandName.ToLower() == filterValue.ToLower()
-                                    select p;
-        return query;
+        var weights = filterValues.Select(fv => decimal.TryParse(fv, out var weight) ? weight : (decimal?)null)
+            .Where(w => w.HasValue)
+            .ToList();
+
+        var predicate = PredicateBuilder.New<Models.Product>(false);
+
+        foreach (var weight in weights)
+        {
+            predicate = predicate.Or(p => p.Weight == weight);
+        }
+
+        return iQueryable.Where(predicate);
     }
-    
-    private IQueryable<Models.Product> GetProductsByTargetGroup(IQueryable<Models.Product> iQueryable, string? filterValue)
+
+    private IQueryable<Models.Product> GetProductsByBrand(IQueryable<Models.Product> iQueryable, List<string> filterValues)
     {
-        var targetGroup = filterValue?.ToLower() switch
+        var predicate = PredicateBuilder.New<Models.Product>(false);
+
+        foreach (var value in filterValues)
+        {
+            var lowerValue = value.ToLower();
+            predicate = predicate.Or(p => dbFactory.DbContext.Set<Models.Brand>()
+                .Any(b => b.BrandId == p.BrandId && b.BrandName.ToLower() == lowerValue));
+        }
+
+        return iQueryable.Where(predicate);
+    }
+
+    private IQueryable<Models.Product> GetProductsByTargetGroup(IQueryable<Models.Product> iQueryable,
+        List<string> filterValues)
+    {
+        var targetGroups = filterValues.Select(fv => fv.ToLower() switch
         {
             "treem" => "Trẻ em",
             "nguoicaotuoi" => "Người cao tuổi",
@@ -72,31 +103,43 @@ public class ProductRepository(DbFactory dbFactory) : Repository<Models.Product>
             "phunucothai" => "Phụ nữ có thai",
             "nguoibitieuduong" => "Người bị tiểu đường",
             _ => "Người lớn"
-        };
+        }).ToList();
+        
+        var predicate = PredicateBuilder.New<Models.Product>(false);
+            
+        foreach (var group in targetGroups)
+        {
+            predicate = predicate.Or(p =>
+                dbFactory.DbContext.Set<Models.ProductTargetGroup>().Any(ptg =>
+                    ptg.ProductId == p.ProductId &&
+                    dbFactory.DbContext.Set<Models.TargetGroup>().Any(tg => tg.GroupId == ptg.GroupId && tg.GroupName == group)));
+        }
 
-        var query = from p in iQueryable
-                                    join ptg in dbFactory.DbContext.Set<Models.ProductTargetGroup>() on p.ProductId equals ptg.ProductId
-                                    join tg in dbFactory.DbContext.Set<Models.TargetGroup>() on ptg.GroupId equals tg.GroupId
-                                    where tg.GroupName == targetGroup
-                                    select p;
-
-        return query;
+        return iQueryable.Where(predicate);
     }
 
-    private IQueryable<Models.Product> GetProductsByPrice(IQueryable<Models.Product> iQueryable, string? filterValue)
+    private IQueryable<Models.Product> GetProductsByPrice(IQueryable<Models.Product> iQueryable,
+        List<string> filterValues)
     {
-        return filterValue?.ToLower() switch
+        var predicate = PredicateBuilder.New<Models.Product>(false);
+
+        foreach (var value in filterValues)
         {
-            "tren50trieu" => iQueryable.Where(p => p.Price > 50000000),
-            "tu20den50trieu" => iQueryable.Where(p => p.Price <= 50000000 && p.Price >= 20000000),
-            "tu10den20trieu" => iQueryable.Where(p => p.Price <= 20000000 && p.Price >= 10000000),
-            "tu5den10trieu" => iQueryable.Where(p => p.Price <= 10000000 && p.Price >= 5000000),
-            "tu3den5trieu" => iQueryable.Where(p => p.Price <= 5000000 && p.Price >= 3000000),
-            "tu2den3trieu" => iQueryable.Where(p => p.Price <= 3000000 && p.Price >= 2000000),
-            "tu1den2trieu" => iQueryable.Where(p => p.Price <= 2000000 && p.Price >= 1000000),
-            "duoi1trieu" => iQueryable.Where(p => p.Price <= 1000000),
-            _ => iQueryable.Where(p => p.Price < 1000000)
-        };
+            predicate = value.ToLower() switch
+            {
+                "tren50trieu" => predicate.Or(p => p.Price > 50000000),
+                "tu20den50trieu" => predicate.Or(p => p.Price >= 20000000 && p.Price <= 50000000),
+                "tu10den20trieu" => predicate.Or(p => p.Price >= 10000000 && p.Price <= 20000000),
+                "tu5den10trieu" => predicate.Or(p => p.Price >= 5000000 && p.Price <= 10000000),
+                "tu3den5trieu" => predicate.Or(p => p.Price >= 3000000 && p.Price <= 5000000),
+                "tu2den3trieu" => predicate.Or(p => p.Price >= 2000000 && p.Price <= 3000000),
+                "tu1den2trieu" => predicate.Or(p => p.Price >= 1000000 && p.Price <= 2000000),
+                "duoi1trieu" => predicate.Or(p => p.Price <= 1000000),
+                _ => predicate.Or(p => p.Price < 1000000)
+            };
+        }
+
+        return iQueryable.Where(predicate);
     }
 
     public IQueryable<Models.Product> SortProducts(IQueryable<Models.Product> iQueryable, string? sortColumn,
@@ -107,9 +150,8 @@ public class ProductRepository(DbFactory dbFactory) : Repository<Models.Product>
             "productname" => product => product.ProductName,
             "price" => product => product.Price,
             _ => product => product.ProductName,
-        }; // Default sort by ProductName
-
-        // Default sort by ascending order
+        }; 
+        
         return sortOrder?.ToLower() == "desc"
             ? iQueryable.OrderByDescending(keySelector)
             : iQueryable.OrderBy(keySelector);
