@@ -36,7 +36,7 @@ public class ProductService(IUnitOfWork unitOfWork, IProductRepository productRe
         var productQuery = _productRepository.GetIQueryableProduct();
 
         productQuery =
-            _productRepository.FilterProducts(productQuery, getProductDto.FilterColumn, getProductDto.FilterValue);
+            _productRepository.FilterProducts(productQuery, getProductDto);
 
         productQuery =
             _productRepository.SortProducts(productQuery, getProductDto.SortColumn, getProductDto.SortOrder);
