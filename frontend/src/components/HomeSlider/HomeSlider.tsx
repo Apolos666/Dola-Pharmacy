@@ -15,11 +15,11 @@ export function HomeSlider() {
 
     return (
         <>
-            <div className="mx-24 my-8 relative">
+            <div className="container-app xl:my-8 md:my-6 my-4 relative">
                 <img className="w-full rounded-[16px]" src={images[currentImageIndex]} alt=""/>
-                <div className="absolute bottom-2 left-1/2 translate-x-1/2 flex items-center">
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center">
                     {images.map((_, index) => (
-                        <GoDotFill key={index} onClick={() => setCurrentImageIndex(index)} className={`text-[${index === currentImageIndex ? '#007AFF' : '#7AC2C2'}] cursor-pointer`}/>
+                        <GoDotFill key={index} onClick={() => setCurrentImageIndex(index)} className={`${index === currentImageIndex ? 'text-[#007AFF]' : 'text-[#7AC2C2]'} cursor-pointer`}/>
                     ))}
                 </div>
             </div>
