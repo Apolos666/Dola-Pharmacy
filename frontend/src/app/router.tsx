@@ -5,6 +5,7 @@ import {Login} from "../pages/Login.tsx";
 import {Register} from "@/pages/Register.tsx";
 import EmailVerification from "@/pages/EmailVerification.tsx";
 import ResetPassword from "@/pages/ResetPassword.tsx";
+import {Product} from "@/pages/Product.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -51,6 +52,18 @@ export const router = createBrowserRouter([
                         element: <ResetPassword />,
                         handle: {
                             crumb: () => "Đặt lại mật khẩu"
+                        }
+                    }
+                ]
+            },
+            {
+                path: '/products',
+                children: [
+                    {
+                        index: true,
+                        element: <Product />,
+                        handle: {
+                            crumb: () => "Tất cả sản phẩm"
                         }
                     }
                 ]
