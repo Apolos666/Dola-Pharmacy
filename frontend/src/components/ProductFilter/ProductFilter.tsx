@@ -1,7 +1,44 @@
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
-import {Checkbox} from "@/components/ui/checkbox.tsx";
+import {Card, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
+import {ProductFilterSection} from "../ProductFilterSection/ProductFilterSection";
+import {FilterData, priceFilterSectionData, weightFilterSectionData} from "../ProductFilterSection/ProductFilterData";
+import {useEffect, useState} from "react";
+import {BrandApi} from "@/api/Product/Brand/BrandApi.ts";
+import {TargetGroupApi} from "@/api/Product/TargetGroup/TargetGroupApi.ts";
 
 export function ProductFilter() {
+    const [brandFilters, setBrandFilters] = useState<FilterData[]>([]);
+    const [targetGroupFilters, setTargetGroupFilters] = useState<FilterData[]>([]);
+
+    useEffect(() => {
+        const abortController = new AbortController();
+
+        async function fetchData() {
+            const result = await BrandApi.GetBrandListAsync(abortController.signal);
+            setBrandFilters(result);
+        }
+
+        fetchData();
+
+        return () => {
+            abortController.abort();
+        }
+    }, [])
+
+    useEffect(() => {
+        const abortController = new AbortController();
+
+        async function fetchData() {
+            const result = await TargetGroupApi.GetTargetGroupListAsync(abortController.signal);
+            setTargetGroupFilters(result);
+        }
+
+        fetchData();
+
+        return () => {
+            abortController.abort();
+        }
+    }, [])
+
     return (
         <>
             <div className="flex flex-col gap-6">
@@ -14,388 +51,16 @@ export function ProductFilter() {
                     </Card>
                 </div>
                 <div>
-                    <Card className="border-[#003cbf] border-2 rounded-[6px]">
-                        <CardHeader className="px-3 py-2 bg-[#003CBF] ">
-                            <CardTitle className="text-white text-xl">Chọn mức giá</CardTitle>
-                        </CardHeader>
-                        <CardContent className="mt-3 px-3">
-                            <div
-                                className="flex flex-col gap-4 overflow-y-scroll max-h-[200px] scrollbar scrollbar-thumb-blue-500 scrollbar-track-sky-300 scrollbar-w-1">
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        className="rounded-[4px] data-[state=checked]:bg-[#0075FF] data-[state=checked]:border-none data-[state=checked]:text-white"
-                                        id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Dưới 1 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 1 triệu - 2 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <ProductFilterSection data={priceFilterSectionData} title="Chọn mức giá"/>
                 </div>
                 <div>
-                    <Card className="border-[#003cbf] border-2 rounded-[6px]">
-                        <CardHeader className="px-3 py-2 bg-[#003CBF] ">
-                            <CardTitle className="text-white text-xl">Thương hiệu</CardTitle>
-                        </CardHeader>
-                        <CardContent className="mt-3 px-3">
-                            <div
-                                className="flex flex-col gap-4 overflow-y-scroll max-h-[200px] scrollbar scrollbar-thumb-blue-500 scrollbar-track-sky-300 scrollbar-w-1">
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        className="rounded-[4px] data-[state=checked]:bg-[#0075FF] data-[state=checked]:border-none data-[state=checked]:text-white"
-                                        id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Dưới 1 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 1 triệu - 2 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <ProductFilterSection data={brandFilters} title="Thương hiệu"/>
                 </div>
                 <div>
-                    <Card className="border-[#003cbf] border-2 rounded-[6px]">
-                        <CardHeader className="px-3 py-2 bg-[#003CBF] ">
-                            <CardTitle className="text-white text-xl">Đối tượng</CardTitle>
-                        </CardHeader>
-                        <CardContent className="mt-3 px-3">
-                            <div
-                                className="flex flex-col gap-4 overflow-y-scroll max-h-[200px] scrollbar scrollbar-thumb-blue-500 scrollbar-track-sky-300 scrollbar-w-1">
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        className="rounded-[4px] data-[state=checked]:bg-[#0075FF] data-[state=checked]:border-none data-[state=checked]:text-white"
-                                        id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Dưới 1 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 1 triệu - 2 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <ProductFilterSection data={targetGroupFilters} title="Đối tượng"/>
                 </div>
                 <div>
-                    <Card className="border-[#003cbf] border-2 rounded-[6px]">
-                        <CardHeader className="px-3 py-2 bg-[#003CBF] ">
-                            <CardTitle className="text-white text-xl">Trọng lượng</CardTitle>
-                        </CardHeader>
-                        <CardContent className="mt-3 px-3">
-                            <div
-                                className="flex flex-col gap-4 overflow-y-scroll max-h-[200px] scrollbar scrollbar-thumb-blue-500 scrollbar-track-sky-300 scrollbar-w-1">
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        className="rounded-[4px] data-[state=checked]:bg-[#0075FF] data-[state=checked]:border-none data-[state=checked]:text-white"
-                                        id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Dưới 1 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 1 triệu - 2 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox className="rounded-[4px]" id="terms"/>
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Từ 2 triệu - 3 triệu
-                                    </label>
-                                </div>
-
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <ProductFilterSection data={weightFilterSectionData} title="Trọng lượng"/>
                 </div>
             </div>
         </>

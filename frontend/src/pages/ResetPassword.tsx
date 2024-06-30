@@ -2,7 +2,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import ResetPasswordForm from "@/components/ResetPasswordForm/ResetPasswordForm.tsx";
 import {IResetPasswordData} from "@/components/ResetPasswordForm/ResetPasswordConfig.ts";
 import {useRef} from "react";
-import {accountApi} from "@/api/account.ts";
+import {accountApi} from "@/api/Account/AccountApi.ts";
 import {useHandleToastResponse} from "@/hooks/useHandleToastResponse.tsx";
 import {useLoading} from "@/hooks/useLoading.tsx";
 

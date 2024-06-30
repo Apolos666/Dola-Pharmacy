@@ -1,5 +1,5 @@
 import {useAxiosPrivate} from "@/hooks/useAxiosPrivate.tsx";
-import {accountApi} from "@/api/account.ts";
+import {accountApi} from "@/api/Account/AccountApi.ts";
 import {HomeSlider} from "@/components/HomeSlider/HomeSlider.tsx";
 
 function Home() {

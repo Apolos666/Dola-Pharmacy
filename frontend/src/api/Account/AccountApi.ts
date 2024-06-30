@@ -1,5 +1,5 @@
 import {IForgotPasswordFormInput} from "@/components/ForgotPasswordForm/ForgotPasswordConfig.ts";
-import axios from "@/api/axios.ts";
+import axios from "@/api/Base/axios.ts";
 import {IResetPasswordData} from "@/components/ResetPasswordForm/ResetPasswordConfig.ts";
 import {ILoginDto} from "@/components/LoginForm/LoginFormConfig.ts";
 import {
@@ -9,7 +9,7 @@ import {
     SystemError,
     UnauthorizedError,
     UnknownError
-} from "@/api/ApiErrorException.ts";
+} from "@/api/Exception/ApiErrorException.ts";
 import {IRegisterDto} from "@/components/RegisterForm/RegisterFormConfig.ts";
 import {IGoogleSigninRequest} from "@/components/ExternalLogin/GoogleSigninConfig.ts";
 import {IFacebookSigninRequest} from "@/components/ExternalLogin/FacebookSigninConfig.ts";

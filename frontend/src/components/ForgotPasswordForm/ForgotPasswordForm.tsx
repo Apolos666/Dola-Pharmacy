@@ -8,7 +8,7 @@ import {
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {accountApi} from "@/api/account.ts";
+import {accountApi} from "@/api/Account/AccountApi.ts";
 import {useToast} from "@/components/ui/use-toast.ts";
 import {cn} from "@/lib/utils.ts";
 import {LoadingContext} from "@/contexts/LoadingProvider.tsx";

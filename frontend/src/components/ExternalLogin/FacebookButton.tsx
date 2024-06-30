@@ -6,7 +6,7 @@ import {useAuth} from "@/hooks/useAuth.tsx";
 import {useNavigate} from "react-router-dom";
 import {useRef} from "react";
 import {IFacebookSigninRequest} from "@/components/ExternalLogin/FacebookSigninConfig.ts";
-import {accountApi} from "@/api/account.ts";
+import {accountApi} from "@/api/Account/AccountApi.ts";
 
 function FacebookButton({ className } : {className?: string}) {
     const setResponse = useHandleToastResponse();
