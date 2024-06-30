@@ -1,8 +1,13 @@
 import {Card, CardContent} from "@/components/ui/card.tsx";
 import {TbShoppingBagPlus} from "react-icons/tb";
+import {Product} from "@/components/ProductDisplay/ProductDisplayConfig.ts";
 
-export function ProductCard({imgUrl}: { imgUrl: string }) {
-    const truncateNumber: number = 45;
+type ProductProps = {
+    product: Product;
+}
+
+export function ProductCard({product}: ProductProps) {
+    const truncateNumber: number = 40;
 
     function truncateString(str: string, num: number) {
         if (str.length <= num) {
@@ -18,17 +23,17 @@ export function ProductCard({imgUrl}: { imgUrl: string }) {
                 <CardContent className="p-2">
                     <div className="w-full overflow-hidden py-8">
                         <img
-                            src={imgUrl}
+                            src={product.productImages[0].imageUrl}
                             alt=""
                             className="block w-2/3 mx-auto group-hover:scale-[1.1] transition-all duration-300"
                         />
                     </div>
                     <div
-                        className="text-[#4B494A] font-bold group-hover:text-[#003CBF] transition-all">{truncateString("Bào tử lợi khuẩn cho mẹ và bé LiveSpo Preg-Mon hết LiveSpo Preg-Mon hết", truncateNumber)}
+                        className="text-[#4B494A] font-bold group-hover:text-[#003CBF] transition-all">{truncateString(product.productName, truncateNumber)}
                     </div>
                     <div className="my-2 flex justify-between">
                         <div className="text-[#8AC379] font-bold text-xl">
-                            333.000đ
+                            {product.price.toLocaleString()}₫
                         </div>
                         <div className="p-2 bg-[#1b74e7] rounded-full mt-4 hover:-translate-y-2 hover:bg-[#003CBF] transition-all duration-300">
                             <TbShoppingBagPlus className="text-2xl text-white"/>

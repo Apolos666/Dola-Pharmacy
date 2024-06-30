@@ -2,8 +2,28 @@ import {TbSortDescendingLetters} from "react-icons/tb";
 import {Button} from "@/components/ui/button.tsx";
 import {ProductCard} from "@/components/ProductCard/ProductCard.tsx";
 import {ProductPagination} from "@/components/ProductPagination/ProductPagination.tsx";
+import {useEffect, useState} from "react";
+import {ProductApi} from "@/api/Product/ProductApi.ts";
+import {Product} from "@/components/ProductDisplay/ProductDisplayConfig.ts";
 
 export function ProductDisplay() {
+    const [products, setProducts] = useState<Product[]>([]);
+
+    useEffect(() => {
+        const abortController = new AbortController();
+
+        async function fetchData() {
+            const result = await ProductApi.GetProductsAsync("", abortController.signal);
+            setProducts(result.items)
+        }
+
+        fetchData();
+
+        return () => {
+            abortController.abort();
+        }
+    }, [])
+
     return (
         <>
             <div className="font-bold text-3xl">Tất cả sản phẩm</div>
@@ -28,22 +48,11 @@ export function ProductDisplay() {
                 </div>
             </div>
             <div className="grid grid-cols-4 gap-4">
-                <ProductCard
-                    imgUrl={"https://dolapharmacy.s3.ap-southeast-1.amazonaws.com/product-images/08cb8884-28fa-4bc6-ad36-d0d071030ddf-792af436-21b3-42ed-8980-003638b8b3f3"}/>
-                <ProductCard
-                    imgUrl={"https://dolapharmacy.s3.ap-southeast-1.amazonaws.com/product-images/129bf09d-e62a-4c1a-87d0-0d4e0a687f54-e5e45c38-1cef-4502-bcd1-f966ffba3c99"}/>
-                <ProductCard
-                    imgUrl={"https://dolapharmacy.s3.ap-southeast-1.amazonaws.com/product-images/08cb8884-28fa-4bc6-ad36-d0d071030ddf-792af436-21b3-42ed-8980-003638b8b3f3"}/>
-                <ProductCard
-                    imgUrl={"https://dolapharmacy.s3.ap-southeast-1.amazonaws.com/product-images/08cb8884-28fa-4bc6-ad36-d0d071030ddf-792af436-21b3-42ed-8980-003638b8b3f3"}/>
-                <ProductCard
-                    imgUrl={"https://dolapharmacy.s3.ap-southeast-1.amazonaws.com/product-images/08cb8884-28fa-4bc6-ad36-d0d071030ddf-792af436-21b3-42ed-8980-003638b8b3f3"}/>
-                <ProductCard
-                    imgUrl={"https://dolapharmacy.s3.ap-southeast-1.amazonaws.com/product-images/08cb8884-28fa-4bc6-ad36-d0d071030ddf-792af436-21b3-42ed-8980-003638b8b3f3"}/>
-                <ProductCard
-                    imgUrl={"https://dolapharmacy.s3.ap-southeast-1.amazonaws.com/product-images/08cb8884-28fa-4bc6-ad36-d0d071030ddf-792af436-21b3-42ed-8980-003638b8b3f3"}/>
-                <ProductCard
-                    imgUrl={"https://dolapharmacy.s3.ap-southeast-1.amazonaws.com/product-images/08cb8884-28fa-4bc6-ad36-d0d071030ddf-792af436-21b3-42ed-8980-003638b8b3f3"}/>
+                {products.map((product, index) => {
+                    return (
+                        <ProductCard key={index} product={product}/>
+                    )
+                })}
             </div>
             <div className="my-8">
                 <ProductPagination/>
