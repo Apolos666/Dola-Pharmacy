@@ -21,5 +21,7 @@ export interface ProductSectionContextType {
     setSort: Dispatch<SetStateAction<Sorting>>,
     pagination: Pagination,
     setPagination: Dispatch<SetStateAction<Pagination>>,
-    buildQueryParams: () => string;
+    buildQueryParams: () => string,
+    setTotalCount: Dispatch<SetStateAction<number>>,
+    totalPages: number
 }

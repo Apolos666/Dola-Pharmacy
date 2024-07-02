@@ -15,6 +15,8 @@ export function ProductSection() {
 
     const [sort, setSort] = useState<Sorting>({ column: "price", order: "desc" });
     const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 10 });
+    const [totalCount, setTotalCount] = useState<number>(1);
+    const totalPages = Math.ceil(totalCount / pagination.pageSize)
 
     function buildQueryParams() {
         const params = new URLSearchParams();
@@ -49,7 +51,7 @@ export function ProductSection() {
 
     return (
         <>
-            <ProductSectionContext.Provider value={{filters ,setFilters, sort, setSort, pagination, setPagination, buildQueryParams}}>
+            <ProductSectionContext.Provider value={{filters ,setFilters, sort, setSort, pagination, setPagination, setTotalCount, totalPages , buildQueryParams}}>
                 <div className="flex justify-between gap-10 w-full mt-4">
                     <div className="w-[30%]">
                         <ProductFilter />
