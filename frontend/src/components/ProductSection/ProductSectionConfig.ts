@@ -20,5 +20,6 @@ export interface ProductSectionContextType {
     sort: Sorting,
     setSort: Dispatch<SetStateAction<Sorting>>,
     pagination: Pagination,
-    setPagination: Dispatch<SetStateAction<Pagination>>
+    setPagination: Dispatch<SetStateAction<Pagination>>,
+    buildQueryParams: () => string;
 }

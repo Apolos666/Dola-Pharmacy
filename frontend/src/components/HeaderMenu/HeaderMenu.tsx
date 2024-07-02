@@ -10,9 +10,8 @@ export function HeaderMenu() {
 
     // Todo: Boc nó vào trong thẻ Link
     function NormalButton(menu: Menu, index: number) {
-        return <Link to="/">
+        return <Link key={index} to="/">
             <Button
-                key={index}
                 onClick={() => setSelectedMenu(menu)}
                 className={`
                         ${selectedMenu === menu ?
@@ -27,9 +26,9 @@ export function HeaderMenu() {
     const getSelectedMenu = (menu: Menu, index: number) => {
         switch (menu){
             case Menu.TinTuc:
-                return <Link to="/"><ArticleMenu key={index} menu={menu} selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}/></Link>
+                return <Link key={index} to="/"><ArticleMenu key={index} menu={menu} selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}/></Link>
             case Menu.SanPham:
-                return <Link to="/products"><ProductCategoryMenu key={index} menu={menu} selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}/></Link>
+                return <Link key={index} to="/products"><ProductCategoryMenu key={index} menu={menu} selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}/></Link>
             default:
                 return NormalButton(menu, index)
         }
