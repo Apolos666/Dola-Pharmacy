@@ -22,4 +22,11 @@ public class TargetGroupService(IUnitOfWork unitOfWork, ITargetGroupRepository t
         var responseTargetGroupDto = _mapper.Map<ResponseTargetGroupDto>(targetGroup);
         return responseTargetGroupDto;
     }
+    
+    public async Task<List<ResponseTargetGroupDto>> GetTargetGroups()
+    {
+        var targetGroups = await _targetGroupRepository.GetAlls();
+        var responseTargetGroupDto = _mapper.Map<List<ResponseTargetGroupDto>>(targetGroups);
+        return responseTargetGroupDto;
+    }
 }

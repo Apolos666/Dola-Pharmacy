@@ -47,13 +47,18 @@ public class ProductController(
         }
     }
 
-    [HttpGet("get-products")] 
-    public async Task<IActionResult> GetProducts([FromQuery] GetProductDto getProductDto)
+    [HttpGet("get-products")]
+    public async Task<IActionResult> GetProducts([FromQuery] GetProductDto getProductDto, CancellationToken cancellationToken)
     {
         try
         {
-            var response = await _productService.GetProductAsync(getProductDto);
+            var response = await _productService.GetProductAsync(getProductDto,cancellationToken);
             return Ok(response);
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Request was cancelled");
+            return StatusCode(StatusCodes.Status400BadRequest, "Request was cancelled");
         }
         catch (Exception exception)
         {
@@ -71,7 +76,7 @@ public class ProductController(
         {
             return BadRequest(AddProductImageDtoValidator.ValidateAddProductImageDto(addProductImageDto).result);
         }
-        
+
         // Todo: Refactor vào cái proudctImageService luôn
         var isProductExists = await _productService.IsProductExists(productId);
 
@@ -89,7 +94,7 @@ public class ProductController(
             imagePath = imagePathResponse;
         else
             return StatusCode(StatusCodes.Status500InternalServerError, "Error uploading image.");
-        
+
         try
         {
             var response = await _productImageService.AddProductImageAsync(imageId, productId,
@@ -118,7 +123,7 @@ public class ProductController(
             return StatusCode(StatusCodes.Status500InternalServerError, "Error adding product target group");
         }
     }
-    
+
     [HttpDelete("{productId:guid}/product-target-group/{groupId:guid}")]
     public async Task<IActionResult> DeleteProductTargetGroup([FromRoute] Guid productId, [FromRoute] Guid groupId)
     {
@@ -133,7 +138,7 @@ public class ProductController(
             return StatusCode(StatusCodes.Status500InternalServerError, "Error deleting product target group");
         }
     }
-    
+
     [HttpPost("{productId:guid}/product-type-association/{productTypeId:guid}")]
     public async Task<IActionResult> AddProductTypeAssociation([FromRoute] Guid productId, [FromRoute] Guid productTypeId)
     {
@@ -148,7 +153,7 @@ public class ProductController(
             return StatusCode(StatusCodes.Status500InternalServerError, "Error adding product type association");
         }
     }
-    
+
     [HttpDelete("{productId:guid}/product-type-association/{productTypeId:guid}")]
     public async Task<IActionResult> DeleteProductTypeAssociation([FromRoute] Guid productId, [FromRoute] Guid productTypeId)
     {

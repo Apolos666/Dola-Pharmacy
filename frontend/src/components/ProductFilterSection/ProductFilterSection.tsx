@@ -1,15 +1,17 @@
 import {Card, CardContent, CardHeader, CardTitle} from "../ui/card";
 import {Checkbox} from "../ui/checkbox";
 import {FilterData} from "./ProductFilterData";
+import {Filters} from "@/components/ProductSection/ProductSectionConfig.ts";
 
 type ProductFilterSectionProps = {
     data: FilterData[],
     title: string,
     filterType: string,
-    onFilterChange: (filterType: string, filterValue: string, checked: boolean) => void
+    onFilterChange: (filterType: string, filterValue: string, checked: boolean) => void,
+    filters: Filters
 }
 
-export function ProductFilterSection({data, title, filterType, onFilterChange}: ProductFilterSectionProps) {
+export function ProductFilterSection({data, title, filterType, onFilterChange, filters}: ProductFilterSectionProps) {
     return (
         <>
             <Card className="border-[#003cbf] border-2 rounded-[6px]">
@@ -25,6 +27,7 @@ export function ProductFilterSection({data, title, filterType, onFilterChange}: 
                                     className="rounded-[4px] data-[state=checked]:bg-[#0075FF] data-[state=checked]:border-none data-[state=checked]:text-white"
                                     id="terms"
                                     onCheckedChange={(e) => onFilterChange(filterType, filterData.filterValue, e as boolean)}
+                                    checked={filters[filterType].includes(filterData.filterValue)}
                                 />
                                 <label
                                     htmlFor="terms"

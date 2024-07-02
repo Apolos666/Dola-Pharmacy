@@ -5,13 +5,14 @@ import {useContext, useEffect, useState} from "react";
 import {BrandApi} from "@/api/Product/Brand/BrandApi.ts";
 import {TargetGroupApi} from "@/api/Product/TargetGroup/TargetGroupApi.ts";
 import {ProductSectionContext} from "@/components/ProductSection/ProductSection.tsx";
+import {SelectedFilters} from "@/components/SelectedFilters/SelectedFilters.tsx";
 
 export function ProductFilter() {
     const contextValue = useContext(ProductSectionContext);
 
     if (!contextValue) throw new Error("ProductSectionContext is not provided");
 
-    const {setFilters} = contextValue;
+    const { filters, setFilters} = contextValue;
 
     const [brandFilters, setBrandFilters] = useState<FilterData[]>([]);
     const [targetGroupFilters, setTargetGroupFilters] = useState<FilterData[]>([]);
@@ -59,6 +60,23 @@ export function ProductFilter() {
         })
     }
 
+    function removeFilter(filterType: string, filterValue: string) {
+        setFilters(prevFilters => {
+            const newFilters = {...prevFilters};
+            newFilters[filterType] = newFilters[filterType].filter(value => value !== filterValue);
+            return newFilters;
+        })
+    }
+
+    function resetFilters() {
+        setFilters({
+            price: [],
+            brand: [],
+            targetGroup: [],
+            weight: []
+        })
+    }
+
     return (
         <>
             <div className="flex flex-col gap-6">
@@ -71,11 +89,21 @@ export function ProductFilter() {
                     </Card>
                 </div>
                 <div>
+                    {Object.values(filters).some(filter => filter.length > 0) && (
+                        <SelectedFilters
+                            filters={filters}
+                            removeFilter={removeFilter}
+                            resetFilters={resetFilters}
+                        />
+                    )}
+                </div>
+                <div>
                     <ProductFilterSection
                         data={priceFilterSectionData}
                         title="Chọn mức giá"
                         filterType="price"
                         onFilterChange={handleFilterChange}
+                        filters={filters}
                     />
                 </div>
                 <div>
@@ -84,6 +112,7 @@ export function ProductFilter() {
                         title="Thương hiệu"
                         filterType="brand"
                         onFilterChange={handleFilterChange}
+                        filters={filters}
                     />
                 </div>
                 <div>
@@ -92,6 +121,7 @@ export function ProductFilter() {
                         title="Đối tượng"
                         filterType="targetGroup"
                         onFilterChange={handleFilterChange}
+                        filters={filters}
                     />
                 </div>
                 <div>
@@ -100,6 +130,7 @@ export function ProductFilter() {
                         title="Trọng lượng"
                         filterType="weight"
                         onFilterChange={handleFilterChange}
+                        filters={filters}
                     />
                 </div>
             </div>

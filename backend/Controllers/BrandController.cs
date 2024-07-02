@@ -10,7 +10,7 @@ public class BrandController(BrandService brandService, ILogger<BrandController>
 {
     private readonly BrandService _brandService = brandService;
     private readonly ILogger<BrandController> _logger = logger;
-    
+
     [HttpPost("add-brand")]
     public async Task<IActionResult> AddBrand([FromBody] AddBrandDto addBrandDto)
     {
@@ -20,9 +20,19 @@ public class BrandController(BrandService brandService, ILogger<BrandController>
         {
             return BadRequest(AddBrandDtoValidator.ValidateAddTargetGroupDto(addBrandDto).result);
         }
-        
+
         var responseBrandDto = await _brandService.AddBrand(addBrandDto.BrandName);
         _logger.LogInformation("Brand added successfully with name: {@name}", addBrandDto.BrandName);
         return Ok(responseBrandDto);
     }
+
+    [HttpGet("get-brands")]
+    public async Task<IActionResult> GetBrand()
+    {
+        _logger.LogInformation("Getting all brands");
+        var responseBrandDtos = await _brandService.GetBrands();
+        _logger.LogInformation("Successfully retrieved all brands");
+        return Ok(responseBrandDtos);
+    }
+
 }
