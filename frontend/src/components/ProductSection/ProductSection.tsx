@@ -1,6 +1,6 @@
 import {ProductDisplay} from "@/components/ProductDisplay/ProductDisplay.tsx";
 import {ProductFilter} from "@/components/ProductFilter/ProductFilter.tsx";
-import {createContext, useState} from "react";
+import {createContext, useEffect, useState} from "react";
 import {Pagination, ProductSectionContextType, Sorting} from "@/components/ProductSection/ProductSectionConfig.ts";
 
 export const ProductSectionContext = createContext<ProductSectionContextType | undefined>(undefined);
@@ -48,6 +48,11 @@ export function ProductSection() {
 
         return params.toString();
     }
+
+    useEffect(() => {
+        const queryParams = buildQueryParams();
+        console.log(queryParams);
+    }, [filters, sort, pagination])
 
     return (
         <>

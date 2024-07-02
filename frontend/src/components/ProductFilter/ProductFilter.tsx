@@ -12,7 +12,7 @@ export function ProductFilter() {
 
     if (!contextValue) throw new Error("ProductSectionContext is not provided");
 
-    const { filters, setFilters} = contextValue;
+    const { filters, setFilters, setPagination} = contextValue;
 
     const [brandFilters, setBrandFilters] = useState<FilterData[]>([]);
     const [targetGroupFilters, setTargetGroupFilters] = useState<FilterData[]>([]);
@@ -48,6 +48,7 @@ export function ProductFilter() {
     }, [])
 
     function handleFilterChange(filterType: string, filterValue: string, checked: boolean) {
+        setPagination({page: 1, pageSize: 10})
         setFilters(prevFilters => {
             const newFilters = {...prevFilters};
             if (checked) {
@@ -69,6 +70,7 @@ export function ProductFilter() {
     }
 
     function resetFilters() {
+        setPagination({page: 1, pageSize: 10})
         setFilters({
             price: [],
             brand: [],
