@@ -34,6 +34,8 @@ public class ProductService(IUnitOfWork unitOfWork, IProductRepository productRe
     public async Task<PagedList<Models.Product>> GetProductAsync(GetProductDto getProductDto, CancellationToken cancellationToken)
     {
         var productQuery = _productRepository.GetIQueryableProduct();
+        
+        productQuery = _productRepository.FilterProductBasedOnType(productQuery, getProductDto.TypeId); 
 
         productQuery =
             _productRepository.FilterProducts(productQuery, getProductDto);
