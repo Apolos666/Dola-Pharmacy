@@ -2,6 +2,7 @@ import {ProductDisplay} from "@/components/ProductDisplay/ProductDisplay.tsx";
 import {ProductFilter} from "@/components/ProductFilter/ProductFilter.tsx";
 import {createContext, useEffect, useState} from "react";
 import {Pagination, ProductSectionContextType, Sorting} from "@/components/ProductSection/ProductSectionConfig.ts";
+import {useParams} from "react-router-dom";
 
 export const ProductSectionContext = createContext<ProductSectionContextType | undefined>(undefined);
 
@@ -13,6 +14,7 @@ export function ProductSection() {
         weight: []
     });
 
+    const { productTypeNameNormalized } = useParams();
     const [sort, setSort] = useState<Sorting>({ column: "price", order: "desc" });
     const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 10 });
     const [totalCount, setTotalCount] = useState<number>(1);
@@ -20,6 +22,10 @@ export function ProductSection() {
 
     function buildQueryParams() {
         const params = new URLSearchParams();
+
+        if (productTypeNameNormalized !== undefined) {
+            params.append('ProductTypeNameNormalized', productTypeNameNormalized);
+        }
 
         if (filters.price.length > 0) {
             params.append('FilterPrice', 'true');
@@ -56,7 +62,7 @@ export function ProductSection() {
 
     return (
         <>
-            <ProductSectionContext.Provider value={{filters ,setFilters, sort, setSort, pagination, setPagination, setTotalCount, totalPages , buildQueryParams}}>
+            <ProductSectionContext.Provider value={{filters ,setFilters, sort, setSort, pagination, setPagination, setTotalCount, totalPages , buildQueryParams, productTypeNameNormalized}}>
                 <div className="flex justify-between gap-10 w-full mt-4">
                     <div className="w-[30%]">
                         <ProductFilter />

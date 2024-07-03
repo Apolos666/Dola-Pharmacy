@@ -2,7 +2,7 @@
 
 public class GetProductDto
 {
-    public Guid? TypeId { get; init; }
+    public string? ProductTypeNameNormalized { get; init; }
     public bool FilterPrice { get; init; } = false;
     public string? FilterPriceValue { get; init; }
     public bool FilterBrand { get; init; } = false;

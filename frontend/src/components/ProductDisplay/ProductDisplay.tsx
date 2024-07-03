@@ -12,7 +12,7 @@ export function ProductDisplay() {
 
     if (!context) throw new Error("ProductSectionContext is not provided");
 
-    const { sort, pagination, filters , buildQueryParams, setTotalCount} = context;
+    const { productTypeNameNormalized ,sort, pagination, filters , buildQueryParams, setTotalCount} = context;
 
     const [products, setProducts] = useState<Product[]>([]);
 
@@ -30,7 +30,7 @@ export function ProductDisplay() {
         return () => {
             abortController.abort();
         }
-    }, [filters, sort, pagination])
+    }, [filters, sort, pagination, productTypeNameNormalized])
 
     const renderProducts =
         products.length > 0

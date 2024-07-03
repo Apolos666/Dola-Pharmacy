@@ -7,7 +7,12 @@ namespace backend.Repositories.ProductType;
 public class ProductTypeRepository(DbFactory dbFactory)
     : Repository<Models.ProductType>(dbFactory), IProductTypeRepository
 {
-    public async Task<Models.ProductType> AddProductTypeAsync(Guid? id, string typeName, string? imageUrl, Guid? parentId)
+    public async Task<Models.ProductType?> GetProductTypeByTypeNameNormalizedAsync(string typeNameNormalized)
+    {
+        return await DbSet.SingleOrDefaultAsync(pt => pt.TypeNameNormalized == typeNameNormalized);
+    }
+
+    public async Task<Models.ProductType> AddProductTypeAsync(Guid? id, string typeName, string typeNameNormalized,string? imageUrl, Guid? parentId)
     {
         try
         {
@@ -16,7 +21,7 @@ public class ProductTypeRepository(DbFactory dbFactory)
             if (exist is not null)
                 throw new Exception($"Product Type {typeName} already exists");
             
-            var productType = Models.ProductType.Create(id, typeName, imageUrl, parentId);
+            var productType = Models.ProductType.Create(id, typeName, typeNameNormalized, imageUrl, parentId);
             Add(productType);
             return productType;
         }

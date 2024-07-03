@@ -35,7 +35,7 @@ public class ProductService(IUnitOfWork unitOfWork, IProductRepository productRe
     {
         var productQuery = _productRepository.GetIQueryableProduct();
         
-        productQuery = _productRepository.FilterProductBasedOnType(productQuery, getProductDto.TypeId); 
+        productQuery = _productRepository.FilterProductBasedOnType(productQuery, getProductDto.ProductTypeNameNormalized); 
 
         productQuery =
             _productRepository.FilterProducts(productQuery, getProductDto);

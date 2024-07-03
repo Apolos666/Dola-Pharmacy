@@ -65,6 +65,13 @@ export const router = createBrowserRouter([
                         handle: {
                             crumb: () => "Tất cả sản phẩm"
                         }
+                    },
+                    {
+                        path: ":productTypeNameNormalized?",
+                        element: <Product />,
+                        handle: {
+                            crumb: (productTypeNameNormalized: string) => productTypeNameNormalized
+                        }
                     }
                 ]
             }

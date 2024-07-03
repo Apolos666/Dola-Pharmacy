@@ -26,7 +26,8 @@ export function HeaderMenu() {
     const getSelectedMenu = (menu: Menu, index: number) => {
         switch (menu){
             case Menu.TinTuc:
-                return <Link key={index} to="/"><ArticleMenu key={index} menu={menu} selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}/></Link>
+                // Testing purpose:
+                return <Link key={index} to="/products/chamsocchan"><ArticleMenu key={index} menu={menu} selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}/></Link>
             case Menu.SanPham:
                 return <Link key={index} to="/products"><ProductCategoryMenu key={index} menu={menu} selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}/></Link>
             default:

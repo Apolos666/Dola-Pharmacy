@@ -36,7 +36,7 @@ export function ProductCategoryMenu({menu, selectedMenu, setSelectedMenu}: Produ
                                         overflow-y-scroll scrollbar scrollbar-w-2 scrollbar-thumb-rounded-full scrollbar-thumb-blue-500 scrollbar-track-white">
                         {categoriesData.map((category, categoryIndex) => (
                             <div key={categoryIndex}>
-                                <Link to="/">
+                                <Link to={`/products/duocpham`}>
                                     <div className="text-[#1b74e7] font-bold mb-2">
                                         {category}
                                     </div>

@@ -40,13 +40,13 @@ public class ProductRepository(DbFactory dbFactory) : Repository<Models.Product>
             .FirstOrDefaultAsync(p => p.ProductId == productId);
     }
 
-    public IQueryable<Models.Product> FilterProductBasedOnType(IQueryable<Models.Product> iQueryable, Guid? typeId)
+    public IQueryable<Models.Product> FilterProductBasedOnType(IQueryable<Models.Product> iQueryable, string? productTypeNameNomalized)
     {
-        return typeId is null
+        return string.IsNullOrEmpty(productTypeNameNomalized)
             ? iQueryable
             : iQueryable.Where(p => p.ProductTypeAssociations.Any(pta =>
                 dbFactory.DbContext.Set<Models.ProductType>()
-                    .Any(pt => pt.TypeId == pta.TypeId && pt.TypeId == typeId)));
+                    .Any(pt => pt.TypeId == pta.TypeId && pt.TypeNameNormalized == productTypeNameNomalized)));
     }
 
     public IQueryable<Models.Product> FilterProducts(IQueryable<Models.Product> iQueryable, GetProductDto getProductDto)

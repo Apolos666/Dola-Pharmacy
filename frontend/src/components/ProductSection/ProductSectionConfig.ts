@@ -15,6 +15,7 @@ export interface Filters {
 }
 
 export interface ProductSectionContextType {
+    productTypeNameNormalized?: string | undefined;
     filters: Filters,
     setFilters: Dispatch<SetStateAction<Filters>>,
     sort: Sorting,
@@ -23,5 +24,5 @@ export interface ProductSectionContextType {
     setPagination: Dispatch<SetStateAction<Pagination>>,
     buildQueryParams: () => string,
     setTotalCount: Dispatch<SetStateAction<number>>,
-    totalPages: number
+    totalPages: number,
 }
