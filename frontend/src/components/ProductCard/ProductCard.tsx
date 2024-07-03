@@ -25,7 +25,7 @@ export function ProductCard({product}: ProductProps) {
                         <img
                             src={product.productImages[0].imageUrl}
                             alt=""
-                            className="block w-2/3 mx-auto group-hover:scale-[1.1] transition-all duration-300"
+                            className="block xl:w-2/3 md:w-full w-2/3 mx-auto group-hover:scale-[1.1] transition-all duration-300"
                         />
                     </div>
                     <div

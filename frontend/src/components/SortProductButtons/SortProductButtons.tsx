@@ -14,10 +14,10 @@ export function SortProductButtons() {
 
     return (
         <>
-            <div className="text-lg flex items-center gap-3">
+            <div className="text-lg flex items-center gap-3 w-full overflow-x-auto">
                 <div className="flex items-center gap-2">
                     <TbSortDescendingLetters className="h-full text-3xl"/>
-                    <div>Xếp theo:</div>
+                    <div className="text-nowrap">Xếp theo:</div>
                 </div>
                 <Button
                     className={`text-white ${selectedButton === 'Tên Z-A' ? 'bg-[#003CBF] text-white' : 'bg-white text-[#003CBF] border-[1px] border-[#003CBF]'} rounded-[8px] hover:bg-[#003CBF] hover:text-white`}

@@ -63,11 +63,26 @@ export function ProductSection() {
     return (
         <>
             <ProductSectionContext.Provider value={{filters ,setFilters, sort, setSort, pagination, setPagination, setTotalCount, totalPages , buildQueryParams, productTypeNameNormalized}}>
-                <div className="flex justify-between gap-10 w-full mt-4">
+                {/* Pc */}
+                <div className="xl:flex hidden justify-between gap-10 w-full mt-4">
                     <div className="w-[30%]">
                         <ProductFilter />
                     </div>
                     <div className="w-[70%]">
+                        <ProductDisplay />
+                    </div>
+                </div>
+
+                {/* Tablet */}
+                <div className="md:block xl:hidden hidden w-full mt-4">
+                    <div>
+                        <ProductDisplay />
+                    </div>
+                </div>
+
+                {/* Mobile */}
+                <div className="xl:hidden md:hidden block w-full mt-4">
+                    <div>
                         <ProductDisplay />
                     </div>
                 </div>

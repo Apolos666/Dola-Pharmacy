@@ -90,15 +90,15 @@ export function ProductFilter() {
                         </CardHeader>
                     </Card>
                 </div>
-                <div>
-                    {Object.values(filters).some(filter => filter.length > 0) && (
+                {Object.values(filters).some(filter => filter.length > 0) && (
+                    <div>
                         <SelectedFilters
                             filters={filters}
                             removeFilter={removeFilter}
                             resetFilters={resetFilters}
                         />
-                    )}
-                </div>
+                    </div>
+                )}
                 <div>
                     <ProductFilterSection
                         data={priceFilterSectionData}
