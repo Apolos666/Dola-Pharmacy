@@ -9,3 +9,7 @@
 .container-app-product {
     @apply xl:ml-24 md:ml-14 ml-2;
 }
+
+.shadow-button {
+    @apply shadow-xl;
+}

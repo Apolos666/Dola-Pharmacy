@@ -3,7 +3,7 @@ import {Button} from "@/components/ui/button.tsx";
 import {MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight} from "react-icons/md";
 import {FaEllipsisH} from "react-icons/fa";
 import {Fragment, useContext} from "react";
-import {ProductSectionContext} from "@/components/ProductSection/ProductSection.tsx";
+import {ProductSectionContext} from "@/components/ProductSection/ProductSectionContext.ts";
 
 export function ProductPagination() {
     const context = useContext(ProductSectionContext);

@@ -1,7 +1,7 @@
 import {useContext, useState} from "react";
-import {ProductSectionContext} from "@/components/ProductSection/ProductSection.tsx";
 import {TbSortDescendingLetters} from "react-icons/tb";
 import {Button} from "@/components/ui/button.tsx";
+import {ProductSectionContext} from "@/components/ProductSection/ProductSectionContext.ts";
 
 export function SortProductButtons() {
     const context = useContext(ProductSectionContext);

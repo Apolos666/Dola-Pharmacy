@@ -1,10 +1,11 @@
 import {ProductDisplay} from "@/components/ProductDisplay/ProductDisplay.tsx";
 import {ProductFilter} from "@/components/ProductFilter/ProductFilter.tsx";
-import {createContext, useEffect, useState} from "react";
+import {useState} from "react";
 import {Pagination, ProductSectionContextType, Sorting} from "@/components/ProductSection/ProductSectionConfig.ts";
 import {useParams} from "react-router-dom";
-
-export const ProductSectionContext = createContext<ProductSectionContextType | undefined>(undefined);
+import {ProductFilterSheet} from "@/components/ProductFilter/ProductFilterSheet.tsx";
+import {useWindowSize} from "@/hooks/useWindowSize.tsx";
+import {ProductSectionContext} from "@/components/ProductSection/ProductSectionContext.ts";
 
 export function ProductSection() {
     const [filters, setFilters] = useState<ProductSectionContextType['filters']>({
@@ -19,6 +20,8 @@ export function ProductSection() {
     const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 10 });
     const [totalCount, setTotalCount] = useState<number>(1);
     const totalPages = Math.ceil(totalCount / pagination.pageSize)
+
+    const { width} = useWindowSize();
 
     function buildQueryParams() {
         const params = new URLSearchParams();
@@ -55,37 +58,44 @@ export function ProductSection() {
         return params.toString();
     }
 
-    useEffect(() => {
-        const queryParams = buildQueryParams();
-        console.log(queryParams);
-    }, [filters, sort, pagination])
-
     return (
         <>
-            <ProductSectionContext.Provider value={{filters ,setFilters, sort, setSort, pagination, setPagination, setTotalCount, totalPages , buildQueryParams, productTypeNameNormalized}}>
+            <ProductSectionContext.Provider value={{productTypeNameNormalized, filters ,setFilters, sort, setSort, pagination, setPagination, buildQueryParams, setTotalCount, totalPages }}>
                 {/* Pc */}
-                <div className="xl:flex hidden justify-between gap-10 w-full mt-4">
-                    <div className="w-[30%]">
-                        <ProductFilter />
+                {width >= 1280 && (
+                    <div className="flex justify-between gap-10 w-full mt-4">
+                        <div className="w-[30%]">
+                            <ProductFilter/>
+                        </div>
+                        <div className="w-[70%]">
+                            <ProductDisplay/>
+                        </div>
                     </div>
-                    <div className="w-[70%]">
-                        <ProductDisplay />
-                    </div>
-                </div>
+                )}
 
                 {/* Tablet */}
-                <div className="md:block xl:hidden hidden w-full mt-4">
-                    <div>
-                        <ProductDisplay />
+                {width < 1280 && width >= 768 && (
+                    <div className="block w-full mt-4">
+                        <div className="fixed top-1/3 right-0">
+                            <ProductFilterSheet/>
+                        </div>
+                        <div>
+                            <ProductDisplay/>
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Mobile */}
-                <div className="xl:hidden md:hidden block w-full mt-4">
-                    <div>
-                        <ProductDisplay />
+                {width < 768 && (
+                    <div className="block w-full mt-4">
+                        <div className="fixed top-1/3 right-0">
+                            <ProductFilterSheet/>
+                        </div>
+                        <div>
+                            <ProductDisplay/>
+                        </div>
                     </div>
-                </div>
+                )}
             </ProductSectionContext.Provider>
         </>
     )

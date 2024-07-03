@@ -4,8 +4,8 @@ import {FilterData, priceFilterSectionData, weightFilterSectionData} from "../Pr
 import {useContext, useEffect, useState} from "react";
 import {BrandApi} from "@/api/Product/Brand/BrandApi.ts";
 import {TargetGroupApi} from "@/api/Product/TargetGroup/TargetGroupApi.ts";
-import {ProductSectionContext} from "@/components/ProductSection/ProductSection.tsx";
 import {SelectedFilters} from "@/components/SelectedFilters/SelectedFilters.tsx";
+import {ProductSectionContext} from "@/components/ProductSection/ProductSectionContext.ts";
 
 export function ProductFilter() {
     const contextValue = useContext(ProductSectionContext);
@@ -52,9 +52,11 @@ export function ProductFilter() {
         setFilters(prevFilters => {
             const newFilters = {...prevFilters};
             if (checked) {
-                newFilters[filterType].push(filterValue);
+                if (!newFilters[filterType].includes(filterValue)) {
+                    newFilters[filterType].push(filterValue);
+                }
             } else {
-                newFilters[filterType] = newFilters[filterType].filter(filterValue => filterValue !== filterValue);
+                newFilters[filterType] = newFilters[filterType].filter(value => value !== filterValue);
             }
 
             return newFilters;

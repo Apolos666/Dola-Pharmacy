@@ -4,7 +4,7 @@ import {useContext, useEffect, useState} from "react";
 import {ProductApi} from "@/api/Product/ProductApi.ts";
 import {Product} from "@/components/ProductDisplay/ProductDisplayConfig.ts";
 import {SortProductButtons} from "@/components/SortProductButtons/SortProductButtons.tsx";
-import {ProductSectionContext} from "@/components/ProductSection/ProductSection.tsx";
+import {ProductSectionContext} from "@/components/ProductSection/ProductSectionContext.ts";
 
 
 export function ProductDisplay() {
