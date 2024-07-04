@@ -1,9 +1,10 @@
-import {productTypeResponse} from "@/model/ProductType.ts";
+import {productTypeResponse, productTypesWithChildrenResponse} from "@/model/ProductType.ts";
 import {useEffect, useState} from "react";
 import {ProductTypeApi} from "@/api/Product/ProductType/ProductTypeApi.ts";
 
-export function useProductType(productTypeNameNormalized: string | undefined) {
+export function useProductType(productTypeNameNormalized?: string | undefined) {
     const [productType, setProductType] = useState<productTypeResponse | null>(null);
+    const [productTypeWithChildren, setProductTypeWithChildren] = useState<productTypesWithChildrenResponse[] | null>(null);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -22,5 +23,20 @@ export function useProductType(productTypeNameNormalized: string | undefined) {
         }
     }, [productTypeNameNormalized]);
 
-    return productType;
+    useEffect(() => {
+        const abortController = new AbortController();
+
+        async function fetchProductTypeWithChildren() {
+            const productTypesWithChildren = await ProductTypeApi.GetAllProductTypesWithChildren(abortController.signal);
+            setProductTypeWithChildren(productTypesWithChildren);
+        }
+
+        fetchProductTypeWithChildren();
+
+        return () => {
+            abortController.abort();
+        }
+    }, []);
+
+    return { productType, productTypeWithChildren };
 }

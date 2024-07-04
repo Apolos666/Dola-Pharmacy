@@ -7,17 +7,15 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb.tsx";
-import {Fragment, useEffect, useState} from "react";
+import {Fragment} from "react";
 import "@/app/app.css"
-import {ProductTypeApi} from "@/api/Product/ProductType/ProductTypeApi.ts";
-import {productTypeResponse} from "@/model/ProductType.ts";
 import {useProductType} from "@/hooks/Entity/useProductType.tsx";
 
 export function BreadCrumbCustom() {
     const matches = useMatches();
     const location = useLocation();
     const { productTypeNameNormalized } = useParams();
-    const productType = useProductType(productTypeNameNormalized)
+    const { productType } = useProductType(productTypeNameNormalized)
 
     if (location.pathname === "/") // If the current path is the home page then don't show the crumb
         return null;

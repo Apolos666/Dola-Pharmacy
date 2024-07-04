@@ -4,7 +4,7 @@ import {Menu} from "@/components/HeaderMenu/HeaderMenuConfig.ts";
 import {Dispatch, SetStateAction} from "react";
 import {FaChevronDown} from "react-icons/fa";
 import {Link} from "react-router-dom";
-import {categoriesData, CategoryItemsData} from "@/components/CategoryHeaderPopup/CategoryHeaderPopupConfig.ts";
+import {useProductType} from "@/hooks/Entity/useProductType.tsx";
 
 type ProductCategoryMenuProps = {
     menu: Menu;
@@ -13,6 +13,8 @@ type ProductCategoryMenuProps = {
 }
 
 export function ProductCategoryMenu({menu, selectedMenu, setSelectedMenu}: ProductCategoryMenuProps) {
+    const { productTypeWithChildren } = useProductType();
+
     return (
         <div className="group">
             <HoverCard openDelay={100} closeDelay={100}>
@@ -34,16 +36,16 @@ export function ProductCategoryMenu({menu, selectedMenu, setSelectedMenu}: Produ
                 <HoverCardContent align="center" sideOffset={15} className="bg-white rounded-[8px] p-4 w-[1000px] container-app-product">
                     <div className="grid grid-cols-4 text-left gap-8 h-[500px]
                                         overflow-y-scroll scrollbar scrollbar-w-2 scrollbar-thumb-rounded-full scrollbar-thumb-blue-500 scrollbar-track-white">
-                        {categoriesData.map((category, categoryIndex) => (
-                            <div key={categoryIndex}>
-                                <Link to={`/products/duocpham`}>
+                        {productTypeWithChildren?.map((productType, productTypeIndex) => (
+                            <div key={productTypeIndex}>
+                                <Link to={`/products/${productType.TypeNameNormalized}`}>
                                     <div className="text-[#1b74e7] font-bold mb-2">
-                                        {category}
+                                        {productType.TypeName}
                                     </div>
                                 </Link>
                                 <div className="flex flex-col">
-                                    {CategoryItemsData[category].map((item, itemIndex) => (
-                                        <Link key={itemIndex} to="/" className="text-[#231f20]">{item.title}</Link>
+                                    {productType.children.map((productTypeChildren, productTypeChildrenIndex) => (
+                                        <Link key={productTypeChildrenIndex} to={`/products/${productTypeChildren.TypeNameNormalized}`} className="text-[#231f20]">{productTypeChildren.TypeName}</Link>
                                     ))}
                                 </div>
                             </div>
