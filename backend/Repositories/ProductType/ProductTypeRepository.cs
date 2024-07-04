@@ -7,6 +7,16 @@ namespace backend.Repositories.ProductType;
 public class ProductTypeRepository(DbFactory dbFactory)
     : Repository<Models.ProductType>(dbFactory), IProductTypeRepository
 {
+    public async Task<IEnumerable<Models.ProductType>> GetAllProductTypesWithChildrenAsync()
+    {
+        var productTypes = await DbSet
+            .Include(pt => pt.Children)
+            .Where(pt => pt.ParentId == null)
+            .ToListAsync();
+
+        return productTypes;
+    }
+
     public async Task<Models.ProductType?> GetProductTypeByTypeNameNormalizedAsync(string typeNameNormalized)
     {
         return await DbSet.SingleOrDefaultAsync(pt => pt.TypeNameNormalized == typeNameNormalized);

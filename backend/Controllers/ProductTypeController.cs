@@ -11,6 +11,13 @@ public class ProductTypeController(ProductTypeService productTypeService, ILogge
 {
     private readonly ProductTypeService _productTypeService = productTypeService;
     private readonly ILogger<ProductTypeController> _logger = logger;
+    
+    [HttpGet("get-all-product-types")]
+    public async Task<IActionResult> GetAllProductTypesWithChildren()
+    {
+        var productTypes = await _productTypeService.GetAllProductTypesWithChildrenAsync();
+        return Ok(productTypes);
+    }
 
     [HttpGet("get-product-type/{productTypeNameNormalized}")]
     public async Task<IActionResult> GetProductTypeByTypeNameNormalized([FromRoute] string productTypeNameNormalized)

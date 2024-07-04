@@ -55,6 +55,13 @@ public class ProductTypeService(
         return (false, "");
     }
     
+    public async Task<IEnumerable<ResponseProductTypeWithChildrenDto>> GetAllProductTypesWithChildrenAsync()
+    {
+        var productTypes = await _productTypeRepository.GetAllProductTypesWithChildrenAsync();
+        var responseProductTypes = _mapper.Map<IEnumerable<ResponseProductTypeWithChildrenDto>>(productTypes);
+        return responseProductTypes;
+    }
+    
     public async Task<ResponseProductTypeDto> GetProductTypeByTypeNameNormalizedAsync(string productTypeNameNormalized)
     {
         var productType = await _productTypeRepository.GetProductTypeByTypeNameNormalizedAsync(productTypeNameNormalized);
