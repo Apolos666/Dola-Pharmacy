@@ -40,34 +40,43 @@ public class ProductRepository(DbFactory dbFactory) : Repository<Models.Product>
             .FirstOrDefaultAsync(p => p.ProductId == productId);
     }
 
+    public IQueryable<Models.Product> FilterProductBasedOnType(IQueryable<Models.Product> iQueryable, string? productTypeNameNomalized)
+    {
+        return string.IsNullOrEmpty(productTypeNameNomalized)
+            ? iQueryable
+            : iQueryable.Where(p => p.ProductTypeAssociations.Any(pta =>
+                dbFactory.DbContext.Set<Models.ProductType>()
+                    .Any(pt => pt.TypeId == pta.TypeId && pt.TypeNameNormalized == productTypeNameNomalized)));
+    }
+
     public IQueryable<Models.Product> FilterProducts(IQueryable<Models.Product> iQueryable, GetProductDto getProductDto)
     {
         var predicate = PredicateBuilder.New<Models.Product>(true);
-        
+
         if (getProductDto.FilterPrice && !string.IsNullOrEmpty(getProductDto.FilterPriceValue))
         {
             var filterValues = ParseFilterValues(getProductDto.FilterPriceValue!);
             predicate = predicate.And(GetProductsByPrice(iQueryable, filterValues));
         }
-        
+
         if (getProductDto.FilterBrand && !string.IsNullOrEmpty(getProductDto.FilterBrandValue))
         {
             var filterValues = ParseFilterValues(getProductDto.FilterBrandValue!);
             predicate = predicate.And(GetProductsByBrand(iQueryable, filterValues));
         }
-        
+
         if (getProductDto.FilterTargetGroup && !string.IsNullOrEmpty(getProductDto.FilterTargetGroupValue))
         {
             var filterValues = ParseFilterValues(getProductDto.FilterTargetGroupValue!);
             predicate = predicate.And(GetProductsByTargetGroup(iQueryable, filterValues));
         }
-        
-        if (getProductDto.FilterTargetWeight && !string.IsNullOrEmpty(getProductDto.FilterTargetWeightValue))
+
+        if (getProductDto.FilterWeight && !string.IsNullOrEmpty(getProductDto.FilterWeightValue))
         {
-            var filterValues = ParseFilterValues(getProductDto.FilterTargetWeightValue!);
-            predicate = predicate.And( GetProductsByWeight(iQueryable, filterValues));
+            var filterValues = ParseFilterValues(getProductDto.FilterWeightValue!);
+            predicate = predicate.And(GetProductsByWeight(iQueryable, filterValues));
         }
-    
+
         List<string> ParseFilterValues(string filterValue)
         {
             return filterValue
@@ -75,7 +84,7 @@ public class ProductRepository(DbFactory dbFactory) : Repository<Models.Product>
                 .Select(fv => fv.Trim())
                 .ToList();
         }
-        
+
         return iQueryable.Where(predicate);
     }
 
@@ -122,9 +131,9 @@ public class ProductRepository(DbFactory dbFactory) : Repository<Models.Product>
             "nguoibitieuduong" => "Người bị tiểu đường",
             _ => "Người lớn"
         }).ToList();
-        
+
         var predicate = PredicateBuilder.New<Models.Product>(false);
-            
+
         foreach (var group in targetGroups)
         {
             predicate = predicate.Or(p =>
@@ -168,8 +177,8 @@ public class ProductRepository(DbFactory dbFactory) : Repository<Models.Product>
             "productname" => product => product.ProductName,
             "price" => product => product.Price,
             _ => product => product.ProductName,
-        }; 
-        
+        };
+
         return sortOrder?.ToLower() == "desc"
             ? iQueryable.OrderByDescending(keySelector)
             : iQueryable.OrderBy(keySelector);

@@ -25,4 +25,13 @@ public class TargetGroupController(TargetGroupService targetGroupService, ILogge
         _logger.LogInformation("Target group added successfully with name: {@name}", addTargetGroupDto.GroupName);
         return Ok(responseTargetGroupDto);
     }
+    
+    [HttpGet("get-target-groups")]
+    public async Task<IActionResult> GetTargetGroups()
+    {
+        _logger.LogInformation("Getting all target groups");
+        var responseTargetGroupDtos = await _targetGroupService.GetTargetGroups();
+        _logger.LogInformation("Successfully retrieved all target groups");
+        return Ok(responseTargetGroupDtos);
+    }
 }

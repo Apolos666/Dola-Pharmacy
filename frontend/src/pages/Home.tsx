@@ -1,12 +1,13 @@
 import {useAxiosPrivate} from "@/hooks/useAxiosPrivate.tsx";
-import {accountApi} from "@/api/account.ts";
+import {accountApi} from "@/api/Account/AccountApi.ts";
+import {HomeSlider} from "@/components/HomeSlider/HomeSlider.tsx";
 
 function Home() {
     const axiosPrivate = useAxiosPrivate();
 
     async function Test() {
         console.log("Test")
-        const response = await axiosPrivate.get('/test/test-function');
+        await axiosPrivate.get('/test/test-function');
     }
 
 
@@ -18,9 +19,9 @@ function Home() {
 
     return (
         <>
-            <div>Home</div>
-            <button onClick={Test} className="bg-black text-white">Click</button>
-            <button onClick={LogoutTest} className="bg-black text-white">Logout</button>
+            <div className="w-full">
+                <HomeSlider/>
+            </div>
         </>
     )
 }

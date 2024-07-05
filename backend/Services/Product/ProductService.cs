@@ -31,9 +31,11 @@ public class ProductService(IUnitOfWork unitOfWork, IProductRepository productRe
         return responseProductDto;
     }
 
-    public async Task<PagedList<Models.Product>> GetProductAsync(GetProductDto getProductDto)
+    public async Task<PagedList<Models.Product>> GetProductAsync(GetProductDto getProductDto, CancellationToken cancellationToken)
     {
         var productQuery = _productRepository.GetIQueryableProduct();
+        
+        productQuery = _productRepository.FilterProductBasedOnType(productQuery, getProductDto.ProductTypeNameNormalized); 
 
         productQuery =
             _productRepository.FilterProducts(productQuery, getProductDto);
@@ -41,8 +43,10 @@ public class ProductService(IUnitOfWork unitOfWork, IProductRepository productRe
         productQuery =
             _productRepository.SortProducts(productQuery, getProductDto.SortColumn, getProductDto.SortOrder);
 
+        productQuery = productQuery.Include(p => p.ProductImages);
+        
         var products =
-            await PagedList<Models.Product>.CreateAsync(productQuery, getProductDto.Page, getProductDto.PageSize);
+            await PagedList<Models.Product>.CreateAsync(productQuery, getProductDto.Page, getProductDto.PageSize, cancellationToken);
 
         return products;
     }

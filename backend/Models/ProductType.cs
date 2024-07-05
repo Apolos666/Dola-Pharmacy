@@ -14,6 +14,7 @@ public class ProductType
 
     [Key] public Guid TypeId { get; set; }
     [Required] [StringLength(50)] public string TypeName { get; set; } = null!;
+    [Required] [StringLength(50)] public string TypeNameNormalized { get; set; }
     [StringLength(300)] public string? ImagePath { get; set; }
     public Guid? ParentId { get; set; }
 
@@ -21,11 +22,16 @@ public class ProductType
     public virtual ICollection<ProductType> Children { get; set; }
     public virtual ICollection<ProductTypeAssociation> ProductTypeAssociations { get; set; }
     
-    public static ProductType Create(Guid? id, string typeName, string? imagePath, Guid? parentId)
+    public static ProductType Create(Guid? id, string typeName, string typeNameNormalized,string? imagePath ,Guid? parentId)
     {
         if (string.IsNullOrEmpty(typeName) || typeName.Length > 50)
         {
             throw new ArgumentException("TypeName is required and must be less than or equal to 50 characters.", nameof(typeName));
+        }
+        
+        if (string.IsNullOrEmpty(typeNameNormalized) || typeNameNormalized.Length > 50)
+        {
+            throw new ArgumentException("TypeNameNormalized is required and must be less than or equal to 50 characters.", nameof(typeNameNormalized));
         }
         
         if (imagePath?.Length > 300)
@@ -37,6 +43,7 @@ public class ProductType
         {
             TypeId = id ?? Guid.NewGuid(),
             TypeName = typeName,
+            TypeNameNormalized = typeNameNormalized,
             ImagePath = imagePath,
             ParentId = parentId,
             Children = new HashSet<ProductType>(),

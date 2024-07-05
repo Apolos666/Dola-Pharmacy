@@ -55,9 +55,27 @@ public class ProductTypeService(
         return (false, "");
     }
     
-    public async Task<ResponseProductTypeDto> AddProductTypeAsync(Guid? id, string typeName, string? imagePath, Guid? parentId = null)
+    public async Task<IEnumerable<ResponseProductTypeWithChildrenDto>> GetAllProductTypesWithChildrenAsync()
     {
-        var productType = await _productTypeRepository.AddProductTypeAsync(id, typeName, imagePath, parentId);
+        var productTypes = await _productTypeRepository.GetAllProductTypesWithChildrenAsync();
+        var responseProductTypes = _mapper.Map<IEnumerable<ResponseProductTypeWithChildrenDto>>(productTypes);
+        return responseProductTypes;
+    }
+    
+    public async Task<ResponseProductTypeDto> GetProductTypeByTypeNameNormalizedAsync(string productTypeNameNormalized)
+    {
+        var productType = await _productTypeRepository.GetProductTypeByTypeNameNormalizedAsync(productTypeNameNormalized);
+
+        if (productType is null)
+            throw new Exception($"Cannot find product type with name {productTypeNameNormalized} in database.");
+        
+        var responseProductTypeDto = _mapper.Map<ResponseProductTypeDto>(productType);
+        return responseProductTypeDto;
+    }
+    
+    public async Task<ResponseProductTypeDto> AddProductTypeAsync(Guid? id, string typeName, string typeNameNormalized, string? imagePath, Guid? parentId = null)
+    {
+        var productType = await _productTypeRepository.AddProductTypeAsync(id, typeName, typeNameNormalized,imagePath, parentId);
         var saved = await _unitOfWork.CommitAsync();
 
         if (saved <= 0)

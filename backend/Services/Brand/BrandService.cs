@@ -22,4 +22,11 @@ public class BrandService(IUnitOfWork unitOfWork, IBrandRepository brandReposito
         var responseBrandDto = _mapper.Map<ResponseBrandDto>(brand);
         return responseBrandDto;
     }
+
+    public async Task<List<ResponseBrandDto>> GetBrands()
+    {
+        var brand = await _brandRepository.GetAlls();
+        var responseBrandDto = _mapper.Map<List<ResponseBrandDto>>(brand);
+        return responseBrandDto;
+    }
 }

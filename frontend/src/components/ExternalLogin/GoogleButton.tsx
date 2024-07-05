@@ -3,7 +3,7 @@ import {useGoogleLogin} from "@react-oauth/google";
 import {useRef} from "react";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "@/hooks/useAuth.tsx";
-import {accountApi} from "@/api/account.ts";
+import {accountApi} from "@/api/Account/AccountApi.ts";
 import {useHandleToastResponse} from "@/hooks/useHandleToastResponse.tsx";
 import {useLoading} from "@/hooks/useLoading.tsx";
 
