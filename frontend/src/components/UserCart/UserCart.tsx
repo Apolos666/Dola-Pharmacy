@@ -1,5 +1,7 @@
 import {HiOutlineShoppingBag} from "react-icons/hi2";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card.tsx";
+import {CartItem} from "@/components/CartItem/CartItem.tsx";
+import {Button} from "@/components/ui/button.tsx";
 
 export function UserCart() {
     return (
@@ -14,8 +16,16 @@ export function UserCart() {
                         >8</span>
                     </div>
                 </HoverCardTrigger>
-                <HoverCardContent align={"end"} sideOffset={10} className="bg-white border-2 border-[#003CBF] text-black rounded-[10px]">
-                    The React Framework – created and maintained by @vercel.
+                <HoverCardContent align={"end"} sideOffset={10} className="bg-white border-2 border-[#003CBF] text-black rounded-[10px] w-[340px]">
+                    <div className="flex flex-col gap-4">
+                        <CartItem />
+                        <CartItem />
+                        <div className="flex items-center justify-between my-4">
+                            <div className="font-medium">Tổng tiền:</div>
+                            <div className="text-[#1b74e7] font-semibold">2.218.000₫</div>
+                        </div>
+                        <Button variant="none" className="bg-[#1b74e7] hover:bg-[#003cbf] text-white rounded-[10px] transition-all">Thanh toán</Button>
+                    </div>
                 </HoverCardContent>
             </HoverCard>
         </>
