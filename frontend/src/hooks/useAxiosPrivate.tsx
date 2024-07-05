@@ -1,7 +1,7 @@
 import {useRefreshToken} from "@/hooks/useRefreshToken.tsx";
 import {useAuth} from "@/hooks/useAuth.tsx";
 import {useEffect} from "react";
-import {axiosPrivate} from "@/api/axios.ts";
+import {axiosPrivate} from "@/api/Base/axios.ts";
 import {useToast} from "@/components/ui/use-toast.ts";
 
 export function useAxiosPrivate() {

@@ -9,3 +9,16 @@
 .container-app-product {
     @apply xl:ml-24 md:ml-14 ml-2;
 }
+
+.shadow-button {
+    @apply shadow-xl;
+}
+
+.shadow-card {
+    box-shadow: 0 0px 2px 0 rgba(60, 64, 67, 0.1), 0 0px 6px 0px rgba(60, 64, 67, 0.25);
+    transition: all 0.3s ease;
+}
+
+.shadow-card:hover {
+    box-shadow: 0 0px 2px 0 #003cbf, 0 0px 6px 0px #003cbf;
+}

@@ -31,6 +31,11 @@ public class Repository<T> : IRepository<T> where T : class
         DbSet.Remove(entity);
     }
 
+    public async Task<List<T>> GetAlls()
+    {
+        return await DbSet.AsNoTracking().ToListAsync();
+    }
+
     public async Task<T?> GetById(Guid id)
     {
         return await DbSet.FindAsync(id);
