@@ -3,6 +3,7 @@ import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hov
 import {CartItem} from "@/components/CartItem/CartItem.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {useCart} from "@/contexts/Cart/CartProviderConfig.ts";
+import {TiShoppingCart} from "react-icons/ti";
 
 export function UserCart() {
     const { userCart } = useCart();
@@ -23,18 +24,30 @@ export function UserCart() {
                     </div>
                 </HoverCardTrigger>
                 <HoverCardContent align={"end"} sideOffset={10} className="bg-white border-2 border-[#003CBF] text-black rounded-[10px] w-[340px]">
-                    <div className="flex flex-col gap-4">
-                        <div className="max-h-[350px] overflow-y-auto scrollbar scrollbar-w-1 scrollbar-thumb-blue-500 scrollbar-track-blue-200 scrollbar-thumb-rounded-full">
-                            {userCart?.cartItems.map((item, index) => (
-                                <CartItem key={index} product={item.product} quantity={item.quantity}/>
-                            ))}
+                    {userCart?.cartItems.length === 0 ? (
+                        <>
+                            <div className="flex flex-col items-center">
+                                <TiShoppingCart className="text-3xl"/>
+                                <div className="text-center py-4 text-sm">Không có sản phẩm nào trong giỏ hàng của bạn</div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex flex-col gap-4">
+                            <div
+                                className="max-h-[350px] overflow-y-auto scrollbar scrollbar-w-1 scrollbar-thumb-blue-500 scrollbar-track-blue-200 scrollbar-thumb-rounded-full">
+                                {userCart?.cartItems.map((item, index) => (
+                                    <CartItem key={index} product={item.product} quantity={item.quantity}/>
+                                ))}
+                            </div>
+                            <div className="flex items-center justify-between my-4">
+                                <div className="font-medium">Tổng tiền:</div>
+                                <div className="text-[#1b74e7] font-semibold">{totalPrice.toLocaleString()}₫</div>
+                            </div>
+                            <Button variant="none"
+                                    className="bg-[#1b74e7] hover:bg-[#003cbf] text-white rounded-[10px] transition-all">Thanh
+                                toán</Button>
                         </div>
-                        <div className="flex items-center justify-between my-4">
-                            <div className="font-medium">Tổng tiền:</div>
-                            <div className="text-[#1b74e7] font-semibold">{totalPrice.toLocaleString()}₫</div>
-                        </div>
-                        <Button variant="none" className="bg-[#1b74e7] hover:bg-[#003cbf] text-white rounded-[10px] transition-all">Thanh toán</Button>
-                    </div>
+                    )}
                 </HoverCardContent>
             </HoverCard>
         </>

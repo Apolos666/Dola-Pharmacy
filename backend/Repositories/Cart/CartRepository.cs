@@ -12,6 +12,7 @@ public class CartRepository(DbFactory dbFactory) : Repository<Models.Cart>(dbFac
         return await DbSet
             .Include(c => c.CartItems)
                 .ThenInclude(ci => ci.Product)
+                    .ThenInclude(p => p.ProductImages)
             .SingleOrDefaultAsync(c => c.UserId == userId);
     }
 

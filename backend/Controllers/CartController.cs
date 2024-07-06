@@ -40,7 +40,7 @@ public class CartController(CartUserService cartUserService, ILogger<CartControl
     }
     
     [HttpPost("add-product")]
-    public async Task<IActionResult> AddProductToCartUser(AddCartDto addCartDto)
+    public async Task<IActionResult> AddProductToCartUser([FromBody] AddCartDto addCartDto)
     {
         var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         
@@ -62,5 +62,41 @@ public class CartController(CartUserService cartUserService, ILogger<CartControl
         
         _logger.LogInformation("Successfully added product to cart.");
         return Ok(cart);
+    }
+
+    [HttpPatch("update-product-quantity")]
+    public async Task<IActionResult> UpdateProductQuantityInCartUser([FromBody] UpdateCartDto updateCartDto)
+    {
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (userId is null)
+        {
+            _logger.LogError("Failed to get user id when update product quantity in cart.");
+            return BadRequest("Failed to update product quantity in cart.");
+        }
+        
+        _logger.LogInformation("Updating product {@productId} quantity in cart user {@userId} with quantity {@quantity}.", updateCartDto.ProductId, userId, updateCartDto.Quantity);
+        await _cartUserService.UpdateProductQuantityInCartUser(userId, updateCartDto.ProductId, updateCartDto.Quantity);
+        
+        _logger.LogInformation("Successfully updated product quantity in cart.");
+        return Ok();
+    }
+    
+    [HttpDelete("remove-product/{productId:guid}")]
+    public async Task<IActionResult> RemoveProductFromCartUser([FromRoute] RemoveCartDto removeCartDto)
+    {
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (userId is null)
+        {
+            _logger.LogError("Failed to get user id when remove product from cart.");
+            return BadRequest("Failed to remove product from cart.");
+        }
+        
+        _logger.LogInformation("Removing product {@productId} from cart user {@userId}.", removeCartDto.ProductId, userId);
+        await _cartUserService.RemoveProductFromCartUser(userId, removeCartDto.ProductId);
+        
+        _logger.LogInformation("Successfully removed product from cart.");
+        return NoContent();
     }
 }

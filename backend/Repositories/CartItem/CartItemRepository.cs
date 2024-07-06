@@ -6,6 +6,11 @@ namespace backend.Repositories.CartItem
 {
     public class CartItemRepository(DbFactory dbFactory) : Repository<Models.CartItem>(dbFactory), ICartItemRepository
     {
+        public async Task<Models.CartItem?> GetCartItemAsync(Guid cartId, Guid productId)
+        {
+            return await DbSet.SingleOrDefaultAsync(ci => ci.CartId == cartId && ci.ProductId == productId);
+        }
+
         public async Task<Models.CartItem> AddCartItem(Guid cartId, Guid productId, int quantity)
         {
             var cartItem = await DbSet.SingleOrDefaultAsync(ci => ci.CartId == cartId && ci.ProductId == productId);
@@ -27,6 +32,17 @@ namespace backend.Repositories.CartItem
             }
 
             return cartItem;
+        }
+
+        public void UpdateCartItemQuantity(Models.CartItem cartItem, int quantity)
+        {
+            cartItem.Quantity = quantity;
+            Update(cartItem);
+        }
+
+        public void RemoveCartItem(Models.CartItem cartItem)
+        {
+            Delete(cartItem);
         }
     }
 }

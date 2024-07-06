@@ -51,4 +51,46 @@ public class CartUserService(
             throw;
         }
     }
+    
+    public async Task UpdateProductQuantityInCartUser(string userId, Guid productId, int quantity)
+    {
+        try
+        {
+            var cart = await _cartRepository.GetCartByUserId(userId);
+        
+            if (cart is null)
+                throw new Exception($"Cart with {userId} not found");
+        
+            var cartItem = await _cartItemRepository.GetCartItemAsync(cart.CartId, productId);
+
+            if (cartItem is not null) _cartItemRepository.UpdateCartItemQuantity(cartItem, quantity);
+        
+            await _unitOfWork.CommitAsync();
+        }
+        catch (Exception exception)
+        {
+            throw new Exception("Update product quantity in cart user failed", exception);
+        }
+    }
+    
+    public async Task RemoveProductFromCartUser(string userId, Guid productId)
+    {
+        try
+        {
+            var cart = await _cartRepository.GetCartByUserId(userId);
+        
+            if (cart is null)
+                throw new Exception($"Cart with {userId} not found");
+        
+            var cartItem = await _cartItemRepository.GetCartItemAsync(cart.CartId, productId);
+
+            if (cartItem is not null) _cartItemRepository.RemoveCartItem(cartItem);
+        
+            await _unitOfWork.CommitAsync();
+        }
+        catch (Exception exception)
+        {
+            throw new Exception("Remove product from cart user failed", exception);
+        }
+    }
 }
