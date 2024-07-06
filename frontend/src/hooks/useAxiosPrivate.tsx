@@ -18,7 +18,6 @@ export function useAxiosPrivate() {
     }
 
     useEffect(() => {
-
         const requestInterceptor = axiosPrivate.interceptors.request.use(
             config => {
                 if (!config.headers.Authorization) {

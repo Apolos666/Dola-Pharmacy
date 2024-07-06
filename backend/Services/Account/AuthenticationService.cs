@@ -62,6 +62,7 @@ public class AuthenticationService : IAuthenticationService
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName!),
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
         };
         
         var userRoles = await _userManager.GetRolesAsync(user);
@@ -69,6 +70,7 @@ public class AuthenticationService : IAuthenticationService
 
         return claims;
     }
+    
 
     public async Task<int> LoginUserAsync(LoginDto loginDto)
     {

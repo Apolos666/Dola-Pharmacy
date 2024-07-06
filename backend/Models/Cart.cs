@@ -22,24 +22,19 @@ public class Cart
     public virtual ICollection<CartItem> CartItems { get; set; }
     public virtual ICollection<Order> Orders { get; set; }
     
-    public static Cart Create(string userId, DateTime deliveryDate, TimeSpan deliveryTime)
+    public static Cart Create(string userId)
     {
         if (string.IsNullOrEmpty(userId))
         {
             throw new ArgumentException("UserId is required.", nameof(userId));
         }
 
-        if (deliveryDate < DateTime.Now)
-        {
-            throw new ArgumentException("DeliveryDate must be in the future.", nameof(deliveryDate));
-        }
-
         return new Cart
         {
             CartId = Guid.NewGuid(),
             UserId = userId,
-            DeliveryDate = deliveryDate,
-            DeliveryTime = deliveryTime,
+            DeliveryDate = DateTime.UtcNow.AddDays(7),
+            DeliveryTime = TimeSpan.FromHours(12),
             CartItems = new HashSet<CartItem>(),
             Orders = new HashSet<Order>()
         };

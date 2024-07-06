@@ -4,6 +4,8 @@ using backend.Extensions.Cloud;
 using backend.Models;
 using backend.Options;
 using backend.Repositories.Brand;
+using backend.Repositories.Cart;
+using backend.Repositories.CartItem;
 using backend.Repositories.Generic;
 using backend.Repositories.Product;
 using backend.Repositories.ProductImage;
@@ -14,6 +16,7 @@ using backend.Repositories.ProductTypeAssociation;
 using backend.Repositories.TargetGroup;
 using backend.Services.Account;
 using backend.Services.Brand;
+using backend.Services.Cart;
 using backend.Services.Email;
 using backend.Services.PasswordValidator;
 using backend.Services.Product;
@@ -89,7 +92,9 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<IProductRepository, ProductRepository>()
             .AddScoped<IProductImageRepository, ProductImageRepository>()
             .AddScoped<IProductTargetGroupRepository, ProductTargetGroupRepository>()
-            .AddScoped<IProductTypeAssociationRepository, ProductTypeAssociationRepository>();
+            .AddScoped<IProductTypeAssociationRepository, ProductTypeAssociationRepository>()
+            .AddScoped<ICartRepository, CartRepository>()
+            .AddScoped<ICartItemRepository, CartItemRepository>();
         
         return services;
     }
@@ -109,7 +114,8 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<ProductService>()
             .AddScoped<ProductImageService>()
             .AddScoped<ProductTargetGroupService>()
-            .AddScoped<ProductTypeAssociationService>();
+            .AddScoped<ProductTypeAssociationService>()
+            .AddScoped<CartUserService>();
         
         return services;
     }
