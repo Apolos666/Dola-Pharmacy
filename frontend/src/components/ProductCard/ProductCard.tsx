@@ -1,7 +1,7 @@
 import {Card, CardContent} from "@/components/ui/card.tsx";
 import {TbShoppingBagPlus} from "react-icons/tb";
 import {Product} from "@/components/ProductDisplay/ProductDisplayConfig.ts";
-import {useCart} from "@/hooks/Entity/useCart.tsx";
+import {useCart} from "@/contexts/Cart/CartProviderConfig.ts";
 
 type ProductProps = {
     product: Product;
@@ -10,7 +10,7 @@ type ProductProps = {
 }
 
 export function ProductCard({product, setIsPopupVisible, setSelectedProduct}: ProductProps) {
-    const {addProductToCartAsync} = useCart();
+    const { addProductToCartAsync } = useCart();
 
     const truncateNumber: number = 40;
 

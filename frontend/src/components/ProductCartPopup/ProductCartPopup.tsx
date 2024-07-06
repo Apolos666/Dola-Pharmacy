@@ -2,8 +2,7 @@ import {Button} from "@/components/ui/button.tsx";
 import {MdClose} from "react-icons/md";
 import {FaRegCircleCheck} from "react-icons/fa6";
 import {Product} from "@/components/ProductDisplay/ProductDisplayConfig.ts";
-import {useCart, UserCart} from "@/hooks/Entity/useCart.tsx";
-import {useEffect, useState} from "react";
+import {useCart} from "@/contexts/Cart/CartProviderConfig.ts";
 
 type ProductCartPopupProps = {
     selectedProduct: Product | null;
@@ -11,18 +10,7 @@ type ProductCartPopupProps = {
 }
 
 export function ProductCartPopup({selectedProduct, closePopup}: ProductCartPopupProps) {
-    const {getUserCartAsync} = useCart();
-    const [userCart, setUserCart] = useState<UserCart | null>(null);
-
-    useEffect(() => {
-        getUserCartAsync().then(response => {
-            setUserCart(response);
-            console.log(response)
-        }).catch(error => {
-            console.error("Failed to fetch cart items:", error);
-        });
-
-    }, []);
+    const {userCart} = useCart();
 
     const cartProductQuantity = userCart?.cartItems.reduce((total, item) => total + item.quantity, 0) || 0;
 

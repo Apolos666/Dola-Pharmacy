@@ -7,18 +7,21 @@ import {useContext} from "react";
 import {LoadingContext} from "@/contexts/LoadingProvider.tsx";
 import "../app/app.css"
 import {BreadCrumbCustom} from "@/components/BreadCrumb/BreadCrumbCustom.tsx";
+import {CartProvider} from "@/contexts/Cart/CartProvider.tsx";
 
 function AppLayout() {
     const { isLoading } = useContext(LoadingContext);
 
     return (
         <>
-            <Header/>
-            <BreadCrumbCustom />
-            <Outlet/>
-            <Footer/>
-            <Toaster/>
-            {isLoading && <Spinner/>}
+            <CartProvider>
+                <Header/>
+                <BreadCrumbCustom />
+                <Outlet/>
+                <Footer/>
+                <Toaster/>
+                {isLoading && <Spinner/>}
+            </CartProvider>
         </>
     )
 }
