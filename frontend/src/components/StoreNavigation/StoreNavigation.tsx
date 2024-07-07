@@ -17,7 +17,7 @@ export function StoreNavigation() {
                         <CategoryHeader widthPercent="w-3/12"/>
                         <SearchHeader widthPercent="w-7/12"/>
                     </div>
-                    <div className="flex items-center gap-3 w-3/12">
+                    <div className="flex items-center gap-3 w-3/12 justify-end">
                         <StoreSystemNavigation/>
                         <UserCart/>
                     </div>

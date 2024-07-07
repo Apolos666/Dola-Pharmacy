@@ -6,6 +6,7 @@ import {Register} from "@/pages/Register.tsx";
 import EmailVerification from "@/pages/EmailVerification.tsx";
 import ResetPassword from "@/pages/ResetPassword.tsx";
 import {Product} from "@/pages/Product.tsx";
+import {UserCart} from "@/pages/UserCart.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -74,6 +75,13 @@ export const router = createBrowserRouter([
                         }
                     }
                 ]
+            },
+            {
+                path: '/cart',
+                element: <UserCart/>,
+                handle: {
+                    crumb: () => "Giỏ hàng"
+                }
             }
         ]
     }

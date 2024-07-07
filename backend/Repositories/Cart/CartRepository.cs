@@ -13,6 +13,7 @@ public class CartRepository(DbFactory dbFactory) : Repository<Models.Cart>(dbFac
             .Include(c => c.CartItems)
                 .ThenInclude(ci => ci.Product)
                     .ThenInclude(p => p.ProductImages)
+            .AsSplitQuery()
             .SingleOrDefaultAsync(c => c.UserId == userId);
     }
 
