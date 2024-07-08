@@ -65,7 +65,7 @@ public class CartController(CartUserService cartUserService, ILogger<CartControl
     }
 
     [HttpPatch("update-product-quantity")]
-    public async Task<IActionResult> UpdateProductQuantityInCartUser([FromBody] UpdateCartDto updateCartDto)
+    public async Task<IActionResult> UpdateProductQuantityInCartUser([FromBody] UpdateCartProductDto updateCartProductDto)
     {
         var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -75,8 +75,8 @@ public class CartController(CartUserService cartUserService, ILogger<CartControl
             return BadRequest("Failed to update product quantity in cart.");
         }
         
-        _logger.LogInformation("Updating product {@productId} quantity in cart user {@userId} with quantity {@quantity}.", updateCartDto.ProductId, userId, updateCartDto.Quantity);
-        await _cartUserService.UpdateProductQuantityInCartUser(userId, updateCartDto.ProductId, updateCartDto.Quantity);
+        _logger.LogInformation("Updating product {@productId} quantity in cart user {@userId} with quantity {@quantity}.", updateCartProductDto.ProductId, userId, updateCartProductDto.Quantity);
+        await _cartUserService.UpdateProductQuantityInCartUser(userId, updateCartProductDto.ProductId, updateCartProductDto.Quantity);
         
         _logger.LogInformation("Successfully updated product quantity in cart.");
         return Ok();
@@ -98,5 +98,23 @@ public class CartController(CartUserService cartUserService, ILogger<CartControl
         
         _logger.LogInformation("Successfully removed product from cart.");
         return NoContent();
+    }
+    
+    [HttpPatch("update-cart")]
+    public async Task<IActionResult> UpdateCart([FromBody] UpdateCartDto updateCartDto)
+    {
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (userId is null)
+        {
+            _logger.LogError("Failed to get user id when update cart.");
+            return BadRequest("Failed to update cart.");
+        }
+        
+        _logger.LogInformation("Updating cart for user {@userId} with delivery date {@deliveryDate} and delivery time {@deliveryTime}.", userId, updateCartDto.DeliveryDate, updateCartDto.DeliveryTime);
+        await _cartUserService.UpdateCartUser(userId, updateCartDto);
+        
+        _logger.LogInformation("Successfully updated cart.");
+        return Ok();
     }
 }

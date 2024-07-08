@@ -93,4 +93,23 @@ public class CartUserService(
             throw new Exception("Remove product from cart user failed", exception);
         }
     }
+    
+    public async Task UpdateCartUser(string userId, UpdateCartDto updateCartDto)
+    {
+        try
+        {
+            var cart = await _cartRepository.GetCartByUserId(userId);
+        
+            if (cart is null)
+                throw new Exception($"Cart with {userId} not found");
+        
+            _cartRepository.UpdateCart(cart, updateCartDto);
+        
+            await _unitOfWork.CommitAsync();
+        }
+        catch (Exception exception)
+        {
+            throw new Exception("Update cart user failed", exception);
+        }
+    }
 }

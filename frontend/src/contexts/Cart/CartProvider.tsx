@@ -1,5 +1,12 @@
 import {useAxiosPrivate} from "@/hooks/useAxiosPrivate.tsx";
-import {AddCartDto, CartContext, CartItem, UpdateCartDto, UserCart} from "@/contexts/Cart/CartProviderConfig.ts";
+import {
+    AddCartDto,
+    CartContext,
+    CartItem,
+    UpdateCartProductDto,
+    UpdateCartUserDto,
+    UserCart
+} from "@/contexts/Cart/CartProviderConfig.ts";
 import {ReactNode, useCallback, useEffect, useState} from "react";
 import {BadRequestError, SystemError, UnknownError} from "@/api/Exception/ApiErrorException.ts";
 
@@ -60,7 +67,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    async function updateProductInCartAsync(data: UpdateCartDto) {
+    async function updateProductInCartAsync(data: UpdateCartProductDto) {
         try {
             await axiosPrivate.patch("/cart/update-product-quantity", data);
             await getUserCartAsync();
@@ -92,9 +99,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    async function updateCartUserAsync(data: UpdateCartUserDto) {
+        try {
+            await axiosPrivate.patch("/cart/update-cart", data);
+            await getUserCartAsync();
+        } catch (error) {
+            switch (error.response.status) {
+                case 500:
+                    throw new SystemError(error.response.data);
+                case 400:
+                    throw new BadRequestError(error.response.data);
+                default:
+                    throw new UnknownError(error.response.data);
+            }
+        }
+    }
 
     return (
-        <CartContext.Provider value={{ userCart, getUserCartAsync, addProductToCartAsync, updateProductInCartAsync, removeProductFromCartAsync}}>
+        <CartContext.Provider value={{ userCart, getUserCartAsync, addProductToCartAsync, updateProductInCartAsync, removeProductFromCartAsync, updateCartUserAsync}}>
             {children}
         </CartContext.Provider>
     );

@@ -1,7 +1,28 @@
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
 import {Button} from "@/components/ui/button.tsx";
+import {UpdateCartProductDto, useCart} from "@/contexts/Cart/CartProviderConfig.ts";
 
 export function UserCartTable() {
+    const {
+        userCart,
+        updateProductInCartAsync,
+        removeProductFromCartAsync
+    }  = useCart();
+
+    const totalPrice = userCart?.cartItems.reduce((total, item) => total + item.quantity * item.product.price, 0) || 0;
+
+    async function HandleUpdateCartProduct(productId: string, quantity: number) {
+        if (quantity <= 0)
+            return;
+
+        const data: UpdateCartProductDto = {
+            productId: productId,
+            quantity: quantity,
+        }
+
+        await updateProductInCartAsync(data);
+    }
+
     return (
         <>
             <div className="p-2 border-[1.5px] border-gray-300 rounded-[5px]">
@@ -16,272 +37,48 @@ export function UserCartTable() {
                             </TableRow>
                         </TableHeader>
                         <TableBody className="border-[1px] border-gray-200">
-                            <TableRow>
-                                <TableCell>
-                                    <div
-                                        className="xl:w-[400px] flex items-center gap-3 border-b-gray-200">
-                                        <div className="w-[20%]">
-                                            <img className="w-full"
-                                                 src="/Category/2-01-duoc-my-pham-2-01-dermo-ski.webp"
-                                                 alt=""/>
-                                        </div>
-                                        <div className="w-[80%]">
-                                            <div
-                                                className="text-[13px] font-bold text-left hover:text-[#1b74e7] transition-all">Nhụy
-                                                hoa nghệ tây Sasagold Saffron hỗ trợ làm đẹp và phù hợp
-                                                cho người bệnh (1g)
+                            {userCart?.cartItems.map((item, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>
+                                        <div
+                                            className="xl:w-[400px] flex items-center gap-3 border-b-gray-200">
+                                            <div className="w-[20%]">
+                                                <img className="w-full"
+                                                     src={item.product.productImages[0].imageUrl}
+                                                     alt=""/>
                                             </div>
-                                            <Button
-                                                className="text-[#1b74e7] font-semibold flex justify-start p-0"
-                                            >Xoá</Button>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">438.000₫</TableCell>
-                                <TableCell>
-                                    <div
-                                        className="flex items-center border-[1px] border-[#1b74e7] min-h-7 float-left p-1 rounded-[5px]">
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >-</Button>
-                                        <div className="mx-3">2</div>
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >+</Button>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">876.000₫</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>
-                                    <div
-                                        className="xl:w-[400px] flex items-center gap-3 border-b-gray-200">
-                                        <div className="w-[20%]">
-                                            <img className="w-full"
-                                                 src="/Category/2-01-duoc-my-pham-2-01-dermo-ski.webp"
-                                                 alt=""/>
-                                        </div>
-                                        <div className="w-[80%]">
-                                            <div
-                                                className="text-[13px] font-bold text-left hover:text-[#1b74e7] transition-all">Nhụy
-                                                hoa nghệ tây Sasagold Saffron hỗ trợ làm đẹp và phù hợp
-                                                cho người bệnh (1g)
+                                            <div className="w-[80%]">
+                                                <div
+                                                    className="text-[13px] font-bold text-left hover:text-[#1b74e7] transition-all duration-300">
+                                                    {item.product.productName}
+                                                </div>
+                                                <Button
+                                                    className="text-[#1b74e7] font-semibold flex justify-start p-0"
+                                                    onClick={() => removeProductFromCartAsync(item.productId)}
+                                                >Xoá</Button>
                                             </div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-[#5dac46] font-bold">{item.product.price.toLocaleString()}₫</TableCell>
+                                    <TableCell>
+                                        <div
+                                            className="flex items-center border-[1px] border-[#1b74e7] min-h-7 float-left p-1 rounded-[5px]">
                                             <Button
-                                                className="text-[#1b74e7] font-semibold flex justify-start p-0"
-                                            >Xoá</Button>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">438.000₫</TableCell>
-                                <TableCell>
-                                    <div
-                                        className="flex items-center border-[1px] border-[#1b74e7] min-h-7 float-left p-1 rounded-[5px]">
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >-</Button>
-                                        <div className="mx-3">2</div>
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >+</Button>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">876.000₫</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>
-                                    <div
-                                        className="xl:w-[400px] flex items-center gap-3 border-b-gray-200">
-                                        <div className="w-[20%]">
-                                            <img className="w-full"
-                                                 src="/Category/2-01-duoc-my-pham-2-01-dermo-ski.webp"
-                                                 alt=""/>
-                                        </div>
-                                        <div className="w-[80%]">
-                                            <div
-                                                className="text-[13px] font-bold text-left hover:text-[#1b74e7] transition-all">Nhụy
-                                                hoa nghệ tây Sasagold Saffron hỗ trợ làm đẹp và phù hợp
-                                                cho người bệnh (1g)
-                                            </div>
+                                                size="none" variant="none"
+                                                className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
+                                                onClick={() => HandleUpdateCartProduct(item.productId, item.quantity - 1)}
+                                            >-</Button>
+                                            <div className="mx-3">{item.quantity}</div>
                                             <Button
-                                                className="text-[#1b74e7] font-semibold flex justify-start p-0"
-                                            >Xoá</Button>
+                                                size="none" variant="none"
+                                                className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
+                                                onClick={() => HandleUpdateCartProduct(item.productId, item.quantity + 1)}
+                                            >+</Button>
                                         </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">438.000₫</TableCell>
-                                <TableCell>
-                                    <div
-                                        className="flex items-center border-[1px] border-[#1b74e7] min-h-7 float-left p-1 rounded-[5px]">
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >-</Button>
-                                        <div className="mx-3">2</div>
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >+</Button>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">876.000₫</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>
-                                    <div
-                                        className="xl:w-[400px] flex items-center gap-3 border-b-gray-200">
-                                        <div className="w-[20%]">
-                                            <img className="w-full"
-                                                 src="/Category/2-01-duoc-my-pham-2-01-dermo-ski.webp"
-                                                 alt=""/>
-                                        </div>
-                                        <div className="w-[80%]">
-                                            <div
-                                                className="text-[13px] font-bold text-left hover:text-[#1b74e7] transition-all">Nhụy
-                                                hoa nghệ tây Sasagold Saffron hỗ trợ làm đẹp và phù hợp
-                                                cho người bệnh (1g)
-                                            </div>
-                                            <Button
-                                                className="text-[#1b74e7] font-semibold flex justify-start p-0"
-                                            >Xoá</Button>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">438.000₫</TableCell>
-                                <TableCell>
-                                    <div
-                                        className="flex items-center border-[1px] border-[#1b74e7] min-h-7 float-left p-1 rounded-[5px]">
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >-</Button>
-                                        <div className="mx-3">2</div>
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >+</Button>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">876.000₫</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>
-                                    <div
-                                        className="xl:w-[400px] flex items-center gap-3 border-b-gray-200">
-                                        <div className="w-[20%]">
-                                            <img className="w-full"
-                                                 src="/Category/2-01-duoc-my-pham-2-01-dermo-ski.webp"
-                                                 alt=""/>
-                                        </div>
-                                        <div className="w-[80%]">
-                                            <div
-                                                className="text-[13px] font-bold text-left hover:text-[#1b74e7] transition-all">Nhụy
-                                                hoa nghệ tây Sasagold Saffron hỗ trợ làm đẹp và phù hợp
-                                                cho người bệnh (1g)
-                                            </div>
-                                            <Button
-                                                className="text-[#1b74e7] font-semibold flex justify-start p-0"
-                                            >Xoá</Button>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">438.000₫</TableCell>
-                                <TableCell>
-                                    <div
-                                        className="flex items-center border-[1px] border-[#1b74e7] min-h-7 float-left p-1 rounded-[5px]">
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >-</Button>
-                                        <div className="mx-3">2</div>
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >+</Button>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">876.000₫</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>
-                                    <div
-                                        className="xl:w-[400px] flex items-center gap-3 border-b-gray-200">
-                                        <div className="w-[20%]">
-                                            <img className="w-full"
-                                                 src="/Category/2-01-duoc-my-pham-2-01-dermo-ski.webp"
-                                                 alt=""/>
-                                        </div>
-                                        <div className="w-[80%]">
-                                            <div
-                                                className="text-[13px] font-bold text-left hover:text-[#1b74e7] transition-all">Nhụy
-                                                hoa nghệ tây Sasagold Saffron hỗ trợ làm đẹp và phù hợp
-                                                cho người bệnh (1g)
-                                            </div>
-                                            <Button
-                                                className="text-[#1b74e7] font-semibold flex justify-start p-0"
-                                            >Xoá</Button>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">438.000₫</TableCell>
-                                <TableCell>
-                                    <div
-                                        className="flex items-center border-[1px] border-[#1b74e7] min-h-7 float-left p-1 rounded-[5px]">
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >-</Button>
-                                        <div className="mx-3">2</div>
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >+</Button>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">876.000₫</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>
-                                    <div
-                                        className="xl:w-[400px] flex items-center gap-3 border-b-gray-200">
-                                        <div className="w-[20%]">
-                                            <img className="w-full"
-                                                 src="/Category/2-01-duoc-my-pham-2-01-dermo-ski.webp"
-                                                 alt=""/>
-                                        </div>
-                                        <div className="w-[80%]">
-                                            <div
-                                                className="text-[13px] font-bold text-left hover:text-[#1b74e7] transition-all">Nhụy
-                                                hoa nghệ tây Sasagold Saffron hỗ trợ làm đẹp và phù hợp
-                                                cho người bệnh (1g)
-                                            </div>
-                                            <Button
-                                                className="text-[#1b74e7] font-semibold flex justify-start p-0"
-                                            >Xoá</Button>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">438.000₫</TableCell>
-                                <TableCell>
-                                    <div
-                                        className="flex items-center border-[1px] border-[#1b74e7] min-h-7 float-left p-1 rounded-[5px]">
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >-</Button>
-                                        <div className="mx-3">2</div>
-                                        <Button
-                                            size="none" variant="none"
-                                            className="bg-[#1b74e7] hover:bg-[#003cbf] rounded-[5px] px-3 py-1 text-white transition-all"
-                                        >+</Button>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-[#5dac46] font-bold">876.000₫</TableCell>
-                            </TableRow>
+                                    </TableCell>
+                                    <TableCell className="text-[#5dac46] font-bold">{(item.product.price * item.quantity).toLocaleString()}₫</TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </div>
@@ -289,7 +86,7 @@ export function UserCartTable() {
                     <div className="flex flex-col gap-2">
                         <div className="flex justify-between">
                             <div className="font-medium text-[15px]">Tổng tiền:</div>
-                            <div className="text-[#5dac46] font-bold">3.200.000₫</div>
+                            <div className="text-[#5dac46] font-bold">{totalPrice.toLocaleString()}₫</div>
                         </div>
                         <Button variant="none"
                                 className="bg-[#1b74e7] hover:bg-[#003cbf] text-white rounded-[6px] transition-all px-28">Thanh

@@ -6,9 +6,14 @@ export type AddCartDto = {
     quantity: number;
 };
 
-export type UpdateCartDto = {
+export type UpdateCartProductDto = {
     productId: string;
     quantity: number;
+}
+
+export type UpdateCartUserDto = {
+    deliveryDate: string;
+    deliveryTime?: string;
 }
 
 export type CartItem = {
@@ -30,8 +35,9 @@ export type CartContextType = {
     userCart: UserCart | null;
     getUserCartAsync: () => Promise<UserCart | void>;
     addProductToCartAsync: (data: AddCartDto) => Promise<void>;
-    updateProductInCartAsync: (data: UpdateCartDto) => Promise<void>;
+    updateProductInCartAsync: (data: UpdateCartProductDto) => Promise<void>;
     removeProductFromCartAsync: (productId: string) => Promise<void>;
+    updateCartUserAsync: (data: UpdateCartUserDto) => Promise<void>;
 };
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);

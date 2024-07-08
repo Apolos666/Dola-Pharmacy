@@ -23,4 +23,13 @@ public class CartRepository(DbFactory dbFactory) : Repository<Models.Cart>(dbFac
         Add(cart);
         return cart;
     }
+
+    public Models.Cart UpdateCart(Models.Cart cart, UpdateCartDto updateCartDto)
+    {
+        cart.DeliveryDate = DateTime.SpecifyKind(updateCartDto.DeliveryDate, DateTimeKind.Utc).ToUniversalTime(); 
+        if (updateCartDto.DeliveryTime.HasValue) 
+            cart.DeliveryTime = updateCartDto.DeliveryTime.Value; 
+        Update(cart);
+        return cart;
+    }
 }

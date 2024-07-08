@@ -1,3 +1,3 @@
 ﻿namespace backend.DTOs.Cart;
 
-public record UpdateCartDto(Guid ProductId, int Quantity);
+public record UpdateCartDto(DateTime DeliveryDate, TimeSpan? DeliveryTime);

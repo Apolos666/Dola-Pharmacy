@@ -1,6 +1,6 @@
 import {Button} from "@/components/ui/button.tsx";
 import {Product} from "@/components/ProductDisplay/ProductDisplayConfig.ts";
-import {CartContext, UpdateCartDto} from "@/contexts/Cart/CartProviderConfig.ts";
+import {CartContext, UpdateCartProductDto} from "@/contexts/Cart/CartProviderConfig.ts";
 import {useContext} from "react";
 
 type CartItemProps = {
@@ -19,7 +19,7 @@ export function CartItem({product, quantity} : CartItemProps) {
             return;
         }
 
-        const updateDto: UpdateCartDto = {
+        const updateDto: UpdateCartProductDto = {
             productId: product.productId,
             quantity: updateQuantity
         }

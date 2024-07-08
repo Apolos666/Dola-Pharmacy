@@ -7,4 +7,5 @@ public interface ICartRepository : IRepository<Models.Cart>
 {
     Task<Models.Cart?> GetCartByUserId(string userId);
     Models.Cart AddCartUser(string userId);
+    Models.Cart UpdateCart(Models.Cart cart, UpdateCartDto updateCartDto);
 }
