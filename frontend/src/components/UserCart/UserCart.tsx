@@ -30,7 +30,7 @@ export function UserCart() {
                     </Link>
                 </HoverCardTrigger>
                 <HoverCardContent align={"end"} sideOffset={10}
-                                  className="bg-white border-2 border-[#003CBF] text-black rounded-[10px] w-[340px]">
+                                  className="bg-white border-2 border-[#003CBF] text-black rounded-[10px] w-[340px] hidden md:block">
                     {userCart?.cartItems.length === 0 ? (
                         <>
                             <div className="flex flex-col items-center">

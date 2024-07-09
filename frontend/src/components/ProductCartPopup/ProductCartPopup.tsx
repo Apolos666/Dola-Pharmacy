@@ -22,7 +22,7 @@ export function ProductCartPopup({selectedProduct, closePopup}: ProductCartPopup
             >
             </div>
             <div
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 max-w-[450px] rounded-[7px] border-[1px] border-[#1b74e7]">
+                className="fixed top-1/2 md:left-1/2 md:-translate-x-1/2 md:mx-0 mx-4 -translate-y-1/2 z-50 max-w-[450px] rounded-[7px] border-[1px] border-[#1b74e7]">
                 <div
                     className="flex items-center justify-between bg-[#1b74e7] rounded-t-[7px] text-white px-3 py-2">
                     <div className="flex items-center">
@@ -37,7 +37,7 @@ export function ProductCartPopup({selectedProduct, closePopup}: ProductCartPopup
                         <MdClose className="text-2xl"/>
                     </Button>
                 </div>
-                <div className="flex items-center bg-white py-5 border-b-[#1b74e7] border-b-[1px]">
+                <div className="flex items-center gap-2 px-2 bg-white py-5 border-b-[#1b74e7] border-b-[1px]">
                     <div className="w-[20%] flex justify-center">
                         <img className="w-[70px]" src={selectedProduct?.productImages[0].imageUrl} alt=""/>
                     </div>
@@ -53,12 +53,18 @@ export function ProductCartPopup({selectedProduct, closePopup}: ProductCartPopup
                             className="text-[#1b74e7]">{cartProductQuantity}</span> sản phẩm
                         </div>
                         <div className="grid grid-cols-2 gap-3">
-                            <Button variant="none" size="none"
-                                    className="bg-[#003cbf] text-white px-2 py-3 rounded-[5px]">Tiếp tục mua
-                                hàng</Button>
-                            <Button variant="none" size="none"
-                                    className="bg-[#1b74e7] text-white px-2 py-3 rounded-[5px]">Thanh toán
-                                ngay</Button>
+                            <Button
+                                variant="none" size="none"
+                                className="bg-[#003cbf] text-white px-2 py-3 rounded-[5px]"
+                                onClick={closePopup}
+                            >Tiếp tục mua hàng
+                            </Button>
+                            <Button
+                                variant="none"
+                                size="none"
+                                className="bg-[#1b74e7] text-white px-2 py-3 rounded-[5px]"
+                            >Thanh toán ngay
+                            </Button>
                         </div>
                     </div>
                 </div>

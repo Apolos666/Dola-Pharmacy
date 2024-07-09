@@ -12,11 +12,11 @@ export function UserCart() {
                 <div className="h-[157px] bg-orange-300">Place Holder</div>
                 {userCart?.cartItems.length !== 0 ? (
                     <div className="my-4">
-                        <div className="flex gap-6">
-                            <div className="w-[75%]">
+                        <div className="flex xl:flex-row gap-6 flex-col">
+                            <div className="xl:w-[75%] w-full">
                                 <UserCartTable/>
                             </div>
-                            <div className="w-[25%]">
+                            <div className="xl:w-[25%] w-full">
                                 <UserCartDate/>
                             </div>
                         </div>
