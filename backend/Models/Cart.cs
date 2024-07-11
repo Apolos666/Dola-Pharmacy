@@ -10,7 +10,6 @@ public class Cart
     public Cart()
     {
         CartItems = new HashSet<CartItem>();
-        Orders = new HashSet<Order>();
     }
     
     [Key] public Guid CartId { get; set; }
@@ -20,7 +19,6 @@ public class Cart
 
     [ForeignKey(nameof(UserId))] public virtual ApplicationIdentityUser User { get; set; } = null!;
     public virtual ICollection<CartItem> CartItems { get; set; }
-    public virtual ICollection<Order> Orders { get; set; }
     
     public static Cart Create(string userId)
     {
@@ -36,7 +34,6 @@ public class Cart
             DeliveryDate = DateTime.UtcNow.AddDays(7),
             DeliveryTime = TimeSpan.FromHours(12),
             CartItems = new HashSet<CartItem>(),
-            Orders = new HashSet<Order>()
         };
     }
 }

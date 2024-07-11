@@ -2,6 +2,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {Button} from "@/components/ui/button.tsx";
 import {UpdateCartProductDto, useCart} from "@/contexts/Cart/CartProviderConfig.ts";
 import {useWindowSize} from "@/hooks/useWindowSize.tsx";
+import {Link} from "react-router-dom";
 
 export function UserCartTable() {
     const {
@@ -95,10 +96,12 @@ export function UserCartTable() {
                                 <div className="font-medium text-[15px]">Tổng tiền:</div>
                                 <div className="text-[#5dac46] font-bold">{totalPrice.toLocaleString()}₫</div>
                             </div>
-                            <Button variant="none"
-                                    className="bg-[#1b74e7] hover:bg-[#003cbf] text-white rounded-[6px] transition-all px-28">Thanh
-                                toán
-                            </Button>
+                            <Link to="/checkout">
+                                <Button variant="none"
+                                        className="bg-[#1b74e7] hover:bg-[#003cbf] text-white rounded-[6px] transition-all px-28">Thanh
+                                    toán
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -152,10 +155,12 @@ export function UserCartTable() {
                                 <div className="font-medium text-[15px]">Tổng tiền:</div>
                                 <div className="text-[#1b74e7] font-bold">{totalPrice.toLocaleString()}₫</div>
                             </div>
-                            <Button variant="none"
-                                    className="bg-[#1b74e7] hover:bg-[#003cbf] text-white rounded-[6px] transition-all px-28">Thanh
-                                toán
-                            </Button>
+                            <Link to="/checkout" className="block w-full">
+                                <Button variant="none"
+                                        className="bg-[#1b74e7] hover:bg-[#003cbf] text-white rounded-[6px] transition-all px-28 w-full">Thanh
+                                    toán
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>

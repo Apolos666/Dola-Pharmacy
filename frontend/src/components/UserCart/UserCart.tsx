@@ -40,7 +40,7 @@ export function UserCart() {
                             </div>
                         </>
                     ) : (
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-1">
                             <div
                                 className="max-h-[350px] overflow-y-auto scrollbar scrollbar-w-1 scrollbar-thumb-blue-500 scrollbar-track-blue-200 scrollbar-thumb-rounded-full">
                                 {userCart?.cartItems.map((item, index) => (
@@ -51,9 +51,11 @@ export function UserCart() {
                                 <div className="font-medium">Tổng tiền:</div>
                                 <div className="text-[#1b74e7] font-semibold">{totalPrice.toLocaleString()}₫</div>
                             </div>
-                            <Button variant="none"
-                                    className="bg-[#1b74e7] hover:bg-[#003cbf] text-white rounded-[10px] transition-all">Thanh
-                                toán</Button>
+                            <Link to="/checkout" className="block w-full">
+                                <Button variant="none"
+                                        className="bg-[#1b74e7] hover:bg-[#003cbf] text-white rounded-[10px] transition-all w-full">Thanh
+                                    toán</Button>
+                            </Link>
                         </div>
                     )}
                 </HoverCardContent>

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using backend.Data;
@@ -11,9 +12,11 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240709072941_UpdateOrderModel")]
+    partial class UpdateOrderModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -367,6 +370,12 @@ namespace backend.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
+                    b.Property<Guid?>("AddressId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CartId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("CouponId")
                         .IsRequired()
                         .HasColumnType("uuid");
@@ -423,6 +432,10 @@ namespace backend.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.HasKey("OrderId");
+
+                    b.HasIndex("AddressId");
+
+                    b.HasIndex("CartId");
 
                     b.HasIndex("CouponId");
 
@@ -777,6 +790,14 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Order", b =>
                 {
+                    b.HasOne("backend.Models.Address", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("AddressId");
+
+                    b.HasOne("backend.Models.Cart", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("CartId");
+
                     b.HasOne("backend.Models.Coupon", "Coupon")
                         .WithMany("Orders")
                         .HasForeignKey("CouponId")
@@ -925,6 +946,11 @@ namespace backend.Migrations
                     b.Navigation("Promotion");
                 });
 
+            modelBuilder.Entity("backend.Models.Address", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
             modelBuilder.Entity("backend.Models.Brand", b =>
                 {
                     b.Navigation("Products");
@@ -933,6 +959,8 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Cart", b =>
                 {
                     b.Navigation("CartItems");
+
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("backend.Models.Coupon", b =>

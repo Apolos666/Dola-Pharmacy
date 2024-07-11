@@ -3,6 +3,7 @@ import {MdClose} from "react-icons/md";
 import {FaRegCircleCheck} from "react-icons/fa6";
 import {Product} from "@/components/ProductDisplay/ProductDisplayConfig.ts";
 import {useCart} from "@/contexts/Cart/CartProviderConfig.ts";
+import {Link} from "react-router-dom";
 
 type ProductCartPopupProps = {
     selectedProduct: Product | null;
@@ -59,12 +60,14 @@ export function ProductCartPopup({selectedProduct, closePopup}: ProductCartPopup
                                 onClick={closePopup}
                             >Tiếp tục mua hàng
                             </Button>
-                            <Button
-                                variant="none"
-                                size="none"
-                                className="bg-[#1b74e7] text-white px-2 py-3 rounded-[5px]"
-                            >Thanh toán ngay
-                            </Button>
+                            <Link to="/checkout" className="block w-full">
+                                <Button
+                                    variant="none"
+                                    size="none"
+                                    className="bg-[#1b74e7] text-white px-2 py-3 rounded-[5px] w-full"
+                                >Thanh toán ngay
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>

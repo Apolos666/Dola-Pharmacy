@@ -7,11 +7,6 @@ namespace backend.Models;
 [Table("Addresses")]
 public class Address
 {
-    public Address()
-    {
-        Orders = new HashSet<Order>();
-    }
-
     [Key] public Guid AddressId { get; set; }
     [Required] public string UserId { get; set; } = null!;
     [Required] [StringLength(50)] public string AddressText { get; set; } = null!;
@@ -20,7 +15,6 @@ public class Address
     [Required] [StringLength(50)] public string Ward { get; set; } = null!;
 
     [ForeignKey(nameof(UserId))] public virtual ApplicationIdentityUser User { get; set; } = null!;
-    public virtual ICollection<Order> Orders { get; set; }
     
     public static Address Create(string userId, string addressText, string city, string district, string ward)
     {
@@ -57,7 +51,6 @@ public class Address
             City = city,
             District = district,
             Ward = ward,
-            Orders = new HashSet<Order>()
         };
     }
 }

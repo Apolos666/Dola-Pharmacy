@@ -9,7 +9,7 @@ import "../app/app.css"
 import {BreadCrumbCustom} from "@/components/BreadCrumb/BreadCrumbCustom.tsx";
 import {CartProvider} from "@/contexts/Cart/CartProvider.tsx";
 
-function AppLayout() {
+function MainLayout() {
     const { isLoading } = useContext(LoadingContext);
 
     return (
@@ -26,4 +26,4 @@ function AppLayout() {
     )
 }
 
-export default AppLayout
+export default MainLayout

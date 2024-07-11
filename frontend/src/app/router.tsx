@@ -1,5 +1,5 @@
 import {createBrowserRouter} from "react-router-dom";
-import AppLayout from "../layouts/AppLayout.tsx";
+import MainLayout from "../layouts/MainLayout.tsx";
 import Home from "../pages/Home.tsx";
 import {Login} from "../pages/Login.tsx";
 import {Register} from "@/pages/Register.tsx";
@@ -7,11 +7,13 @@ import EmailVerification from "@/pages/EmailVerification.tsx";
 import ResetPassword from "@/pages/ResetPassword.tsx";
 import {Product} from "@/pages/Product.tsx";
 import {UserCart} from "@/pages/UserCart.tsx";
+import {Checkout} from "@/pages/Checkout.tsx";
+import {CheckoutLayout} from "@/layouts/CheckoutLayout.tsx";
 
 export const router = createBrowserRouter([
     {
         path: '/',
-        element: <AppLayout/>,
+        element: <MainLayout/>,
         handle: {
             crumb: () => "Trang chủ"
         },
@@ -78,10 +80,20 @@ export const router = createBrowserRouter([
             },
             {
                 path: '/cart',
-                element: <UserCart/>,
+                element: <UserCart />,
                 handle: {
                     crumb: () => "Giỏ hàng"
                 }
+            },
+        ]
+    },
+    {
+        path: '/checkout',
+        element: <CheckoutLayout />,
+        children: [
+            {
+                index: true,
+                element: <Checkout />,
             }
         ]
     }

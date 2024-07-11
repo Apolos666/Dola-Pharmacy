@@ -12,28 +12,29 @@ public class Order
         OrderItems = new HashSet<OrderItem>();
     }
     
-    [Key] public Guid OrderId { get; set; }
-    [Required] public string UserId { get; set; } = null!;
-    [Required] [StringLength(50)] [EmailAddress] public string Email { get; set; } = null!;
-    [Required] [StringLength(50)] public string FullName { get; set; } = null!;
-    [Required] [StringLength(50)] [Phone] public string PhoneNumber { get; set; } = null!;
-    [Required] public Guid CartId { get; set; }
-    [Required] public Guid AddressId { get; set; }
-    [Required] [StringLength(150)] public string Note { get; set; } = null!;
-    [Required] public Guid ShippingMethodId { get; set; }
-    [Required] public Guid PaymentMethodId { get; set; }
-    [Required] public Guid? CouponId { get; set; }
-    [Required] public DateTime OrderDate { get; set; }
+    [Key] public Guid OrderId { get; init; }
+    [Required] public string UserId { get; init; } = null!;
+    [Required] [StringLength(50)] [EmailAddress] public string Email { get; init; } = null!;
+    [Required] [StringLength(50)] public string FullName { get; init; } = null!;
+    [Required] [StringLength(50)] [Phone] public string PhoneNumber { get; init; } = null!;
+    [Required] [StringLength(150)] public string Address { get; set; } = null!;
+    [Required] [StringLength(50)] public string Province { get; set; } = null!;
+    [Required] [StringLength(50)] public string District { get; set; } = null!;
+    [Required] [StringLength(50)] public string Ward { get; set; } = null!;
+    [Required] [StringLength(150)] public string Note { get; init; } = null!;
+    [Required] public Guid ShippingMethodId { get; init; }
+    [Required] public Guid PaymentMethodId { get; init; }
+    [Required] public Guid? CouponId { get; init; }
+    [Required] public DateTime OrderDate { get; init; }
+    [Required] public TimeSpan DeliveryTime { get; set; }
     
-    [ForeignKey(nameof(UserId))] public virtual ApplicationIdentityUser User { get; set; } = null!;
-    [ForeignKey(nameof(AddressId))] public virtual Address Address { get; set; } = null!;
-    [ForeignKey(nameof(ShippingMethodId))] public virtual ShippingMethod ShippingMethod { get; set; } = null!;
-    [ForeignKey(nameof(PaymentMethodId))] public virtual PaymentMethod PaymentMethod { get; set; } = null!;
-    [ForeignKey(nameof(CouponId))] public virtual Coupon Coupon { get; set; } = null!;
-    [ForeignKey(nameof(CartId))] public virtual Cart Cart { get; set; } = null!;
-    public virtual ICollection<OrderItem> OrderItems { get; set; }
+    [ForeignKey(nameof(UserId))] public virtual ApplicationIdentityUser User { get; init; } = null!;
+    [ForeignKey(nameof(ShippingMethodId))] public virtual ShippingMethod ShippingMethod { get; init; } = null!;
+    [ForeignKey(nameof(PaymentMethodId))] public virtual PaymentMethod PaymentMethod { get; init; } = null!;
+    [ForeignKey(nameof(CouponId))] public virtual Coupon Coupon { get; init; } = null!;
+    public virtual ICollection<OrderItem> OrderItems { get; init; }
     
-    public static Order Create(string userId, string email, string fullName, string phoneNumber, Guid cartId, Guid addressId, string note, Guid shippingMethodId, Guid paymentMethodId, Guid? couponId, DateTime orderDate)
+    public static Order Create(string userId, string email, string fullName, string phoneNumber, string address, string province, string district, string ward, string note, Guid shippingMethodId, Guid paymentMethodId, Guid? couponId, DateTime orderDate, TimeSpan deliveryTime)
     {
         if (string.IsNullOrEmpty(userId))
         {
@@ -55,6 +56,26 @@ public class Order
             throw new ArgumentException("Valid PhoneNumber is required.", nameof(phoneNumber));
         }
 
+        if (string.IsNullOrEmpty(address) || address.Length > 150)
+        {
+            throw new ArgumentException("Address is required and must be less than or equal to 150 characters.", nameof(address));
+        }
+
+        if (string.IsNullOrEmpty(province) || province.Length > 50)
+        {
+            throw new ArgumentException("Province is required and must be less than or equal to 50 characters.", nameof(province));
+        }
+
+        if (string.IsNullOrEmpty(district) || district.Length > 50)
+        {
+            throw new ArgumentException("District is required and must be less than or equal to 50 characters.", nameof(district));
+        }
+
+        if (string.IsNullOrEmpty(ward) || ward.Length > 50)
+        {
+            throw new ArgumentException("Ward is required and must be less than or equal to 50 characters.", nameof(ward));
+        }
+
         if (string.IsNullOrEmpty(note) || note.Length > 150)
         {
             throw new ArgumentException("Note is required and must be less than or equal to 150 characters.", nameof(note));
@@ -67,13 +88,16 @@ public class Order
             Email = email,
             FullName = fullName,
             PhoneNumber = phoneNumber,
-            CartId = cartId,
-            AddressId = addressId,
+            Address = address,
+            Province = province,
+            District = district,
+            Ward = ward,
             Note = note,
             ShippingMethodId = shippingMethodId,
             PaymentMethodId = paymentMethodId,
             CouponId = couponId,
             OrderDate = orderDate,
+            DeliveryTime = deliveryTime,
             OrderItems = new HashSet<OrderItem>()
         };
     }
