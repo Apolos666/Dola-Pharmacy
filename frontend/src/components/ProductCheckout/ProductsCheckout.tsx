@@ -11,10 +11,10 @@ export function ProductsCheckout() {
 
     return (
         <>
-            <div className="font-bold text-xl py-4 pl-8 border-b-2 border-b-[#ddd]">Đơn
+            <div className="font-bold text-xl py-4 xl:pl-8 pl-0 border-b-2 border-b-[#ddd]">Đơn
                 hàng <span>({userCart?.cartItems.length} sản phẩm)</span>
             </div>
-            <div className="py-3 pl-8">
+            <div className="py-3 xl:pl-8 pl-0">
                 <div className="flex flex-col max-h-[320px] overflow-y-auto">
                     {userCart?.cartItems.map((item, index) => (
                         <div key={index} className="flex items-center justify-between gap-4">
@@ -39,7 +39,7 @@ export function ProductsCheckout() {
                         dụng</Button>
                 </div>
             </div>
-            <div className="py-3 pl-8">
+            <div className="py-3 xl:pl-8 pl-0">
                 <div className="flex items-center justify-between w-full mb-2">
                     <div className="font-medium">Tạm tính</div>
                     <div className="text-[#5dac46] font-bold">{totalPrices.toLocaleString()}₫</div>
@@ -49,15 +49,15 @@ export function ProductsCheckout() {
                     <div className="text-[#5dac46] font-bold">{(40000).toLocaleString()}₫</div>
                 </div>
             </div>
-            <div className="py-1 pl-8">
+            <div className="py-1 xl:pl-8 pl-0">
                 <div className="flex items-center justify-between w-full">
                     <div className="font-medium">Tổng cộng</div>
                     <div className="text-[#2a9dcc] text-xl font-bold">{(totalPrices + 40000).toLocaleString()}₫</div>
                 </div>
-                <div className="flex items-start justify-between w-full mt-4">
-                    <Link to="/cart" className="font-medium text-[#2a9dcc]"><MdOutlineKeyboardArrowLeft className="inline text-xl"/> Quay về giỏ hàng</Link>
+                <div className="flex xl:flex-row flex-col-reverse items-start w-full mt-4">
+                    <Link to="/cart" className="font-medium text-[#2a9dcc] w-full flex justify-center my-4 xl:my-0 xl:justify-start "><MdOutlineKeyboardArrowLeft className="inline text-xl"/> Quay về giỏ hàng</Link>
                     <Button size="none" variant="none"
-                            className="bg-[#2f71a9] h-full text-white py-3 px-8 rounded-[4px]"
+                            className="bg-[#2f71a9] h-full w-full text-white py-3 px-8 rounded-[4px]"
                     >Đặt hàng</Button>
                 </div>
             </div>

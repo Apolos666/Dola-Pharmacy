@@ -7,12 +7,12 @@ import {ProductsCheckout} from "@/components/ProductCheckout/ProductsCheckout.ts
 export function Checkout() {
     return (
         <>
-            <div className="flex mx-32 gap-10">
-                <div className="w-[65%]">
+            <div className="flex xl:flex-row flex-col md:mx-32 mx-4 gap-10">
+                <div className="xl:w-[65%] w-full">
                     <div className="flex justify-center my-4">
                         <img src="/logo.webp" alt="" className="w-72"/>
                     </div>
-                    <div className="grid grid-cols-2 gap-7 mt-2">
+                    <div className="grid xl:grid-cols-2 xl:gap-7 grid-cols-1 mt-2">
                         <DeliveryInformation/>
                         <div className="flex flex-col gap-4">
                             <ShippingMethod/>
@@ -21,7 +21,7 @@ export function Checkout() {
                     </div>
                     <div className="py-8"></div>
                 </div>
-                <div className="w-[35%] border-l-[#ddd] border-l-2">
+                <div className="xl:w-[35%] w-full border-l-[#ddd] xl:border-l-2">
                     <ProductsCheckout />
                 </div>
             </div>
