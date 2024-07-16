@@ -40,6 +40,14 @@ public class ProductRepository(DbFactory dbFactory) : Repository<Models.Product>
             .FirstOrDefaultAsync(p => p.ProductId == productId);
     }
 
+    public async Task<List<Models.Product>> GetAllProductsWithImages()
+    {
+        return await DbSet
+            .AsNoTracking()
+            .Include(p => p.ProductImages)
+            .ToListAsync();
+    }
+
     public IQueryable<Models.Product> FilterProductBasedOnType(IQueryable<Models.Product> iQueryable, string? productTypeNameNomalized)
     {
         return string.IsNullOrEmpty(productTypeNameNomalized)

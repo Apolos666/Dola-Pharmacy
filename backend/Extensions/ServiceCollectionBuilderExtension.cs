@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using backend.Data;
 using backend.Extensions.Cloud;
+using backend.Extensions.Stripe;
 using backend.Models;
 using backend.Options;
 using backend.Repositories.Brand;
@@ -19,12 +20,12 @@ using backend.Services.Brand;
 using backend.Services.Cart;
 using backend.Services.Email;
 using backend.Services.PasswordValidator;
-using backend.Services.Product;
 using backend.Services.ProductImage;
 using backend.Services.ProductStatus;
 using backend.Services.ProductTargetGroupService;
 using backend.Services.ProductType;
 using backend.Services.ProductTypeAssociation;
+using backend.Services.Stripe;
 using backend.Services.TargetGroup;
 using backend.UnitOfWork;
 using Mailjet.Client;
@@ -33,6 +34,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Stripe;
+using ProductService = backend.Services.Product.ProductService;
 
 namespace backend.Extensions;
 
@@ -104,7 +107,8 @@ public static class ServiceCollectionBuilderExtension
         services
             .AddScoped<IAuthenticationService, AuthenticationService>()
             .AddScoped<IEmailService, MailKitEmailService>()
-            .AddScoped<IGoogleAuthService, GoogleAuthService>();
+            .AddScoped<IGoogleAuthService, GoogleAuthService>()
+            .AddScoped<IStripeService, StripeService>();
 
         services
             .AddScoped<BrandService>()
@@ -193,6 +197,7 @@ public static class ServiceCollectionBuilderExtension
         });
 
         services.AddAwsService();
+        services.AddStripeService();
         
         return services;
     }

@@ -3,9 +3,11 @@ import {Button} from "@/components/ui/button.tsx";
 import {useCart} from "@/contexts/Cart/CartProviderConfig.ts";
 import {Link} from "react-router-dom";
 import {MdOutlineKeyboardArrowLeft} from "react-icons/md";
+import {useOrderUser} from "@/hooks/Entity/useOrderUser.tsx";
 
 export function ProductsCheckout() {
     const {userCart} = useCart();
+    const {HandleCheckoutAsync} = useOrderUser();
 
     const totalPrices = userCart?.cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0) || 0;
 
@@ -56,8 +58,10 @@ export function ProductsCheckout() {
                 </div>
                 <div className="flex xl:flex-row flex-col-reverse items-start w-full mt-4">
                     <Link to="/cart" className="font-medium text-[#2a9dcc] w-full flex justify-center my-4 xl:my-0 xl:justify-start "><MdOutlineKeyboardArrowLeft className="inline text-xl"/> Quay về giỏ hàng</Link>
-                    <Button size="none" variant="none"
-                            className="bg-[#2f71a9] h-full w-full text-white py-3 px-8 rounded-[4px]"
+                    <Button
+                        size="none" variant="none"
+                        className="bg-[#2f71a9] h-full w-full text-white py-3 px-8 rounded-[4px]"
+                        onClick={() => HandleCheckoutAsync(userCart)}
                     >Đặt hàng</Button>
                 </div>
             </div>
