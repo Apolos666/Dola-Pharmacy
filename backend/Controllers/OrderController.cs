@@ -11,12 +11,12 @@ namespace backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = Roles.User)]
 public class OrderController(IStripeService stripeService) : ControllerBase
 {
     private readonly IStripeService _stripeService = stripeService;
 
     [HttpPost("create-order")]
+    [Authorize(Roles = Roles.User)]
     public async Task<IActionResult> CreateOrder([FromBody] AddOrderDto addOrderDto)
     {
         var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -34,7 +34,7 @@ public class OrderController(IStripeService stripeService) : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, "Error occurred while adding order.");
         }
     }
-
+    
     [HttpPost("fullfilment-order")]
     public async Task<IActionResult> FullilmentOrder()
     {
@@ -50,7 +50,7 @@ public class OrderController(IStripeService stripeService) : ControllerBase
             if (stripeEvent.Type is Events.CheckoutSessionCompleted or Events.CheckoutSessionAsyncPaymentSucceeded)
             {
                 var session = stripeEvent.Data.Object as Session;
-                await _stripeService.FullfilCheckout(session!.Id);
+                await _stripeService.FullfilCheckout(session.Metadata);
             }
 
             return Ok("Success");

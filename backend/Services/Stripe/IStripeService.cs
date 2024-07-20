@@ -10,5 +10,5 @@ public interface IStripeService
     Task<global::Stripe.Product> CreateProductAsync(CreateProductStripeDto createProductStripeDto);
     Task<StripeSearchResult<global::Stripe.Product>> GetProductAsync(GetProductStripeDto getProductStripeDto);
     Task<string> CreateSessionAsync(AddOrderDto addOrderDto, string userId);
-    Task FullfilCheckout(string sessionId);
+    Task FullfilCheckout(Dictionary<string, string> metadata);
 }

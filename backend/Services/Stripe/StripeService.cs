@@ -5,6 +5,7 @@ using backend.Repositories.Product;
 using backend.Repositories.ShippingMethod;
 using backend.Services.Cart;
 using backend.Services.ShippingMethod;
+using Newtonsoft.Json;
 using Stripe;
 using Stripe.Checkout;
 
@@ -21,6 +22,22 @@ public class StripeService(
 
     private const string SuccessUrl = "http://localhost:5173/checkout/success?session_id={CHECKOUT_SESSION_ID}";
     private const string CancelUrl = "http://localhost:5173/checkout/cancel";
+    
+    private const string MetaDataUserId = "UserId";
+    private const string MetaDataEmail = "Email";
+    private const string MetaDataFullName = "FullName";
+    private const string MetaDataPhoneNumber = "PhoneNumber";
+    private const string MetaDataAddress = "Address";
+    private const string MetaDataProvince = "Province";
+    private const string MetaDataDistrict = "District";
+    private const string MetaDataWard = "Ward";
+    private const string MetaDataNote = "Note";
+    private const string MetaDataShippingMethodId = "ShippingMethodId";
+    private const string MetaDataPaymentMethodId = "PaymentMethodId";
+    private const string MetaDataCouponId = "CouponId";
+    private const string MetaDataOrderDate = "OrderDate";
+    private const string MetaDataDeliveryTime = "DeliveryTime";
+    private const string OrderItems = "OrderItems";
 
     public async Task UploadProductsToStripe()
     {
@@ -110,22 +127,23 @@ public class StripeService(
             }).ToList(),
             Metadata = new Dictionary<string, string>
             {
-                { "UserId", userId },
-                { "Email", addOrderDto.Email },
-                { "FullName", addOrderDto.FullName },
-                { "PhoneNumber", addOrderDto.PhoneNumber },
-                { "Address", addOrderDto.Address },
-                { "Province", addOrderDto.Province },
-                { "District", addOrderDto.District },
-                { "Ward", addOrderDto.Ward },
-                { "Note", addOrderDto.Note ?? "" },
-                { "ShippingMethodId", addOrderDto.ShippingMethodId.ToString() },
-                { "PaymentMethodId", addOrderDto.PaymentMethodId.ToString() },
-                { "CouponId", addOrderDto.CouponId.ToString() ?? "" },
-                { "OrderDate", userCart.DeliveryDate.ToString(CultureInfo.InvariantCulture) },
-                { "DeliveryTime", userCart.DeliveryTime.ToString() },
+                { MetaDataUserId, userId },
+                { MetaDataEmail, addOrderDto.Email },
+                { MetaDataFullName, addOrderDto.FullName },
+                { MetaDataPhoneNumber, addOrderDto.PhoneNumber },
+                { MetaDataAddress, addOrderDto.Address },
+                { MetaDataProvince, addOrderDto.Province },
+                { MetaDataDistrict, addOrderDto.District },
+                { MetaDataWard, addOrderDto.Ward },
+                { MetaDataNote, addOrderDto.Note ?? "" },
+                { MetaDataShippingMethodId, addOrderDto.ShippingMethodId.ToString() },
+                { MetaDataPaymentMethodId, addOrderDto.PaymentMethodId.ToString() },
+                { MetaDataCouponId, addOrderDto.CouponId.ToString() ?? "" },
+                { MetaDataOrderDate, userCart.DeliveryDate.ToUniversalTime().ToString(CultureInfo.InvariantCulture)},
+                { MetaDataDeliveryTime, userCart.DeliveryTime.ToString() },
+                { OrderItems, JsonConvert.SerializeObject(addOrderDto.CartItemsDto)}
             },
-            Mode = "payment",
+            Mode = "payment"
         };
 
         options.LineItems.Add(new SessionLineItemOptions
@@ -148,7 +166,7 @@ public class StripeService(
         return session.Id;
     }
 
-    public Task FullfilCheckout(string sessionId)
+    public Task FullfilCheckout(Dictionary<string, string> metaData)
     {
         throw new NotImplementedException();
     }

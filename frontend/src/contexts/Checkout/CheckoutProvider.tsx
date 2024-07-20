@@ -3,11 +3,14 @@ import {AddOrderDto} from "@/model/OrderType.ts";
 import {loadStripe} from "@stripe/stripe-js";
 import {CheckoutContext} from "@/contexts/Checkout/CheckoutProviderConfig.ts";
 import {ReactNode, useState} from "react";
+import {useLoading} from "@/hooks/useLoading.tsx";
 
 const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 export function CheckoutProvider({children}: { children: ReactNode }) {
     const axiosPrivate = useAxiosPrivate();
+    const {withLoading} = useLoading();
+
     const [order, setOrder] = useState<AddOrderDto>({
         CartItemsDto: [],
         Email: '',
@@ -46,9 +49,10 @@ export function CheckoutProvider({children}: { children: ReactNode }) {
 
     async function HandleCheckoutAsync(addOrderDto: AddOrderDto | null) {
         if (addOrderDto) {
-            console.log(addOrderDto)
-            const response = await AddOrderAsync(addOrderDto);
-            stripe?.redirectToCheckout({sessionId: response});
+            await withLoading(async () => {
+                const response = await AddOrderAsync(addOrderDto)
+                stripe?.redirectToCheckout({sessionId: response})
+            } );
         }
     }
 
