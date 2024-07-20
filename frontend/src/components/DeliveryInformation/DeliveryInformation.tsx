@@ -1,12 +1,24 @@
 import {TiArrowSortedDown} from "react-icons/ti";
 import PhoneInput from "react-phone-number-input/min";
-import {useState} from "react";
-import {E164Number} from "libphonenumber-js";
+import {useEffect} from "react";
 import {AdministrativeUnitSelection} from "@/components/AdministrativeUnitSelection/AdministrativeUnitSelection.tsx";
 import {Textarea} from "@/components/ui/textarea.tsx";
+import {useOrderUser} from "@/hooks/Entity/useOrderUser.tsx";
+import {useAuth} from "@/hooks/useAuth.tsx";
+import {AddOrderDto} from "@/model/OrderType.ts";
 
 export function DeliveryInformation() {
-    const [country, setCountry] = useState<E164Number | undefined>()
+    const {setOrder } = useOrderUser();
+    const {profile} = useAuth();
+
+    useEffect(() => {
+        setOrder((prev: AddOrderDto) => {
+            return {
+                ...prev,
+                Email: profile?.email || ''
+            }
+        });
+    }, [profile?.email, setOrder]);
 
     return (
         <>
@@ -30,23 +42,40 @@ export function DeliveryInformation() {
                     <div
                         className="rounded-[4px] px-3 p-1 bg-[#ddd] text-[15px] border-[#d9d9d9] w-full font-medium border-2">
                         <div className="text-[13px] text-[#999]">Email</div>
-                        <div className="text-[15px] font-medium">ApolosHonkai@gmail.com</div>
+                        <div
+                            className="text-[15px] font-medium"
+                        >{profile?.email}</div>
                     </div>
                 </div>
                 <div>
                     <div
                         className="rounded-[4px] px-3 p-1 text-[15px] border-[#d9d9d9] w-full font-medium border-2">
                         <div className="text-[13px] text-[#999]">Họ và tên</div>
-                        <input className="text-[15px] font-medium w-full focus:outline-none" type="text"
-                               placeholder="Nhập tên"/>
+                        <input
+                            className="text-[15px] font-medium w-full focus:outline-none"
+                            type="text"
+                            placeholder="Nhập tên"
+                            onChange={(e) => setOrder((prev: AddOrderDto) => {
+                                return {
+                                    ...prev,
+                                    FullName: e.target.value
+                                }
+                            })}
+                        />
                     </div>
                 </div>
                 <div>
                     <PhoneInput
                         className="px-3 py-3 rounded-[4px] border-[#d9d9d9] font-medium border-2"
                         placeholder="Số điện thoại"
-                        value={country}
-                        onChange={setCountry}
+                        onChange={(e) => {
+                            setOrder((prev: AddOrderDto) => {
+                                return {
+                                    ...prev,
+                                    PhoneNumber: e || ''
+                                }
+                            })
+                        }}
                         defaultCountry="VN"
                     />
                 </div>
@@ -54,15 +83,33 @@ export function DeliveryInformation() {
                     <div
                         className="rounded-[4px] px-3 p-1 text-[15px] border-[#d9d9d9] w-full font-medium border-2">
                         <div className="text-[13px] text-[#999]">Địa chỉ</div>
-                        <input className="text-[15px] font-medium w-full focus:outline-none" type="text"
-                               placeholder="Nhập Địa chỉ"/>
+                        <input
+                            className="text-[15px] font-medium w-full focus:outline-none"
+                            type="text"
+                            placeholder="Nhập Địa chỉ"
+                            onChange={(e) => setOrder((prev: AddOrderDto) => {
+                                return {
+                                    ...prev,
+                                    Address: e.target.value
+                                }
+                            })}
+                        />
                     </div>
                 </div>
                 <div>
                     <AdministrativeUnitSelection />
                 </div>
                 <div>
-                    <Textarea className="rounded-[4px] border-[#d9d9d9] text-[15px]" placeholder="Ghi chú (tuỳ chọn)" />
+                    <Textarea
+                        className="rounded-[4px] border-[#d9d9d9] text-[15px]"
+                        placeholder="Ghi chú (tuỳ chọn)"
+                        onChange={(e) => setOrder((prev: AddOrderDto) => {
+                            return {
+                                ...prev,
+                                Note: e.target.value
+                            }
+                        })}
+                    />
                 </div>
             </div>
         </>

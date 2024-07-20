@@ -8,23 +8,27 @@ using backend.Repositories.Brand;
 using backend.Repositories.Cart;
 using backend.Repositories.CartItem;
 using backend.Repositories.Generic;
+using backend.Repositories.PaymentMethod;
 using backend.Repositories.Product;
 using backend.Repositories.ProductImage;
 using backend.Repositories.ProductStatus;
 using backend.Repositories.ProductTargetGroup;
 using backend.Repositories.ProductType;
 using backend.Repositories.ProductTypeAssociation;
+using backend.Repositories.ShippingMethod;
 using backend.Repositories.TargetGroup;
 using backend.Services.Account;
 using backend.Services.Brand;
 using backend.Services.Cart;
 using backend.Services.Email;
 using backend.Services.PasswordValidator;
+using backend.Services.PaymentMethod;
 using backend.Services.ProductImage;
 using backend.Services.ProductStatus;
 using backend.Services.ProductTargetGroupService;
 using backend.Services.ProductType;
 using backend.Services.ProductTypeAssociation;
+using backend.Services.ShippingMethod;
 using backend.Services.Stripe;
 using backend.Services.TargetGroup;
 using backend.UnitOfWork;
@@ -34,7 +38,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Stripe;
 using ProductService = backend.Services.Product.ProductService;
 
 namespace backend.Extensions;
@@ -97,7 +100,9 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<IProductTargetGroupRepository, ProductTargetGroupRepository>()
             .AddScoped<IProductTypeAssociationRepository, ProductTypeAssociationRepository>()
             .AddScoped<ICartRepository, CartRepository>()
-            .AddScoped<ICartItemRepository, CartItemRepository>();
+            .AddScoped<ICartItemRepository, CartItemRepository>()
+            .AddScoped<IShippingMethodRepository, ShippingMethodRepository>()
+            .AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
         
         return services;
     }
@@ -119,7 +124,9 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<ProductImageService>()
             .AddScoped<ProductTargetGroupService>()
             .AddScoped<ProductTypeAssociationService>()
-            .AddScoped<CartUserService>();
+            .AddScoped<CartUserService>()
+            .AddScoped<ShippingMethodService>()
+            .AddScoped<PaymentMethodService>();
         
         return services;
     }

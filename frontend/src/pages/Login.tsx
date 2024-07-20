@@ -7,6 +7,7 @@ import {EmailNotVerifiedError} from "@/api/Exception/ApiErrorException.ts";
 import {useAuth} from "@/hooks/useAuth.tsx";
 import {useHandleToastResponse} from "@/hooks/useHandleToastResponse.tsx";
 import {useLoading} from "@/hooks/useLoading.tsx";
+import {useUserProfile} from "@/hooks/useUserProfile.tsx";
 
 export function Login() {
     const setResponse = useHandleToastResponse();
@@ -15,6 +16,7 @@ export function Login() {
     const navigate = useNavigate();
     const countError = useRef<number>(0);
     const loginSuccessToastDelay = 2000;
+    const { GetMeAsync } = useUserProfile()
 
     async function handleLoginAsync(data: ILoginDto) {
         await withLoading(async () => {
@@ -22,6 +24,7 @@ export function Login() {
                 const response = await accountApi.requestLogicAsync(data)
                 setAuth({accessToken: response.data.accessToken})
                 setResponse({message: "Đăng nhập thành công", type: "success"})
+                await GetMeAsync()
                 setTimeout(() => {
                     navigate("/")
                 }, loginSuccessToastDelay)

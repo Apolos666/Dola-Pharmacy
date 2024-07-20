@@ -4,21 +4,16 @@ import {LoginLink} from "@/components/TopBar/LoginLink.tsx";
 import {Hotline} from "@/components/TopBar/Hotline.tsx";
 import {useAuth} from "@/hooks/useAuth.tsx";
 import {Link} from "react-router-dom";
-import {IsNullOrEmpty} from "@/helper/StringHelper.ts";
-import {axiosPrivate} from "@/api/Base/axios.ts";
+import {IsNullOrEmptyOrUndefined} from "@/helper/StringHelper.ts";
 
 export function TopBar() {
     const {auth} = useAuth();
-
-    function test() {
-        axiosPrivate.get("/Test/test-function");
-    }
 
     return (
         <div className="flex items-center justify-between text-center container-app pt-2">
             <Swiper/>
             <div className="xl:flex items-center hidden">
-                { IsNullOrEmpty(auth?.accessToken) ? (
+                { IsNullOrEmptyOrUndefined(auth?.accessToken) ? (
                     <>
                         <RegisterLink />
                         <LoginLink />
@@ -26,7 +21,7 @@ export function TopBar() {
                 ) : (
                     <>
                         {/* Todo: làm chức năng cho nó */}
-                        <div onClick={test} className="pr-3 border-r-[1px] border-r-white">
+                        <div className="pr-3 border-r-[1px] border-r-white">
                             <Link
                                 to="/account/register"
                                 className="text-white font-bold text-sm"

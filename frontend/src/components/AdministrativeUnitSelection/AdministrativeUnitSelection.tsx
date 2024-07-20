@@ -1,12 +1,26 @@
 import { useAdministrativeDivision } from "@/hooks/AdministrativeDivision/useAdministrativeDivision.tsx";
 import { TiArrowSortedDown } from "react-icons/ti";
-import { useState } from "react";
+import {useEffect, useState} from "react";
+import {useOrderUser} from "@/hooks/Entity/useOrderUser.tsx";
+import {AddOrderDto} from "@/model/OrderType.ts";
 
 export function AdministrativeUnitSelection() {
     const { data } = useAdministrativeDivision();
     const [provinceSelect, setProvinceSelect] = useState("---");
     const [districtSelect, setDistrictSelect] = useState("---");
     const [wardSelect, setWardSelect] = useState("---");
+    const {setOrder} = useOrderUser()
+
+    useEffect(() => {
+        setOrder((prev: AddOrderDto) => {
+            return {
+                ...prev,
+                Province: provinceSelect,
+                District: districtSelect,
+                Ward: wardSelect
+            }
+        })
+    }, [districtSelect, provinceSelect, setOrder, wardSelect]);
 
     return (
         <>

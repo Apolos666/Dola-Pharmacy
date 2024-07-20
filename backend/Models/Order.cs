@@ -21,7 +21,7 @@ public class Order
     [Required] [StringLength(50)] public string Province { get; set; } = null!;
     [Required] [StringLength(50)] public string District { get; set; } = null!;
     [Required] [StringLength(50)] public string Ward { get; set; } = null!;
-    [Required] [StringLength(150)] public string Note { get; init; } = null!;
+    [StringLength(150)] public string? Note { get; init; }
     [Required] public Guid ShippingMethodId { get; init; }
     [Required] public Guid PaymentMethodId { get; init; }
     [Required] public Guid? CouponId { get; init; }

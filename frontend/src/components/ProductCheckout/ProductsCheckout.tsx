@@ -4,10 +4,28 @@ import {useCart} from "@/contexts/Cart/CartProviderConfig.ts";
 import {Link} from "react-router-dom";
 import {MdOutlineKeyboardArrowLeft} from "react-icons/md";
 import {useOrderUser} from "@/hooks/Entity/useOrderUser.tsx";
+import {useEffect} from "react";
+import {AddOrderDto} from "@/model/OrderType.ts";
+import {useToastCheckout} from "@/hooks/useToastCheckout.tsx";
 
 export function ProductsCheckout() {
     const {userCart} = useCart();
-    const {HandleCheckoutAsync} = useOrderUser();
+    const {order, setOrder, HandleCheckoutAsync} = useOrderUser();
+    const {handleToastCheckout} = useToastCheckout()
+
+    useEffect(() => {
+        setOrder((prev: AddOrderDto) => {
+            return {
+                ...prev,
+                CartItemsDto: userCart ? userCart?.cartItems.map((item) => {
+                    return {
+                        ProductId: item.productId,
+                        Quantity: item.quantity
+                    }
+                }) : []
+            }
+        })
+    }, [setOrder, userCart]);
 
     const totalPrices = userCart?.cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0) || 0;
 
@@ -61,7 +79,12 @@ export function ProductsCheckout() {
                     <Button
                         size="none" variant="none"
                         className="bg-[#2f71a9] h-full w-full text-white py-3 px-8 rounded-[4px]"
-                        onClick={() => HandleCheckoutAsync(userCart)}
+                        onClick={async () => {
+                            if (handleToastCheckout(order)) {
+                                await HandleCheckoutAsync(order)
+                            }
+                        }
+                        }
                     >Đặt hàng</Button>
                 </div>
             </div>

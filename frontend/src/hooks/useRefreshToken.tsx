@@ -2,7 +2,7 @@ import {useAuth} from "@/hooks/useAuth.tsx";
 import {accountApi} from "@/api/Account/AccountApi.ts";
 
 export function useRefreshToken() {
-    const { setAuth } = useAuth();
+    const {setAuth} = useAuth();
 
     async function refreshTokenAsync() {
         const response = await accountApi.requestRefreshTokenAsync();
