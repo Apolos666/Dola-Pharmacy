@@ -14,13 +14,27 @@ public class CartUserService(
     private readonly ICartItemRepository _cartItemRepository = cartItemRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    // Todo: Thêm Dto để trả về dữ liệu thích hợp
     public async Task<Models.Cart?> GetCartByUserId(string userId)
     {
         return await _cartRepository.GetCartByUserId(userId);
     }
-
-    // Todo: Thêm Dto để trả về dữ liệu thích hợp
+    
+    public async Task RemoveCartUser(string userId)
+    {
+        try
+        {
+            var cart = _cartRepository.GetCartByUserId(userId).Result;
+        
+            if (cart is not null) _cartRepository.Delete(cart);
+        
+            await _unitOfWork.CommitAsync();
+        }
+        catch (Exception exception)
+        {
+            throw new Exception("Remove cart user failed", exception);
+        }
+    }
+    
     public async Task<Models.Cart?> AddProductToCartUser(string userId, Guid productId, int quantity)
     {
         await _unitOfWork.BeginTransactionAsync();

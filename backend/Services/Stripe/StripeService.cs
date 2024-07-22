@@ -1,10 +1,13 @@
 ﻿using System.Globalization;
 using backend.DTOs.Order;
 using backend.DTOs.Stripe;
+using backend.Models;
+using backend.Repositories.Order;
+using backend.Repositories.OrderItem;
 using backend.Repositories.Product;
-using backend.Repositories.ShippingMethod;
 using backend.Services.Cart;
 using backend.Services.ShippingMethod;
+using backend.UnitOfWork;
 using Newtonsoft.Json;
 using Stripe;
 using Stripe.Checkout;
@@ -14,11 +17,17 @@ namespace backend.Services.Stripe;
 public class StripeService(
     IProductRepository productRepository,
     ShippingMethodService shippingMethodService,
-    CartUserService cartUserService) : IStripeService
+    CartUserService cartUserService,
+    IOrderRepository orderRepository,
+    IUnitOfWork unitOfWork,
+    IOrderItemRepository orderItemRepository) : IStripeService
 {
     private readonly IProductRepository _productRepository = productRepository;
     private readonly ShippingMethodService _shippingMethodService = shippingMethodService;
     private readonly CartUserService _cartUserService = cartUserService;
+    private readonly IOrderRepository _orderRepository = orderRepository;
+    private readonly IOrderItemRepository _orderItemRepository = orderItemRepository;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     private const string SuccessUrl = "http://localhost:5173/checkout/success?session_id={CHECKOUT_SESSION_ID}";
     private const string CancelUrl = "http://localhost:5173/checkout/cancel";
@@ -166,8 +175,55 @@ public class StripeService(
         return session.Id;
     }
 
-    public Task FullfilCheckout(Dictionary<string, string> metaData)
+    public async Task FullfilCheckout(Dictionary<string, string> metaData)
     {
-        throw new NotImplementedException();
+        await _unitOfWork.BeginTransactionAsync();
+
+        try
+        {
+            // First we create the order
+            var order = new OrderBuilder()
+                .SetUserId(metaData[MetaDataUserId])
+                .SetEmail(metaData[MetaDataEmail])
+                .SetFullName(metaData[MetaDataFullName])
+                .SetPhoneNumber(metaData[MetaDataPhoneNumber])
+                .SetAddress(metaData[MetaDataAddress])
+                .SetProvince(metaData[MetaDataProvince])
+                .SetDistrict(metaData[MetaDataDistrict])
+                .SetWard(metaData[MetaDataWard])
+                .SetNote(metaData[MetaDataNote])
+                .SetShippingMethodId(metaData[MetaDataShippingMethodId])
+                .SetPaymentMethodId(metaData[MetaDataPaymentMethodId])
+                .SetCouponId(metaData[MetaDataCouponId])
+                .SetOrderDate(metaData[MetaDataOrderDate])
+                .SetDeliveryTime(metaData[MetaDataDeliveryTime])
+                .Build();
+            
+            _orderRepository.Add(order);
+            await _unitOfWork.CommitAsync();
+            
+            // Second we create the order items for the order
+            var orderItems = JsonConvert.DeserializeObject<List<CartItemDto>>(metaData[OrderItems])?.Select(ci => new OrderItem
+            {
+                OrderId = order.OrderId,
+                ProductId = ci.ProductId,
+                Quantity = ci.Quantity
+            }).ToList();
+            
+            if (orderItems is null)
+                throw new Exception("Order items not found.");
+            
+            _orderItemRepository.AddRange(orderItems);
+            await _unitOfWork.CommitAsync();
+            
+            // Third we remove the cart of the user
+            await _cartUserService.RemoveCartUser(metaData[MetaDataUserId]);
+            
+            await _unitOfWork.CommitTransactionAsync();
+        } catch (Exception exception)
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            throw new Exception("Fullfil checkout failed" + exception.Message, exception);
+        }
     }
 }

@@ -8,6 +8,8 @@ using backend.Repositories.Brand;
 using backend.Repositories.Cart;
 using backend.Repositories.CartItem;
 using backend.Repositories.Generic;
+using backend.Repositories.Order;
+using backend.Repositories.OrderItem;
 using backend.Repositories.PaymentMethod;
 using backend.Repositories.Product;
 using backend.Repositories.ProductImage;
@@ -21,6 +23,7 @@ using backend.Services.Account;
 using backend.Services.Brand;
 using backend.Services.Cart;
 using backend.Services.Email;
+using backend.Services.Order;
 using backend.Services.PasswordValidator;
 using backend.Services.PaymentMethod;
 using backend.Services.ProductImage;
@@ -102,7 +105,9 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<ICartRepository, CartRepository>()
             .AddScoped<ICartItemRepository, CartItemRepository>()
             .AddScoped<IShippingMethodRepository, ShippingMethodRepository>()
-            .AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
+            .AddScoped<IPaymentMethodRepository, PaymentMethodRepository>()
+            .AddScoped<IOrderRepository, OrderRepository>()
+            .AddScoped<IOrderItemRepository, OrderItemRepository>();
         
         return services;
     }
@@ -126,7 +131,8 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<ProductTypeAssociationService>()
             .AddScoped<CartUserService>()
             .AddScoped<ShippingMethodService>()
-            .AddScoped<PaymentMethodService>();
+            .AddScoped<PaymentMethodService>()
+            .AddScoped<OrderService>();
         
         return services;
     }
