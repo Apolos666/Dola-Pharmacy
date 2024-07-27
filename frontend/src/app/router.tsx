@@ -9,6 +9,7 @@ import {Product} from "@/pages/Product.tsx";
 import {UserCart} from "@/pages/UserCart.tsx";
 import {Checkout} from "@/pages/Checkout.tsx";
 import {CheckoutLayout} from "@/layouts/CheckoutLayout.tsx";
+import { SuccessCheckout } from "@/pages/SuccessCheckout.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -94,6 +95,10 @@ export const router = createBrowserRouter([
             {
                 index: true,
                 element: <Checkout />,
+            },
+            {
+                path: 'success',
+                element: <SuccessCheckout />,
             }
         ]
     }

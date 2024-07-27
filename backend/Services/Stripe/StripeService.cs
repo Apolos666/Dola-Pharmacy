@@ -31,7 +31,7 @@ public class StripeService(
 
     private const string SuccessUrl = "http://localhost:5173/checkout/success?session_id={CHECKOUT_SESSION_ID}";
     private const string CancelUrl = "http://localhost:5173/checkout/cancel";
-    
+
     private const string MetaDataUserId = "UserId";
     private const string MetaDataEmail = "Email";
     private const string MetaDataFullName = "FullName";
@@ -148,9 +148,9 @@ public class StripeService(
                 { MetaDataShippingMethodId, addOrderDto.ShippingMethodId.ToString() },
                 { MetaDataPaymentMethodId, addOrderDto.PaymentMethodId.ToString() },
                 { MetaDataCouponId, addOrderDto.CouponId.ToString() ?? "" },
-                { MetaDataOrderDate, userCart.DeliveryDate.ToUniversalTime().ToString(CultureInfo.InvariantCulture)},
+                { MetaDataOrderDate, userCart.DeliveryDate.ToUniversalTime().ToString(CultureInfo.InvariantCulture) },
                 { MetaDataDeliveryTime, userCart.DeliveryTime.ToString() },
-                { OrderItems, JsonConvert.SerializeObject(addOrderDto.CartItemsDto)}
+                // { OrderItems, JsonConvert.SerializeObject(addOrderDto.CartItemsDto)}
             },
             Mode = "payment"
         };
@@ -170,13 +170,30 @@ public class StripeService(
             Quantity = 1
         });
 
-        var service = new SessionService();
-        var session = await service.CreateAsync(options);
-        return session.Id;
+        try
+        {
+            var service = new SessionService();
+            var session = await service.CreateAsync(options);
+            return session.Id;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating Stripe session: {ex.Message}");
+            throw;
+        }
     }
 
-    public async Task FullfilCheckout(Dictionary<string, string> metaData)
+    public async Task FullfilCheckout(Dictionary<string, string> metaData, string sessionId)
     {
+        var sessionService = new SessionService();
+        var session = await sessionService.GetAsync(sessionId, new SessionGetOptions
+        {
+            Expand = ["line_items.data.price.product"]
+        });
+
+        if (session is null)
+            throw new Exception("Session not found.");
+
         await _unitOfWork.BeginTransactionAsync();
 
         try
@@ -198,29 +215,31 @@ public class StripeService(
                 .SetOrderDate(metaData[MetaDataOrderDate])
                 .SetDeliveryTime(metaData[MetaDataDeliveryTime])
                 .Build();
-            
+
             _orderRepository.Add(order);
             await _unitOfWork.CommitAsync();
-            
-            // Second we create the order items for the order
-            var orderItems = JsonConvert.DeserializeObject<List<CartItemDto>>(metaData[OrderItems])?.Select(ci => new OrderItem
-            {
-                OrderId = order.OrderId,
-                ProductId = ci.ProductId,
-                Quantity = ci.Quantity
-            }).ToList();
-            
+
+            var orderItems = session.LineItems
+                .Where(li => li.Price.Product.Metadata.ContainsKey("ID"))
+                .Select(li => new OrderItem()
+                {
+                    OrderId = order.OrderId,
+                    ProductId = Guid.Parse(li.Price.Product.Metadata["ID"]),
+                    Quantity = li.Quantity.GetValueOrDefault() != 0 ? (int)li.Quantity : throw new InvalidOperationException("Quantity is missing")
+                });
+
             if (orderItems is null)
                 throw new Exception("Order items not found.");
-            
+
             _orderItemRepository.AddRange(orderItems);
             await _unitOfWork.CommitAsync();
-            
+
             // Third we remove the cart of the user
             await _cartUserService.RemoveCartUser(metaData[MetaDataUserId]);
-            
+
             await _unitOfWork.CommitTransactionAsync();
-        } catch (Exception exception)
+        }
+        catch (Exception exception)
         {
             await _unitOfWork.RollbackTransactionAsync();
             throw new Exception("Fullfil checkout failed" + exception.Message, exception);

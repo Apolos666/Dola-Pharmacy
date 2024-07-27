@@ -20,10 +20,10 @@ public class OrderController(IStripeService stripeService) : ControllerBase
     public async Task<IActionResult> CreateOrder([FromBody] AddOrderDto addOrderDto)
     {
         var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        
+
         if (userId is null)
             return BadRequest("Failed to add product to cart.");
-        
+
         try
         {
             var sessionId = await _stripeService.CreateSessionAsync(addOrderDto, userId);
@@ -34,7 +34,7 @@ public class OrderController(IStripeService stripeService) : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, "Error occurred while adding order.");
         }
     }
-    
+
     [HttpPost("fullfilment-order")]
     public async Task<IActionResult> FullilmentOrder()
     {
@@ -50,7 +50,7 @@ public class OrderController(IStripeService stripeService) : ControllerBase
             if (stripeEvent.Type is Events.CheckoutSessionCompleted or Events.CheckoutSessionAsyncPaymentSucceeded)
             {
                 var session = stripeEvent.Data.Object as Session;
-                await _stripeService.FullfilCheckout(session.Metadata);
+                await _stripeService.FullfilCheckout(session.Metadata, session.Id);
             }
 
             return Ok("Success");
@@ -59,5 +59,20 @@ public class OrderController(IStripeService stripeService) : ControllerBase
         {
             return BadRequest("Webhook Error");
         }
+    }
+
+    [HttpGet("session/{sessionId}")]
+    public async Task<IActionResult> GetSession([FromRoute] string sessionId)
+    {
+        var service = new SessionService();
+        var session = await service.GetAsync(sessionId, new SessionGetOptions
+        {
+            Expand = ["line_items"]
+        });
+
+        if (session is null)
+            return NotFound("Session not found.");
+
+        return Ok(session);
     }
 }

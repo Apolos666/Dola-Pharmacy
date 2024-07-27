@@ -11,7 +11,7 @@ import {useUserProfile} from "@/hooks/useUserProfile.tsx";
 
 export function Login() {
     const setResponse = useHandleToastResponse();
-    const withLoading = useLoading();
+    const { withLoading }= useLoading();
     const { setAuth } = useAuth();
     const navigate = useNavigate();
     const countError = useRef<number>(0);

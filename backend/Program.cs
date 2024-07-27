@@ -1,6 +1,5 @@
 using backend.Extensions;
 using Serilog;
-using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
