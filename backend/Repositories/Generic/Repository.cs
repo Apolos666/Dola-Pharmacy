@@ -19,7 +19,12 @@ public class Repository<T> : IRepository<T> where T : class
     public void Add(T entity)
     {
         DbSet.Add(entity);
-    }   
+    }
+
+    public void AddRange(IEnumerable<T> entities)
+    {
+        DbSet.AddRange(entities);
+    }
 
     public void Update(T entity)
     {

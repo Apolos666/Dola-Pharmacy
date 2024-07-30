@@ -62,6 +62,8 @@ public class AuthenticationService : IAuthenticationService
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName!),
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Email, user.Email!)
         };
         
         var userRoles = await _userManager.GetRolesAsync(user);
@@ -69,6 +71,7 @@ public class AuthenticationService : IAuthenticationService
 
         return claims;
     }
+    
 
     public async Task<int> LoginUserAsync(LoginDto loginDto)
     {
@@ -434,6 +437,21 @@ public class AuthenticationService : IAuthenticationService
         var cookieOptions = CookieOptionsSetup();
 
         httpContext.Response.Cookies.Append(Cookies.RefreshToken, refreshToken.Token, cookieOptions);
+    }
+
+    public async Task<GetUserDto?> GetMe(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        
+        if (user is null) return null;
+
+        return new GetUserDto
+        {
+            Email = user.Email!,
+            HoTen = user.UserName!,
+            PhoneNumber = user.PhoneNumber!,
+            DiaChi = user.Addresses.Select(a => $"{a.City}, {a.District}, {a.Ward}").ToArray()
+        };
     }
 
     private CookieOptions CookieOptionsSetup()

@@ -91,7 +91,7 @@ function LoginForm({ handleLoginAsync } : LoginFormProps) {
                     <div className="text-center my-3">Hoặc đăng nhập bằng</div>
                     <div className="flex xl:justify-around xl:items-center xl:flex-row xl:mx-2 flex-col mx-20 gap-2">
                     <FacebookButton className="xl:flex-1"/>
-                        <GoogleButton className="xl:flex-1"/>
+                    <GoogleButton className="xl:flex-1"/>
                     </div>
                 </div>
             </div>

@@ -4,6 +4,7 @@ using backend.Services.Product;
 using backend.Services.ProductImage;
 using backend.Services.ProductTargetGroupService;
 using backend.Services.ProductTypeAssociation;
+using backend.Services.Stripe;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -15,7 +16,8 @@ public class ProductController(
     ProductImageService productImageService,
     ILogger<ProductController> logger,
     ProductTargetGroupService productTargetGroupService,
-    ProductTypeAssociationService productTypeAssociationService)
+    ProductTypeAssociationService productTypeAssociationService,
+    IStripeService stripeService)
     : ControllerBase
 {
     private readonly ProductService _productService = productService;
@@ -23,6 +25,7 @@ public class ProductController(
     private readonly ProductTargetGroupService _productTargetGroupService = productTargetGroupService;
     private readonly ProductTypeAssociationService _productTypeAssociationService = productTypeAssociationService;
     private readonly ILogger<ProductController> _logger = logger;
+    private readonly IStripeService _stripeService = stripeService;
 
     [HttpPost("add-product")]
     public async Task<IActionResult> AddProduct([FromBody] AddProductDto addProductDto)
@@ -166,6 +169,19 @@ public class ProductController(
         {
             _logger.LogError(exception, "Error deleting product type association with exception: {@Exception}", exception.Message);
             return StatusCode(StatusCodes.Status500InternalServerError, "Error deleting product type association");
+        }
+    }
+
+    [HttpPost("upload-products-to-stripe")]
+    public async Task<IActionResult> UploadProductsToStripe()
+    {
+        try
+        {
+            await _stripeService.UploadProductsToStripe();
+            return Ok("Successfully uploaded products to stripe");
+        } catch (Exception exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error uploading products to stripe");
         }
     }
 }

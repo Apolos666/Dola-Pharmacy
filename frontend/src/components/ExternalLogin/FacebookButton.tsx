@@ -10,7 +10,7 @@ import {accountApi} from "@/api/Account/AccountApi.ts";
 
 function FacebookButton({ className } : {className?: string}) {
     const setResponse = useHandleToastResponse();
-    const withLoading = useLoading();
+    const {withLoading} = useLoading();
     const { setAuth } = useAuth();
     const navigate = useNavigate();
     const countError = useRef<number>(0);

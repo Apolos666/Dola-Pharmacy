@@ -23,7 +23,9 @@ builder.Host.UseSerilog((context, configuration) =>
 });
 var app = builder.Build();
 app.UseSerilogRequestLogging();
+app.UseFileServerCustom();
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseConfiguredCors();
 app.UseAuthentication();
 app.UseAuthorization();

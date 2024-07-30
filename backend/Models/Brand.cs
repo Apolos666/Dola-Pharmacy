@@ -12,9 +12,9 @@ public class Brand
     }
 
     [Key] public Guid BrandId { get; set; }
-    [Required] [StringLength(50)] public string BrandName { get; set; }
+    [Required][StringLength(50)] public string BrandName { get; set; }
     public virtual ICollection<Product> Products { get; set; }
-    
+
     public static Brand Create(string brandName)
     {
         if (string.IsNullOrEmpty(brandName) || brandName.Length > 50)
