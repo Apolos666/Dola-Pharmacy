@@ -18,4 +18,5 @@ public interface IAuthenticationService
     RefreshToken GenerateRefreshToken();
     Task<bool> SaveRefreshTokenAsync(string userEmail, RefreshToken refreshToken);
     void WriteRefreshTokenCookie(RefreshToken refreshToken, HttpContext httpContext);
+    Task<GetUserDto?> GetMe(string email);
 }

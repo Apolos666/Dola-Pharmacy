@@ -9,7 +9,7 @@ import {useLoading} from "@/hooks/useLoading.tsx";
 
 function GoogleButton({ className } : {className?: string}) {
     const setResponse = useHandleToastResponse();
-    const withLoading = useLoading();
+    const {withLoading} = useLoading();
     const { setAuth } = useAuth();
     const navigate = useNavigate();
     const countError = useRef<number>(0);

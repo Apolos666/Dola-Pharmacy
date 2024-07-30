@@ -89,7 +89,7 @@ public class ProductBuilder
             ProductTargetGroups = new HashSet<ProductTargetGroup>(),
             ProductImages = new HashSet<Models.ProductImage>(),
             PromotionProducts = new HashSet<PromotionProduct>(),
-            CartItems = new HashSet<CartItem>(),
+            CartItems = new HashSet<Models.CartItem>(),
             OrderItems = new HashSet<OrderItem>(),
             ProductTypeAssociations = new HashSet<ProductTypeAssociation>()
         };

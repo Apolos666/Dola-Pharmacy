@@ -1,6 +1,7 @@
 ﻿using backend.Options;
 using backend.Utilities.TypeSafe;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 
 namespace backend.Extensions;
@@ -12,6 +13,18 @@ public static class WebApplicationBuilderExtensions
         var corsConfig = app.Services.GetService<IOptions<CorsConfig>>()?.Value;
 
         app.UseCors(corsConfig!.PolicyName);
+
+        return app;
+    }
+    
+    public static WebApplication UseFileServerCustom(this WebApplication app)
+    {
+        app.UseFileServer(new FileServerOptions
+        {
+            FileProvider = new PhysicalFileProvider(
+                Path.Combine(Directory.GetCurrentDirectory(), "StaticFile")),
+            RequestPath = "/StaticFile",
+        });
 
         return app;
     }

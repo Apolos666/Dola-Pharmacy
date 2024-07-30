@@ -362,15 +362,21 @@ namespace backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AddressId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CartId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<Guid?>("CouponId")
-                        .IsRequired()
                         .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("DeliveryTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("District")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -383,7 +389,6 @@ namespace backend.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<string>("Note")
-                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
@@ -398,6 +403,11 @@ namespace backend.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<string>("Province")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<Guid>("ShippingMethodId")
                         .HasColumnType("uuid");
 
@@ -405,11 +415,12 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Ward")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.HasKey("OrderId");
-
-                    b.HasIndex("AddressId");
-
-                    b.HasIndex("CartId");
 
                     b.HasIndex("CouponId");
 
@@ -633,6 +644,9 @@ namespace backend.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<decimal>("ShippingCost")
+                        .HasColumnType("numeric");
+
                     b.HasKey("MethodId");
 
                     b.ToTable("ShippingMethods");
@@ -724,7 +738,7 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Address", b =>
                 {
                     b.HasOne("backend.Models.ApplicationIdentityUser", "User")
-                        .WithMany()
+                        .WithMany("Addresses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -764,23 +778,9 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Order", b =>
                 {
-                    b.HasOne("backend.Models.Address", "Address")
-                        .WithMany("Orders")
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("backend.Models.Cart", "Cart")
-                        .WithMany("Orders")
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("backend.Models.Coupon", "Coupon")
                         .WithMany("Orders")
-                        .HasForeignKey("CouponId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CouponId");
 
                     b.HasOne("backend.Models.PaymentMethod", "PaymentMethod")
                         .WithMany("Orders")
@@ -799,10 +799,6 @@ namespace backend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Address");
-
-                    b.Navigation("Cart");
 
                     b.Navigation("Coupon");
 
@@ -928,9 +924,9 @@ namespace backend.Migrations
                     b.Navigation("Promotion");
                 });
 
-            modelBuilder.Entity("backend.Models.Address", b =>
+            modelBuilder.Entity("backend.Models.ApplicationIdentityUser", b =>
                 {
-                    b.Navigation("Orders");
+                    b.Navigation("Addresses");
                 });
 
             modelBuilder.Entity("backend.Models.Brand", b =>
@@ -941,8 +937,6 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Cart", b =>
                 {
                     b.Navigation("CartItems");
-
-                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("backend.Models.Coupon", b =>

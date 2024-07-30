@@ -11,7 +11,7 @@ export function useLoading() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }
 
-    return withLoading;
+    return {withLoading};
 }

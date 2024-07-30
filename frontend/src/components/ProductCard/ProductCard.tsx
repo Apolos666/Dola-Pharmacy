@@ -1,12 +1,17 @@
 import {Card, CardContent} from "@/components/ui/card.tsx";
 import {TbShoppingBagPlus} from "react-icons/tb";
 import {Product} from "@/components/ProductDisplay/ProductDisplayConfig.ts";
+import {useCart} from "@/contexts/Cart/CartProviderConfig.ts";
 
 type ProductProps = {
     product: Product;
+    setIsPopupVisible: (value: boolean) => void;
+    setSelectedProduct: (value: Product | null) => void;
 }
 
-export function ProductCard({product}: ProductProps) {
+export function ProductCard({product, setIsPopupVisible, setSelectedProduct}: ProductProps) {
+    const { addProductToCartAsync } = useCart();
+
     const truncateNumber: number = 40;
 
     function truncateString(str: string, num: number) {
@@ -14,6 +19,16 @@ export function ProductCard({product}: ProductProps) {
             return str
         }
         return str.slice(0, num) + '...'
+    }
+
+    async function HandleAddProductToCart() {
+        try {
+            await addProductToCartAsync({ productId: product.productId, quantity: 1 });
+            setSelectedProduct(product);
+            setIsPopupVisible(true);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     return (
@@ -35,7 +50,9 @@ export function ProductCard({product}: ProductProps) {
                         <div className="text-[#8AC379] font-bold text-xl">
                             {product.price.toLocaleString()}₫
                         </div>
-                        <div className="p-2 bg-[#1b74e7] rounded-full mt-4 hover:-translate-y-2 hover:bg-[#003CBF] transition-all duration-300">
+                        <div
+                            onClick={HandleAddProductToCart}
+                            className="p-2 bg-[#1b74e7] rounded-full mt-4 hover:-translate-y-2 hover:bg-[#003CBF] transition-all duration-300">
                             <TbShoppingBagPlus className="text-2xl text-white"/>
                         </div>
                     </div>

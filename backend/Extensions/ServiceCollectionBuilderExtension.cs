@@ -1,27 +1,38 @@
 ﻿using System.Text;
 using backend.Data;
 using backend.Extensions.Cloud;
+using backend.Extensions.Stripe;
 using backend.Models;
 using backend.Options;
 using backend.Repositories.Brand;
+using backend.Repositories.Cart;
+using backend.Repositories.CartItem;
 using backend.Repositories.Generic;
+using backend.Repositories.Order;
+using backend.Repositories.OrderItem;
+using backend.Repositories.PaymentMethod;
 using backend.Repositories.Product;
 using backend.Repositories.ProductImage;
 using backend.Repositories.ProductStatus;
 using backend.Repositories.ProductTargetGroup;
 using backend.Repositories.ProductType;
 using backend.Repositories.ProductTypeAssociation;
+using backend.Repositories.ShippingMethod;
 using backend.Repositories.TargetGroup;
 using backend.Services.Account;
 using backend.Services.Brand;
+using backend.Services.Cart;
 using backend.Services.Email;
+using backend.Services.Order;
 using backend.Services.PasswordValidator;
-using backend.Services.Product;
+using backend.Services.PaymentMethod;
 using backend.Services.ProductImage;
 using backend.Services.ProductStatus;
 using backend.Services.ProductTargetGroupService;
 using backend.Services.ProductType;
 using backend.Services.ProductTypeAssociation;
+using backend.Services.ShippingMethod;
+using backend.Services.Stripe;
 using backend.Services.TargetGroup;
 using backend.UnitOfWork;
 using Mailjet.Client;
@@ -30,6 +41,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using QuestPDF.Infrastructure;
+using ProductService = backend.Services.Product.ProductService;
 
 namespace backend.Extensions;
 
@@ -38,7 +51,7 @@ public static class ServiceCollectionBuilderExtension
     public static IServiceCollection AddDatabase(this IServiceCollection services)
     {
         var databaseConfig = services.BuildServiceProvider().GetService<IOptions<DatabaseConfig>>()?.Value;
-        
+
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseNpgsql(databaseConfig?.ConnectionString);
@@ -76,8 +89,8 @@ public static class ServiceCollectionBuilderExtension
         services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
 
         return services;
-    } 
-    
+    }
+
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services
@@ -89,17 +102,24 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<IProductRepository, ProductRepository>()
             .AddScoped<IProductImageRepository, ProductImageRepository>()
             .AddScoped<IProductTargetGroupRepository, ProductTargetGroupRepository>()
-            .AddScoped<IProductTypeAssociationRepository, ProductTypeAssociationRepository>();
-        
+            .AddScoped<IProductTypeAssociationRepository, ProductTypeAssociationRepository>()
+            .AddScoped<ICartRepository, CartRepository>()
+            .AddScoped<ICartItemRepository, CartItemRepository>()
+            .AddScoped<IShippingMethodRepository, ShippingMethodRepository>()
+            .AddScoped<IPaymentMethodRepository, PaymentMethodRepository>()
+            .AddScoped<IOrderRepository, OrderRepository>()
+            .AddScoped<IOrderItemRepository, OrderItemRepository>();
+
         return services;
     }
-    
+
     public static IServiceCollection AddCustomServices(this IServiceCollection services)
     {
         services
             .AddScoped<IAuthenticationService, AuthenticationService>()
             .AddScoped<IEmailService, MailKitEmailService>()
-            .AddScoped<IGoogleAuthService, GoogleAuthService>();
+            .AddScoped<IGoogleAuthService, GoogleAuthService>()
+            .AddScoped<IStripeService, StripeService>();
 
         services
             .AddScoped<BrandService>()
@@ -109,11 +129,15 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<ProductService>()
             .AddScoped<ProductImageService>()
             .AddScoped<ProductTargetGroupService>()
-            .AddScoped<ProductTypeAssociationService>();
-        
+            .AddScoped<ProductTypeAssociationService>()
+            .AddScoped<CartUserService>()
+            .AddScoped<ShippingMethodService>()
+            .AddScoped<PaymentMethodService>()
+            .AddScoped<OrderService>();
+
         return services;
     }
-    
+
     public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services
@@ -123,14 +147,14 @@ public static class ServiceCollectionBuilderExtension
             .Configure<JwtConfig>(configuration.GetSection("JwtConfig"))
             .Configure<RefreshTokenConfig>(configuration.GetSection("RefreshTokenConfig"))
             .Configure<AwsS3Config>(configuration.GetSection("AwsS3Config"));
-        
+
         return services;
     }
 
     public static IServiceCollection AddCorsService(this IServiceCollection services)
     {
         var corsConfig = services.BuildServiceProvider().GetService<IOptions<CorsConfig>>()?.Value;
-        
+
         services.AddCors(options =>
         {
             options.AddPolicy(corsConfig!.PolicyName, builder =>
@@ -142,7 +166,7 @@ public static class ServiceCollectionBuilderExtension
                     .AllowCredentials();
             });
         });
-        
+
         return services;
     }
 
@@ -175,19 +199,21 @@ public static class ServiceCollectionBuilderExtension
 
         return service;
     }
-    
+
     public static IServiceCollection AddThirdPartyServices(this IServiceCollection services)
     {
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddHttpClient<IMailjetClient, MailjetClient>(client =>
         {
             client.SetDefaultSettings();
-            
+
             client.UseBasicAuthentication("6f9543c0602cc1be87d94d1ae524adfc", "26658f53db990f8da9e5e3406e78ced3");
         });
 
         services.AddAwsService();
-        
+        services.AddStripeService();
+        QuestPDF.Settings.License = LicenseType.Community;
+
         return services;
     }
 }

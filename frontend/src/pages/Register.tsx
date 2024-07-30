@@ -8,7 +8,7 @@ import {useLoading} from "@/hooks/useLoading.tsx";
 
 export function Register() {
     const setResponse = useHandleToastResponse();
-    const withLoading = useLoading();
+    const {withLoading} = useLoading();
     const navigate = useNavigate();
     const countError = useRef<number>(0);
     const registerSuccessToastDelay = 2000;

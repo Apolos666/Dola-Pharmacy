@@ -1,7 +1,9 @@
-﻿using backend.DTOs.Account;
+﻿using System.Security.Claims;
+using backend.DTOs.Account;
 using backend.Models;
 using backend.Services.Account;
 using backend.Utilities.TypeSafe;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -223,5 +225,18 @@ public class AccountController(IAuthenticationService authenticationService, ILo
         }
 
         return Ok("Password reset successfully.");
+    }
+
+    [HttpGet("get-me")]
+    [Authorize]
+    public async Task<IActionResult> GetMe()
+    {
+        var userEmail = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+
+        var result = await authenticationService.GetMe(userEmail!);
+        
+        if (result is null) return NotFound("User not found");
+        
+        return Ok(result);
     }
 }
