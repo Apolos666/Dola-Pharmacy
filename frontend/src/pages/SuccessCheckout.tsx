@@ -1,5 +1,5 @@
 import axios from "@/api/Base/axios";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -37,91 +37,82 @@ interface OrderData {
 
 export function SuccessCheckout() {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
-
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const sessionId = searchParams.get("session_id");
+  const { profile } = useAuth();
+  const pdfPopupRef = useRef(null);
+
   const [orderData, setOrderData] = useState<OrderData | null>(null);
   const [shippingFee, setShippingFee] = useState<number | null>(null);
-  const { profile } = useAuth();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const pdfPopupRef = useRef(null);
+
+  const sessionId = new URLSearchParams(location.search).get("session_id");
+
   useOutsideAlerter(pdfPopupRef, () => setPdfUrl(null));
 
   useEffect(() => {
     async function fetchData() {
-      if (sessionId) {
+      if (!sessionId) return;
+
+      try {
         const response = await axios.get(`/order/session/${sessionId}`);
+        const { metadata, line_items } = response.data;
+
         setOrderData({
-          ...response.data.metadata,
-          LineItems: response.data.line_items.data
+          ...metadata,
+          LineItems: line_items.data
             .filter((item) => item.description !== "Shipping Fee")
-            .map((item) => ({
-              ProductDescription: item.description,
-              ProductPrice: item.price.unit_amount,
-              ProductQuantity: item.quantity,
+            .map(({ description, price, quantity }) => ({
+              ProductDescription: description,
+              ProductPrice: price.unit_amount,
+              ProductQuantity: quantity,
             })),
         });
+
         setShippingFee(
-          response.data.line_items.data.find(
-            (item) => item.description === "Shipping Fee"
-          )?.price.unit_amount
+          line_items.data.find((item) => item.description === "Shipping Fee")
+            ?.price.unit_amount ?? null
         );
+      } catch (error) {
+        console.error("Lỗi khi tải dữ liệu đơn hàng:", error);
       }
     }
 
     fetchData();
-  }, [location.search, sessionId]);
+  }, [sessionId]);
 
-  const totalPrice = orderData?.LineItems.reduce(
-    (acc, item) => acc + item.ProductPrice * item.ProductQuantity,
-    0
+  const totalPrice = useMemo(
+    () =>
+      orderData?.LineItems.reduce(
+        (acc, item) => acc + item.ProductPrice * item.ProductQuantity,
+        0
+      ) ?? 0,
+    [orderData]
   );
 
-  async function handlePrintInvoicePdf() {
-    const response = await axios.post("/order/create-order-pdf", {
-      Address: orderData?.Address,
-      CouponId: orderData?.CouponId,
-      DeliveryTime: orderData?.DeliveryTime,
-      District: orderData?.District,
-      Email: orderData?.Email,
-      FullName: orderData?.FullName,
-      Note: orderData?.Note,
-      OrderDate: orderData?.OrderDate,
-      PaymentMethodId: orderData?.PaymentMethodId,
-      PhoneNumber: orderData?.PhoneNumber,
-      Province: orderData?.Province,
-      ShippingMethodId: orderData?.ShippingMethodId,
-      UserId: orderData?.UserId,
-      Ward: orderData?.Ward,
-      LineItems: orderData?.LineItems.map((item) => {
-        return {
-          ProductDescription: item.ProductDescription,
-          ProductPrice: item.ProductPrice,
-          ProductQuantity: item.ProductQuantity,
-        };
-      }),
-      ShippingFee: shippingFee,
-      CurrentSuccessUrl: window.location.href,
-    });
+  const handlePrintInvoicePdf = useCallback(async () => {
+    if (!orderData) return;
 
-    // Lấy dữ liệu base64 từ phản hồi
-    const { pdfData, contentType } = response.data;
+    try {
+      const response = await axios.post("/order/create-order-pdf", {
+        ...orderData,
+        ShippingFee: shippingFee,
+        CurrentSuccessUrl: window.location.href,
+      });
 
-    // Chuyển đổi base64 thành Uint8Array
-    const binaryData = atob(pdfData);
-    const bytes = new Uint8Array(binaryData.length);
-    for (let i = 0; i < binaryData.length; i++) {
-      bytes[i] = binaryData.charCodeAt(i);
+      const { pdfData, contentType } = response.data;
+      const binaryData = atob(pdfData);
+      const bytes = new Uint8Array(binaryData.length);
+      for (let i = 0; i < binaryData.length; i++) {
+        bytes[i] = binaryData.charCodeAt(i);
+      }
+
+      const blob = new Blob([bytes], { type: contentType });
+      const url = URL.createObjectURL(blob);
+      setPdfUrl(url);
+    } catch (error) {
+      console.error("Lỗi khi tạo PDF:", error);
     }
-
-    // Tạo blob từ Uint8Array
-    const blob = new Blob([bytes], { type: contentType });
-
-    // Tạo Url cho Blob
-    const url = URL.createObjectURL(blob);
-    setPdfUrl(url);
-  }
+  }, [orderData, shippingFee]);
 
   return (
     <div className="min-h-screen bg-[#E6E8EA]">
@@ -165,10 +156,16 @@ export function SuccessCheckout() {
       {pdfUrl && (
         <>
           <div className="fixed inset-0 bg-black bg-opacity-70 z-40"></div>
-          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] z-50" ref={pdfPopupRef}>
+          <div
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] z-50"
+            ref={pdfPopupRef}
+          >
             <div className="w-full h-full bg-white">
               <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-                <Viewer fileUrl={pdfUrl} plugins={[defaultLayoutPluginInstance]} />
+                <Viewer
+                  fileUrl={pdfUrl}
+                  plugins={[defaultLayoutPluginInstance]}
+                />
               </Worker>
             </div>
           </div>
