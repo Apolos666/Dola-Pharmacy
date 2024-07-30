@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using backend.DTOs.Order;
+using backend.Services.Order;
 using backend.Services.Stripe;
 using backend.Utilities.TypeSafe;
 using Microsoft.AspNetCore.Authorization;
@@ -11,9 +12,10 @@ namespace backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class OrderController(IStripeService stripeService) : ControllerBase
+public class OrderController(IStripeService stripeService, OrderService orderService) : ControllerBase
 {
     private readonly IStripeService _stripeService = stripeService;
+    private readonly OrderService _orderService = orderService;
 
     [HttpPost("create-order")]
     [Authorize(Roles = Roles.User)]
@@ -74,5 +76,22 @@ public class OrderController(IStripeService stripeService) : ControllerBase
             return NotFound("Session not found.");
 
         return Ok(session);
+    }
+
+    [HttpPost("create-order-pdf")]
+    public IActionResult CreateOrderPdf([FromBody] OrderData orderData)
+    {
+        var pdf = _orderService.CreateOrderPdf(orderData);
+
+        if (pdf == null)
+            return BadRequest("Failed to generate PDF.");
+
+        var base64Pdf = Convert.ToBase64String(pdf);
+
+        return Ok(new
+        {
+            pdfData = base64Pdf,
+            contentType = "application/pdf"
+        });
     }
 }

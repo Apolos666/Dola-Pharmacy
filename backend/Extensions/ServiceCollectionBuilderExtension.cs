@@ -41,6 +41,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using QuestPDF.Infrastructure;
 using ProductService = backend.Services.Product.ProductService;
 
 namespace backend.Extensions;
@@ -50,7 +51,7 @@ public static class ServiceCollectionBuilderExtension
     public static IServiceCollection AddDatabase(this IServiceCollection services)
     {
         var databaseConfig = services.BuildServiceProvider().GetService<IOptions<DatabaseConfig>>()?.Value;
-        
+
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseNpgsql(databaseConfig?.ConnectionString);
@@ -88,8 +89,8 @@ public static class ServiceCollectionBuilderExtension
         services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
 
         return services;
-    } 
-    
+    }
+
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services
@@ -108,10 +109,10 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<IPaymentMethodRepository, PaymentMethodRepository>()
             .AddScoped<IOrderRepository, OrderRepository>()
             .AddScoped<IOrderItemRepository, OrderItemRepository>();
-        
+
         return services;
     }
-    
+
     public static IServiceCollection AddCustomServices(this IServiceCollection services)
     {
         services
@@ -133,10 +134,10 @@ public static class ServiceCollectionBuilderExtension
             .AddScoped<ShippingMethodService>()
             .AddScoped<PaymentMethodService>()
             .AddScoped<OrderService>();
-        
+
         return services;
     }
-    
+
     public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services
@@ -146,14 +147,14 @@ public static class ServiceCollectionBuilderExtension
             .Configure<JwtConfig>(configuration.GetSection("JwtConfig"))
             .Configure<RefreshTokenConfig>(configuration.GetSection("RefreshTokenConfig"))
             .Configure<AwsS3Config>(configuration.GetSection("AwsS3Config"));
-        
+
         return services;
     }
 
     public static IServiceCollection AddCorsService(this IServiceCollection services)
     {
         var corsConfig = services.BuildServiceProvider().GetService<IOptions<CorsConfig>>()?.Value;
-        
+
         services.AddCors(options =>
         {
             options.AddPolicy(corsConfig!.PolicyName, builder =>
@@ -165,7 +166,7 @@ public static class ServiceCollectionBuilderExtension
                     .AllowCredentials();
             });
         });
-        
+
         return services;
     }
 
@@ -198,20 +199,21 @@ public static class ServiceCollectionBuilderExtension
 
         return service;
     }
-    
+
     public static IServiceCollection AddThirdPartyServices(this IServiceCollection services)
     {
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddHttpClient<IMailjetClient, MailjetClient>(client =>
         {
             client.SetDefaultSettings();
-            
+
             client.UseBasicAuthentication("6f9543c0602cc1be87d94d1ae524adfc", "26658f53db990f8da9e5e3406e78ced3");
         });
 
         services.AddAwsService();
         services.AddStripeService();
-        
+        QuestPDF.Settings.License = LicenseType.Community;
+
         return services;
     }
 }

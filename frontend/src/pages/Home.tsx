@@ -3,6 +3,7 @@ import {accountApi} from "@/api/Account/AccountApi.ts";
 import {HomeSlider} from "@/components/HomeSlider/HomeSlider.tsx";
 import axios from "@/api/Base/axios.ts";
 import {useAuth} from "@/hooks/useAuth.tsx";
+import { InvoiceOrderPdfShower } from "@/components/InvoiceOrderPdfShower/InvoiceOrderPdfShower";
 
 function Home() {
     const axiosPrivate = useAxiosPrivate();
@@ -37,6 +38,7 @@ function Home() {
         <>
             <div className="w-full">
                 <HomeSlider/>
+                <InvoiceOrderPdfShower /> 
             </div>
         </>
     )
