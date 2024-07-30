@@ -118,19 +118,18 @@ export function SuccessCheckout() {
     <div className="min-h-screen bg-[#E6E8EA]">
       <div className="flex justify-center items-center">
         <img
-          width={270}
-          height={270}
-          className="my-8"
+          className="my-8 xl:w-[270px] md:w-[150px] w-[130px]"
           src="/logo.webp"
           alt=""
         />
       </div>
-      <div className="container-app flex gap-4">
-        <div className="w-[50%]">
-          <SuccessMessage />
+      <SuccessMessage className="xl:hidden md:flex-row flex flex-col justify-center mb-4" />
+      <div className="container-app flex xl:flex-row flex-col  gap-4">
+        <div className="xl:w-[50%]">
+          <SuccessMessage className="hidden xl:flex" />
           <OrderInfo orderData={orderData} profile={profile ?? null} />
         </div>
-        <div className="w-[50%]">
+        <div className="xl:w-[50%] order-first xl:order-none">
           <OrderSummary
             orderData={orderData}
             totalPrice={totalPrice}
@@ -138,7 +137,7 @@ export function SuccessCheckout() {
           />
         </div>
       </div>
-      <div className="flex justify-center items-center mt-4">
+      <div className="flex justify-center items-center my-4">
         <Button
           size={"none"}
           variant={"none"}
