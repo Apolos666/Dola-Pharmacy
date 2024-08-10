@@ -9,39 +9,35 @@ namespace backend.Services.Product;
 
 public class ProductService(IUnitOfWork unitOfWork, IProductRepository productRepository, IMapper mapper)
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IProductRepository _productRepository = productRepository;
-    private readonly IMapper _mapper = mapper;
-
     public async Task<ResponseProductDto> AddProductAsync(AddProductDto addProductDto)
     {
-        var product = _productRepository.AddProduct(addProductDto);
-        var saved = await _unitOfWork.CommitAsync();
+        var product = productRepository.AddProduct(addProductDto);
+        var saved = await unitOfWork.CommitAsync();
 
         if (saved <= 0)
             throw new Exception($"Cannot save {product} to database");
 
-        var productWithRelations = await _productRepository.GetProductWithRelations(product.ProductId);
+        var productWithRelations = await productRepository.GetProductWithRelations(product.ProductId);
 
         if (productWithRelations is null)
             throw new Exception(
                 $"Product with ID {product.ProductId} could not be found in the database with its relations.");
 
-        var responseProductDto = _mapper.Map<ResponseProductDto>(productWithRelations);
+        var responseProductDto = mapper.Map<ResponseProductDto>(productWithRelations);
         return responseProductDto;
     }
 
     public async Task<PagedList<Models.Product>> GetProductAsync(GetProductDto getProductDto, CancellationToken cancellationToken)
     {
-        var productQuery = _productRepository.GetIQueryableProduct();
+        var productQuery = productRepository.GetIQueryableProduct();
         
-        productQuery = _productRepository.FilterProductBasedOnType(productQuery, getProductDto.ProductTypeNameNormalized); 
+        productQuery = productRepository.FilterProductBasedOnType(productQuery, getProductDto.ProductTypeNameNormalized); 
 
         productQuery =
-            _productRepository.FilterProducts(productQuery, getProductDto);
+            productRepository.FilterProducts(productQuery, getProductDto);
 
         productQuery =
-            _productRepository.SortProducts(productQuery, getProductDto.SortColumn, getProductDto.SortOrder);
+            productRepository.SortProducts(productQuery, getProductDto.SortColumn, getProductDto.SortOrder);
 
         productQuery = productQuery.Include(p => p.ProductImages);
         
@@ -50,9 +46,14 @@ public class ProductService(IUnitOfWork unitOfWork, IProductRepository productRe
 
         return products;
     }
+    
+    public async Task<Models.Product?> GetProductByProductNameNormalized(string productNameNormalized)
+    {
+        return await productRepository.GetProductByProductNameNormalized(productNameNormalized);
+    }
 
     public async Task<bool> IsProductExists(Guid productId)
     {
-        return await _productRepository.CheckIfProductExists(productId);
+        return await productRepository.CheckIfProductExists(productId);
     }
 }

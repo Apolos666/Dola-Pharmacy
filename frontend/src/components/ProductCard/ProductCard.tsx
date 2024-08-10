@@ -1,7 +1,8 @@
-import {Card, CardContent} from "@/components/ui/card.tsx";
-import {TbShoppingBagPlus} from "react-icons/tb";
-import {Product} from "@/components/ProductDisplay/ProductDisplayConfig.ts";
-import {useCart} from "@/contexts/Cart/CartProviderConfig.ts";
+import { Card, CardContent } from "@/components/ui/card.tsx";
+import { TbShoppingBagPlus } from "react-icons/tb";
+import { Product } from "@/components/ProductDisplay/ProductDisplayConfig.ts";
+import { useCart } from "@/contexts/Cart/CartProviderConfig.ts";
+import { Link } from "react-router-dom";
 
 type ProductProps = {
     product: Product;
@@ -9,7 +10,7 @@ type ProductProps = {
     setSelectedProduct: (value: Product | null) => void;
 }
 
-export function ProductCard({product, setIsPopupVisible, setSelectedProduct}: ProductProps) {
+export function ProductCard({ product, setIsPopupVisible, setSelectedProduct }: ProductProps) {
     const { addProductToCartAsync } = useCart();
 
     const truncateNumber: number = 40;
@@ -33,31 +34,35 @@ export function ProductCard({product, setIsPopupVisible, setSelectedProduct}: Pr
 
     return (
         <>
-            <Card
-                className="rounded-[6px] border-2 cursor-pointer group hover:border-[#003CBF] hover:shadow-custom transition-all duration-300">
-                <CardContent className="p-2">
-                    <div className="w-full overflow-hidden py-8">
-                        <img
-                            src={product.productImages[0].imageUrl}
-                            alt=""
-                            className="block xl:w-2/3 md:w-full w-2/3 mx-auto group-hover:scale-[1.1] transition-all duration-300"
-                        />
-                    </div>
-                    <div
-                        className="text-[#4B494A] font-bold group-hover:text-[#003CBF] transition-all">{truncateString(product.productName, truncateNumber)}
-                    </div>
-                    <div className="my-2 flex justify-between">
-                        <div className="text-[#8AC379] font-bold text-xl">
-                            {product.price.toLocaleString()}₫
+            <Link
+                to={`/product-detail/${product.productNameNormalized}`}
+            >
+                <Card
+                    className="rounded-[6px] border-2 cursor-pointer group hover:border-[#003CBF] hover:shadow-custom transition-all duration-300">
+                    <CardContent className="p-2">
+                        <div className="w-full overflow-hidden py-8">
+                            <img
+                                src={product.productImages[0].imageUrl}
+                                alt=""
+                                className="block xl:w-2/3 md:w-full w-2/3 mx-auto group-hover:scale-[1.1] transition-all duration-300"
+                            />
                         </div>
                         <div
-                            onClick={HandleAddProductToCart}
-                            className="p-2 bg-[#1b74e7] rounded-full mt-4 hover:-translate-y-2 hover:bg-[#003CBF] transition-all duration-300">
-                            <TbShoppingBagPlus className="text-2xl text-white"/>
+                            className="text-[#4B494A] font-bold group-hover:text-[#003CBF] transition-all">{truncateString(product.productName, truncateNumber)}
                         </div>
-                    </div>
-                </CardContent>
-            </Card>
+                        <div className="my-2 flex justify-between">
+                            <div className="text-[#8AC379] font-bold text-xl">
+                                {product.price.toLocaleString()}₫
+                            </div>
+                            <div
+                                onClick={HandleAddProductToCart}
+                                className="p-2 bg-[#1b74e7] rounded-full mt-4 hover:-translate-y-2 hover:bg-[#003CBF] transition-all duration-300">
+                                <TbShoppingBagPlus className="text-2xl text-white" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </Link>
         </>
     )
 }

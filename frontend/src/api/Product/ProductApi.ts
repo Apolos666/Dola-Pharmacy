@@ -19,6 +19,7 @@ async function GetProductsAsync(query: string ,abortSignal: AbortSignal) {
                     price: item.price,
                     productId: item.productId,
                     productName: item.productName,
+                    productNameNormalized: item.productNameNormalized,
                     statusId: item.statusId,
                     weight: item.weight,
                     productImages: item.productImages.map(image => {

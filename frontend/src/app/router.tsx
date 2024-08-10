@@ -77,15 +77,15 @@ export const router = createBrowserRouter([
                         handle: {
                             crumb: (productTypeNameNormalized: string) => productTypeNameNormalized
                         }
-                    },
-                    {
-                        path: ":name",
-                        element: <ProductDetail />, 
-                        handle: {
-                            crumb: (name: string) => name
-                        }
                     }
                 ]
+            },
+            {
+                path: '/product-detail/:productNameNormalized',
+                element: <ProductDetail />, 
+                handle: {
+                    crumb: (productNameNormalized: string) => productNameNormalized
+                }
             },
             {
                 path: '/cart',

@@ -16,7 +16,8 @@ export type Product = {
     productName: string,
     statusId: string,
     weight: number,
-    productImages: ProductImage[]
+    productImages: ProductImage[],
+    productNameNormalized: string,
 }
 
 export type ProductImage = {

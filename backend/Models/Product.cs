@@ -18,6 +18,7 @@ public class Product
 
     [Key] public Guid ProductId { get; set; }
     [Required] [StringLength(100)] public string ProductName { get; set; } = null!;
+    [Required] [StringLength(100)] public string ProductNameNormalized { get; set; }
     [Required] public Guid BrandId { get; set; }
     [Required] public Guid StatusId { get; set; }
     [Required] public decimal Price { get; set; }
@@ -34,11 +35,16 @@ public class Product
     public virtual ICollection<OrderItem> OrderItems { get; set; }
     public virtual ICollection<ProductTypeAssociation> ProductTypeAssociations { get; set; }
     
-    public static Product Create(string productName, Guid brandId, Guid statusId, decimal price ,string description, string buyingGuide, decimal weight)
+    public static Product Create(string productName, string productNameNormalized, Guid brandId, Guid statusId, decimal price ,string description, string buyingGuide, decimal weight)
     {
         if (string.IsNullOrEmpty(productName) || productName.Length > 100)
         {
             throw new ArgumentException("ProductName is required and must be less than or equal to 100 characters.", nameof(productName));
+        }
+        
+        if (string.IsNullOrEmpty(productNameNormalized) || productNameNormalized.Length > 100)
+        {
+            throw new ArgumentException("ProductNameNormalized is required and must be less than or equal to 100 characters.", nameof(productNameNormalized));
         }
 
         if (string.IsNullOrEmpty(description) || description.Length > 1000)
@@ -60,6 +66,7 @@ public class Product
         {
             ProductId = Guid.NewGuid(),
             ProductName = productName,
+            ProductNameNormalized = productNameNormalized,
             BrandId = brandId,
             StatusId = statusId,
             Price = price,

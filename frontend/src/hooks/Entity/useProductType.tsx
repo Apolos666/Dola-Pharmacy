@@ -38,5 +38,7 @@ export function useProductType(productTypeNameNormalized?: string | undefined) {
         }
     }, []);
 
+    
+
     return { productType, productTypeWithChildren };
 }

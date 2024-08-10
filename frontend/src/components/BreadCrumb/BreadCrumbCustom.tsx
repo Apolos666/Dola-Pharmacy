@@ -10,19 +10,23 @@ import {
 import {Fragment} from "react";
 import "@/app/app.css"
 import {useProductType} from "@/hooks/Entity/useProductType.tsx";
+import useGetProductName from "@/hooks/Product/useGetProductName";
 
 export function BreadCrumbCustom() {
     const matches = useMatches();
     const location = useLocation();
-    const { productTypeNameNormalized } = useParams();
+    const { productTypeNameNormalized, productNameNormalized } = useParams();
     const { productType } = useProductType(productTypeNameNormalized)
+
+    const {product} = useGetProductName({productNameNormalized});
 
     if (location.pathname === "/") // If the current path is the home page then don't show the crumb
         return null;
 
     let crumbs = matches
         .filter((match) => Boolean(match.handle?.crumb))
-        .map((match) => match.handle!.crumb(productType?.TypeName));
+        .map((match) => match.handle!.crumb(productType?.TypeName || product?.productName));
+
 
     return (
         <>

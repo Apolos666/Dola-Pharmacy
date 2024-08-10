@@ -48,6 +48,11 @@ public class ProductRepository(DbFactory dbFactory) : Repository<Models.Product>
             .ToListAsync();
     }
 
+    public async Task<Models.Product?> GetProductByProductNameNormalized(string productNameNormalized)
+    {
+        return await DbSet.AsNoTracking().FirstOrDefaultAsync(p => p.ProductNameNormalized == productNameNormalized);
+    }
+
     public IQueryable<Models.Product> FilterProductBasedOnType(IQueryable<Models.Product> iQueryable, string? productTypeNameNomalized)
     {
         return string.IsNullOrEmpty(productTypeNameNomalized)

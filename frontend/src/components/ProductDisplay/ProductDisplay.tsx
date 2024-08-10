@@ -67,6 +67,8 @@ export function ProductDisplay() {
         ));
     }, [products]);
 
+    console.log(products)
+
     return (
         <>
             {isPopupVisible && <ProductCartPopup selectedProduct={selectedProduct} closePopup={closePopup} />}

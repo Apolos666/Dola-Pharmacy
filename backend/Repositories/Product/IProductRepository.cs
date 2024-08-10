@@ -9,6 +9,7 @@ public interface IProductRepository : IRepository<Models.Product>
     Models.Product AddProduct(AddProductDto productDto);
     Task<Models.Product?> GetProductWithRelations(Guid productId);
     Task<List<backend.Models.Product>> GetAllProductsWithImages();
+    Task<Models.Product?> GetProductByProductNameNormalized(string productNameNormalized);
     IQueryable<Models.Product> FilterProductBasedOnType(IQueryable<Models.Product> iQueryable, string? productTypeNameNomalized);
     IQueryable<Models.Product> FilterProducts(IQueryable<Models.Product> iQueryable, GetProductDto getProductDto);
     IQueryable<Models.Product> SortProducts(IQueryable<Models.Product> iQueryable, string? sortColumn, string? sortOrder);
