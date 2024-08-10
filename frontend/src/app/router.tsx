@@ -10,6 +10,7 @@ import {UserCart} from "@/pages/UserCart.tsx";
 import {Checkout} from "@/pages/Checkout.tsx";
 import {CheckoutLayout} from "@/layouts/CheckoutLayout.tsx";
 import { SuccessCheckout } from "@/pages/SuccessCheckout.tsx";
+import ProductDetail from "@/pages/ProductDetail/ProductDetail.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -75,6 +76,13 @@ export const router = createBrowserRouter([
                         element: <Product />,
                         handle: {
                             crumb: (productTypeNameNormalized: string) => productTypeNameNormalized
+                        }
+                    },
+                    {
+                        path: ":name",
+                        element: <ProductDetail />, 
+                        handle: {
+                            crumb: (name: string) => name
                         }
                     }
                 ]
